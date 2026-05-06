@@ -104,6 +104,7 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
   const recentEvents = events.slice(0, 80);
   const recentGames = games.slice(0, 40);
   const knownGeoEvents = events.filter((event) => event.country || event.region || event.city);
+  const setupEvents = events.filter((event) => event.event_name === "setup_saved");
 
   return (
     <main className="shell owner-shell">
@@ -135,6 +136,8 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
         <Breakdown title="Play modes" rows={toRows(countByValue(games.map((game) => game.play_mode)))} />
         <Breakdown title="Prompt modes" rows={toRows(countByValue(games.map((game) => game.prompt_mode)))} />
         <Breakdown title="Devices" rows={toRows(countByValue(events.map((event) => event.device_type ?? "unknown")))} />
+        <Breakdown title="Game categories" rows={toRows(countByKnownValue(games.flatMap((game) => game.prompt_categories ?? []))).slice(0, 16)} />
+        <Breakdown title="Setup categories" rows={toRows(countByKnownValue(setupEvents.flatMap((event) => getSelectedCategories(event)))).slice(0, 16)} />
         <Breakdown title="Known countries" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => event.country))).slice(0, 12)} />
         <Breakdown title="Known regions" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => formatKnownLocationPart(event.region, event.country)))).slice(0, 12)} />
         <Breakdown title="Known cities" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => formatKnownLocation(event)))).slice(0, 12)} />
@@ -152,6 +155,7 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
                 <th>Mode</th>
                 <th>Players</th>
                 <th>Prompts</th>
+                <th>Categories</th>
                 <th>Turns</th>
                 <th>Scores</th>
               </tr>
@@ -171,6 +175,7 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
                   </td>
                   <td>{playersByGame.get(game.id) ?? 0}</td>
                   <td>{promptsByGame.get(game.id) ?? 0}</td>
+                  <td>{formatCategories(game.prompt_categories)}</td>
                   <td>{turnsByGame.get(game.id) ?? 0}</td>
                   <td>{formatScores(teamsByGame.get(game.id) ?? [])}</td>
                 </tr>
@@ -286,19 +291,35 @@ function countByKnownValue(values: Array<string | null | undefined>) {
   return counts;
 }
 
+function getSelectedCategories(event: AnalyticsEventRow) {
+  const selectedCategories = event.metadata?.selectedCategories;
+  if (typeof selectedCategories !== "string") return [];
+  return selectedCategories
+    .split(",")
+    .map((category) => category.trim())
+    .filter(Boolean);
+}
+
 function toRows(counts: Map<string, number>) {
   return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
 }
 
 function formatDate(value: string) {
-  return new Intl.DateTimeFormat("en-US", {
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
     dateStyle: "short",
-    timeStyle: "short"
+    timeStyle: "short",
+    timeZone: "America/Los_Angeles"
   }).format(new Date(value));
+  return `${formattedDate} PT`;
 }
 
 function formatMode(value: string) {
   return value.replaceAll("_", " ");
+}
+
+function formatCategories(categories: string[] | null) {
+  if (!categories || categories.length === 0) return "none";
+  return categories.map(formatMode).join(", ");
 }
 
 function formatLocation(event: Pick<AnalyticsEventRow, "city" | "country" | "region">) {
