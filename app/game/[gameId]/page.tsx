@@ -432,14 +432,15 @@ export default function GamePage() {
           onStart={() =>
             runAction(async () => {
               await startGame(snapshot);
-              trackSnapshotEvent("game_started", snapshot, {
-                cardsDealtPerPlayer: snapshot.game.cards_dealt_per_player,
-                cardsKeptPerPlayer: snapshot.game.cards_kept_per_player,
-                expectedPlayers: snapshot.game.expected_players,
-                passAndPlayCardCount: snapshot.game.pass_play_card_count,
-                promptsPerPlayer: snapshot.game.prompts_per_player,
-                selectedCategories: (snapshot.game.prompt_categories ?? [MIXED_PASS_PLAY_CATEGORY]).join(","),
-                turnDurationSeconds: snapshot.game.turn_duration_seconds
+              const startedSnapshot = await loadSnapshot(snapshot.game.id);
+              trackSnapshotEvent("game_started", startedSnapshot, {
+                cardsDealtPerPlayer: startedSnapshot.game.cards_dealt_per_player,
+                cardsKeptPerPlayer: startedSnapshot.game.cards_kept_per_player,
+                expectedPlayers: startedSnapshot.game.expected_players,
+                passAndPlayCardCount: startedSnapshot.game.pass_play_card_count,
+                promptsPerPlayer: startedSnapshot.game.prompts_per_player,
+                selectedCategories: (startedSnapshot.game.prompt_categories ?? [MIXED_PASS_PLAY_CATEGORY]).join(","),
+                turnDurationSeconds: startedSnapshot.game.turn_duration_seconds
               });
             })
           }

@@ -106,8 +106,8 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
   const recentEvents = events.slice(0, 80);
   const recentGames = games.slice(0, 40);
   const knownGeoEvents = events.filter((event) => event.country || event.region || event.city);
-  const startedEvents = events.filter((event) => event.event_name === "game_started");
-  const playersAtStart = startedEvents.reduce((total, event) => total + (event.player_count ?? 0), 0);
+  const startedGames = games.filter(isStartedGame);
+  const playersInStartedGames = startedGames.reduce((total, game) => total + (playersByGame.get(game.id) ?? 0), 0);
 
   return (
     <main className="shell owner-shell">
@@ -135,16 +135,16 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
         <MetricCard label="Turns played" value={turns.length} />
         <MetricCard label="Page views" value={countEvents(events, "page_view")} />
         <MetricCard label="Joins tracked" value={countEvents(events, "player_joined")} />
-        <MetricCard label="Games started" value={startedEvents.length} />
-        <MetricCard label="Players at start" value={playersAtStart} />
+        <MetricCard label="Games started" value={startedGames.length} />
+        <MetricCard label="Players in started games" value={playersInStartedGames} />
       </section>
 
       <section className="card stack">
         <h2>Started game settings</h2>
-        <Breakdown title="Play modes" rows={toRows(countByValue(startedEvents.map((event) => event.play_mode)))} />
-        <Breakdown title="Prompt modes" rows={toRows(countByValue(startedEvents.map((event) => event.prompt_mode)))} />
+        <Breakdown title="Play modes" rows={toRows(countByValue(startedGames.map((game) => game.play_mode)))} />
+        <Breakdown title="Prompt modes" rows={toRows(countByValue(startedGames.map((game) => game.prompt_mode)))} />
         <Breakdown title="Devices" rows={toRows(countByValue(events.map((event) => event.device_type ?? "unknown")))} />
-        <Breakdown title="Categories used" rows={toRows(countByKnownValue(startedEvents.flatMap((event) => getSelectedCategories(event)))).slice(0, 16)} />
+        <Breakdown title="Categories used" rows={toRows(countByKnownValue(startedGames.flatMap((game) => game.prompt_categories ?? []))).slice(0, 16)} />
         <Breakdown title="Known countries" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => event.country))).slice(0, 12)} />
         <Breakdown title="Known regions" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => formatKnownLocationPart(event.region, event.country)))).slice(0, 12)} />
         <Breakdown title="Known cities" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => formatKnownLocation(event)))).slice(0, 12)} />
@@ -298,13 +298,8 @@ function countByKnownValue(values: Array<string | null | undefined>) {
   return counts;
 }
 
-function getSelectedCategories(event: AnalyticsEventRow) {
-  const selectedCategories = event.metadata?.selectedCategories;
-  if (typeof selectedCategories !== "string") return [];
-  return selectedCategories
-    .split(",")
-    .map((category) => category.trim())
-    .filter(Boolean);
+function isStartedGame(game: Game) {
+  return game.phase !== "setup" && game.phase !== "lobby";
 }
 
 function toRows(counts: Map<string, number>) {
