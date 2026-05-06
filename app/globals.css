@@ -147,6 +147,16 @@ a {
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.62);
 }
 
+.home-rule-round.round-label {
+  gap: 0.18em;
+}
+
+.round-number {
+  display: inline-block;
+  width: 0.72em;
+  text-align: center;
+}
+
 .home-rule-copy {
   display: block;
   width: 100%;

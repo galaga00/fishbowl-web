@@ -36,6 +36,8 @@ export default function Home() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const isFinalHowToPage = mode === "howTo" && howToIndex === howToPages.length - 1;
+  const currentHowToPage = howToPages[howToIndex];
+  const roundTitleMatch = currentHowToPage.title?.match(/^Round (\d+)$/);
 
   async function handleCreate() {
     setBusy(true);
@@ -110,8 +112,17 @@ export default function Home() {
         <div className="home-title-lockup">
           {mode === "howTo" ? (
             <h1 className="home-rule-title" id="home-title">
-              <span className="home-rule-round">{howToPages[howToIndex].title ?? ""}</span>
-              <span className="home-rule-copy">{howToPages[howToIndex].body}</span>
+              <span className={roundTitleMatch ? "home-rule-round round-label" : "home-rule-round"}>
+                {roundTitleMatch ? (
+                  <>
+                    <span>Round</span>
+                    <span className="round-number">{roundTitleMatch[1]}</span>
+                  </>
+                ) : (
+                  currentHowToPage.title ?? ""
+                )}
+              </span>
+              <span className="home-rule-copy">{currentHowToPage.body}</span>
             </h1>
           ) : (
             <h1 id="home-title" aria-label="Fish Bowl">
