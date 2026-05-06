@@ -94,6 +94,25 @@ export type GameEvent = {
   created_at: string;
 };
 
+export type AnalyticsEvent = {
+  id: string;
+  event_name: string;
+  game_id: string | null;
+  player_id: string | null;
+  path: string | null;
+  referrer: string | null;
+  user_agent: string | null;
+  device_type: string | null;
+  play_mode: string | null;
+  prompt_mode: string | null;
+  phase: string | null;
+  player_count: number | null;
+  team_count: number | null;
+  prompt_count: number | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+};
+
 export type GameSnapshot = {
   game: Game;
   players: Player[];

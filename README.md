@@ -24,6 +24,7 @@ cp .env.example .env.local
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+OWNER_ANALYTICS_KEY=make-a-private-random-key
 ```
 
 7. Start the app:
@@ -77,9 +78,22 @@ Install Command: npm install
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+OWNER_ANALYTICS_KEY=...
 ```
 
 6. Deploy.
+
+## Owner Analytics
+
+The app records lightweight analytics events such as page views, games created, players joined, setup saved, games started, turns, correct/skip actions, and finished games. It avoids login and does not collect player emails or accounts.
+
+Set `OWNER_ANALYTICS_KEY` locally and in Vercel, then open:
+
+```bash
+/owner/analytics?key=YOUR_OWNER_ANALYTICS_KEY
+```
+
+For production, use `https://fish-bowl-game.vercel.app/owner/analytics?key=YOUR_OWNER_ANALYTICS_KEY`. Keep the real key in `.env.local`, Vercel env vars, or a password manager.
 
 If you use the debug seed script locally, keep `SUPABASE_SERVICE_ROLE_KEY` out of browser-facing code. It is optional and should only be added to trusted local or server environments.
 

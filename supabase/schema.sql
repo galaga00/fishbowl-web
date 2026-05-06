@@ -87,6 +87,25 @@ create table if not exists public.game_events (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.analytics_events (
+  id uuid primary key default gen_random_uuid(),
+  event_name text not null,
+  game_id uuid references public.games(id) on delete set null,
+  player_id uuid references public.players(id) on delete set null,
+  path text,
+  referrer text,
+  user_agent text,
+  device_type text,
+  play_mode text,
+  prompt_mode text,
+  phase text,
+  player_count integer,
+  team_count integer,
+  prompt_count integer,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
 do $$
 begin
   if not exists (select 1 from pg_constraint where conname = 'games_host_player_id_fkey') then
@@ -110,6 +129,9 @@ create index if not exists prompts_game_id_status_idx on public.prompts(game_id,
 create index if not exists draft_cards_game_player_idx on public.draft_cards(game_id, player_id);
 create index if not exists turns_game_id_active_idx on public.turns(game_id, ended_at);
 create index if not exists game_events_game_id_undo_idx on public.game_events(game_id, undone_at, created_at desc);
+create index if not exists analytics_events_created_at_idx on public.analytics_events(created_at desc);
+create index if not exists analytics_events_game_id_idx on public.analytics_events(game_id, created_at desc);
+create index if not exists analytics_events_event_name_idx on public.analytics_events(event_name, created_at desc);
 
 alter table public.games add column if not exists prompts_per_player integer not null default 3;
 alter table public.games add column if not exists turn_duration_seconds integer not null default 60;
@@ -204,3 +226,4 @@ alter table public.prompts disable row level security;
 alter table public.draft_cards disable row level security;
 alter table public.turns disable row level security;
 alter table public.game_events disable row level security;
+alter table public.analytics_events disable row level security;

@@ -4,6 +4,7 @@ import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 import {
   assignPlayerToTeam,
   endTurn,
@@ -150,6 +151,26 @@ export default function GamePage() {
     }
   }
 
+  function trackSnapshotEvent(eventName: string, nextSnapshot = snapshot, metadata: Record<string, unknown> = {}) {
+    if (!nextSnapshot) return;
+    trackAnalyticsEvent({
+      eventName,
+      gameId: nextSnapshot.game.id,
+      playerId: playerId ?? me?.id ?? null,
+      playMode: nextSnapshot.game.play_mode,
+      promptMode: nextSnapshot.game.prompt_mode,
+      phase: nextSnapshot.game.phase,
+      playerCount: nextSnapshot.players.length,
+      teamCount: nextSnapshot.teams.length,
+      promptCount: nextSnapshot.prompts.length,
+      metadata: {
+        roundNumber: nextSnapshot.game.round_number,
+        turnNumber: nextSnapshot.game.turn_number,
+        ...metadata
+      }
+    });
+  }
+
   async function handleJoin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!snapshot) return;
@@ -157,6 +178,10 @@ export default function GamePage() {
       const { player } = await joinGame(snapshot.game.code, joinName);
       localStorage.setItem(getPlayerStorageKey(snapshot.game.id), player.id);
       setPlayerId(player.id);
+      trackSnapshotEvent("player_joined", snapshot, {
+        joinedPlayerId: player.id,
+        source: "game_join"
+      });
     });
   }
 
@@ -176,6 +201,13 @@ export default function GamePage() {
     event.preventDefault();
     if (!snapshot || !me) return;
     await runAction(async () => {
+      const submittedCount =
+        snapshot.game.prompt_mode === "category"
+          ? categoryPromptValues.filter((value) => value.trim()).length
+          : promptText
+              .split("\n")
+              .map((line) => line.trim())
+              .filter(Boolean).length;
       if (snapshot.game.prompt_mode === "category") {
         const promptTarget =
           snapshot.game.play_mode === "pass_and_play"
@@ -211,6 +243,10 @@ export default function GamePage() {
         );
         setPromptText("");
       }
+      trackSnapshotEvent("prompts_submitted", snapshot, {
+        submittedCount,
+        passAndPlay: snapshot.game.play_mode === "pass_and_play"
+      });
     });
   }
 
@@ -218,8 +254,8 @@ export default function GamePage() {
     event.preventDefault();
     if (!snapshot) return;
     const minimumExpectedPlayers = Math.max(1, snapshot.players.length);
-    await runAction(() =>
-      saveGameSetup(
+    await runAction(async () => {
+      await saveGameSetup(
         snapshot.game.id,
         promptsPerPlayer,
         teamNames.slice(0, teamCount),
@@ -234,8 +270,20 @@ export default function GamePage() {
         passAndPlayCardCount,
         passAndPlayCategories,
         promptCategories
-      )
-    );
+      );
+      trackSnapshotEvent("setup_saved", snapshot, {
+        expectedPlayers: expectedPlayers ? Math.max(minimumExpectedPlayers, Number(expectedPlayers)) : null,
+        promptsPerPlayer,
+        turnDurationSeconds,
+        cardsDealtPerPlayer,
+        cardsKeptPerPlayer,
+        passAndPlayCardCount,
+        selectedCategories: playMode === "pass_and_play" ? passAndPlayCategories.join(",") : promptCategories.join(","),
+        setupPlayMode: playMode,
+        setupPromptMode: promptMode,
+        setupTeamCount: teamCount
+      });
+    });
   }
 
   async function handleDraftCardToggle(draftCardId: string, selected: boolean) {
@@ -392,7 +440,12 @@ export default function GamePage() {
           onChooseTeam={handleChooseTeam}
           onAssignPlayerToTeam={handleAssignPlayerToTeam}
           onDraftCardToggle={handleDraftCardToggle}
-          onStart={() => runAction(() => startGame(snapshot))}
+          onStart={() =>
+            runAction(async () => {
+              await startGame(snapshot);
+              trackSnapshotEvent("game_started", snapshot);
+            })
+          }
         />
       ) : (
         <Play
@@ -402,18 +455,72 @@ export default function GamePage() {
           currentPrompt={currentPrompt}
           busy={busy}
           isHost={isHost}
-          onCorrect={() => runAction(() => markCorrect(snapshot))}
-          onSkip={() => runAction(() => skipPrompt(snapshot))}
-          onEndTurn={() => runAction(() => endTurn(snapshot))}
-          onStartTurn={() => runAction(() => startTurn(snapshot))}
-          onPause={() => runAction(() => pauseGame(snapshot))}
-          onResume={() => runAction(() => resumeGame(snapshot))}
-          onUndo={() => runAction(() => undoLastAction(snapshot))}
+          onCorrect={() =>
+            runAction(async () => {
+              await markCorrect(snapshot);
+              trackSnapshotEvent("correct", snapshot, {
+                promptId: snapshot.game.current_prompt_id
+              });
+            })
+          }
+          onSkip={() =>
+            runAction(async () => {
+              await skipPrompt(snapshot);
+              trackSnapshotEvent("skip", snapshot, {
+                promptId: snapshot.game.current_prompt_id
+              });
+            })
+          }
+          onEndTurn={() =>
+            runAction(async () => {
+              await endTurn(snapshot);
+              trackSnapshotEvent("turn_ended", snapshot);
+            })
+          }
+          onStartTurn={() =>
+            runAction(async () => {
+              await startTurn(snapshot);
+              trackSnapshotEvent("turn_started", snapshot, {
+                activePlayerId: snapshot.game.active_player_id,
+                currentTeamId: snapshot.game.current_team_id
+              });
+            })
+          }
+          onPause={() =>
+            runAction(async () => {
+              await pauseGame(snapshot);
+              trackSnapshotEvent("game_paused", snapshot);
+            })
+          }
+          onResume={() =>
+            runAction(async () => {
+              await resumeGame(snapshot);
+              trackSnapshotEvent("game_resumed", snapshot);
+            })
+          }
+          onUndo={() =>
+            runAction(async () => {
+              await undoLastAction(snapshot);
+              trackSnapshotEvent("action_undone", snapshot, {
+                action: snapshot.latestUndoableEvent?.action ?? null
+              });
+            })
+          }
           onFinishGame={() => {
-            if (window.confirm("End the game now?")) runAction(() => finishGame(snapshot));
+            if (window.confirm("End the game now?")) {
+              runAction(async () => {
+                await finishGame(snapshot);
+                trackSnapshotEvent("game_finished", snapshot);
+              });
+            }
           }}
           onResetToLobby={() => {
-            if (window.confirm("Reset scores and return to the lobby?")) runAction(() => resetToLobby(snapshot));
+            if (window.confirm("Reset scores and return to the lobby?")) {
+              runAction(async () => {
+                await resetToLobby(snapshot);
+                trackSnapshotEvent("reset_to_lobby", snapshot);
+              });
+            }
           }}
         />
       )}

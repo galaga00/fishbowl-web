@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ASSETS } from "@/lib/assets";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 import { createGame, joinGame } from "@/lib/game-api";
 import { getPlayerStorageKey, normalizeCode } from "@/lib/game-utils";
 
@@ -23,6 +24,16 @@ export default function Home() {
     try {
       const { game, player } = await createGame("Host");
       localStorage.setItem(getPlayerStorageKey(game.id), player.id);
+      trackAnalyticsEvent({
+        eventName: "game_created",
+        gameId: game.id,
+        playerId: player.id,
+        playMode: game.play_mode,
+        promptMode: game.prompt_mode,
+        phase: game.phase,
+        playerCount: 1,
+        metadata: { source: "home_create" }
+      });
       router.push(`/game/${game.id}`);
     } catch (createError) {
       setError(createError instanceof Error ? createError.message : "Could not create game.");
@@ -38,6 +49,15 @@ export default function Home() {
     try {
       const { game, player } = await joinGame(normalizeCode(joinCode), playerName);
       localStorage.setItem(getPlayerStorageKey(game.id), player.id);
+      trackAnalyticsEvent({
+        eventName: "player_joined",
+        gameId: game.id,
+        playerId: player.id,
+        playMode: game.play_mode,
+        promptMode: game.prompt_mode,
+        phase: game.phase,
+        metadata: { source: "home_join" }
+      });
       router.push(`/game/${game.id}`);
     } catch (joinError) {
       setError(joinError instanceof Error ? joinError.message : "Could not join game.");

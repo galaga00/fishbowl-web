@@ -840,6 +840,86 @@ a {
   font-size: 0.82rem;
 }
 
+.owner-shell {
+  width: min(100%, 1120px);
+}
+
+.owner-key-form {
+  display: grid;
+  gap: 12px;
+}
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.analytics-metric,
+.analytics-breakdown {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  padding: 14px;
+}
+
+.analytics-metric span,
+.analytics-table td span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.analytics-metric strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 2.1rem;
+}
+
+.analytics-breakdown {
+  display: grid;
+  gap: 8px;
+}
+
+.analytics-breakdown h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.analytics-breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+
+.analytics-table-wrap {
+  overflow-x: auto;
+}
+
+.analytics-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.analytics-table th,
+.analytics-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 10px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.analytics-table th {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
 @keyframes winnerPulse {
   0%,
   100% {

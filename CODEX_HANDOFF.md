@@ -24,6 +24,8 @@ Safe-to-document env var names:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `OWNER_ANALYTICS_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
 Local ignored secret/config files:
 
@@ -43,6 +45,8 @@ npm run build
 vercel --prod --yes
 vercel alias set <deployment-url> fish-bowl-game.vercel.app
 ```
+
+Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. Keep the key only in ignored env files, Vercel env vars, or a password manager.
 
 ## Source Of Truth
 
