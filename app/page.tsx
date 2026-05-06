@@ -10,11 +10,11 @@ import { getPlayerStorageKey, normalizeCode } from "@/lib/game-utils";
 
 const titleLetters = Array.from("Fish Bowl");
 const howToPages = [
-  "Pick the cards you want to use or create your own!",
-  "Round 1: Say anything to describe the card.",
-  "Round 2: Use only one word.",
-  "Round 3: Act out the word. No sounds!",
-  "Team with the most points wins!"
+  { body: "Pick the cards you want to use or create your own!" },
+  { title: "Round 1", body: "Say anything to describe the card." },
+  { title: "Round 2", body: "Use only one word." },
+  { title: "Round 3", body: "Act out the card. No sounds!" },
+  { body: "Team with the most points wins!" }
 ];
 
 export default function Home() {
@@ -78,7 +78,8 @@ export default function Home() {
         <div className="home-title-lockup">
           {mode === "howTo" ? (
             <h1 className="home-rule-title" id="home-title">
-              {howToPages[howToIndex]}
+              {howToPages[howToIndex].title ? <strong>{howToPages[howToIndex].title}</strong> : null}
+              <span>{howToPages[howToIndex].body}</span>
             </h1>
           ) : (
             <h1 id="home-title" aria-label="Fish Bowl">

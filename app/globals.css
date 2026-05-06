@@ -117,10 +117,25 @@ a {
 }
 
 .home-title-lockup .home-rule-title {
+  display: grid;
+  gap: 6px;
   width: min(100%, 11.5em);
-  font-size: clamp(1.75rem, 7vw, 2.75rem);
-  line-height: 1.02;
+  color: var(--accent);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(1.55rem, 6.8vw, 2.25rem);
+  font-weight: 400;
+  line-height: 1.12;
   text-wrap: balance;
+}
+
+.home-rule-title strong {
+  display: block;
+  font-size: clamp(1.6rem, 7vw, 2.25rem);
+  font-weight: 800;
+}
+
+.home-rule-title span {
+  display: block;
 }
 
 .home-title-letter,
@@ -182,7 +197,13 @@ a {
 }
 
 .home-art-stage.how-to-mode {
+  grid-template-rows: clamp(120px, 24svh, 168px) minmax(0, 1fr) auto;
   gap: 10px;
+}
+
+.home-art-stage.how-to-mode .home-title-lockup {
+  align-content: center;
+  min-height: 0;
 }
 
 .home-action-panel {
