@@ -133,6 +133,7 @@ a {
 .home-rule-round {
   display: block;
   min-height: 42px;
+  color: #de7c35;
   font-size: clamp(1.7rem, 7vw, 2.45rem);
   line-height: 1;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.62);
@@ -141,6 +142,7 @@ a {
 .home-rule-copy {
   display: block;
   align-self: start;
+  color: #73adc9;
   line-height: 1.02;
 }
 
