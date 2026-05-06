@@ -7,6 +7,15 @@ export const ASSETS = {
         fish: "/assets/art/home/fishbowl%20layers/002-fish.svg",
         bottom: "/assets/art/home/fishbowl%20layers/003-fishbowl.svg"
       }
+    },
+    howTo: {
+      steps: [
+        "/assets/art/how-to/step-1.png",
+        "/assets/art/how-to/step-2.png",
+        "/assets/art/how-to/step-3.png",
+        "/assets/art/how-to/step-4.png",
+        "/assets/art/how-to/step-5.png"
+      ]
     }
   },
   audio: {

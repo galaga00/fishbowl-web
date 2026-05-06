@@ -141,14 +141,15 @@ export default function Home() {
         </div>
 
         {mode === "howTo" ? (
-          <div className="home-illustration-frame how-to-illustration-frame" role="img" aria-label="Placeholder rule artwork.">
-            <div className="how-to-placeholder">
-              <div className="how-to-card-stack" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
+          <div className="home-illustration-frame how-to-illustration-frame" role="img" aria-label="How to play artwork.">
+            <Image
+              className="how-to-art"
+              src={ASSETS.art.howTo.steps[howToIndex]}
+              alt=""
+              fill
+              priority
+              sizes="(max-width: 520px) min(76vw, calc(100svh - 250px)), 320px"
+            />
           </div>
         ) : (
           <div className="home-illustration-frame" role="img" aria-label="A fish singing into a microphone inside a fish bowl.">
