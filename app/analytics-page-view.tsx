@@ -2,12 +2,13 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { trackAnalyticsEvent } from "@/lib/analytics";
+import { applyAnalyticsIgnoreFromUrl, trackAnalyticsEvent } from "@/lib/analytics";
 
 export function AnalyticsPageView() {
   const pathname = usePathname();
 
   useEffect(() => {
+    applyAnalyticsIgnoreFromUrl();
     if (pathname.startsWith("/owner")) return;
 
     trackAnalyticsEvent({

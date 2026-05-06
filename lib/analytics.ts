@@ -1,6 +1,7 @@
 "use client";
 
 const ANALYTICS_IGNORE_KEY = "fish-bowl-ignore-analytics";
+const ANALYTICS_IGNORE_QUERY_KEY = "ignoreAnalytics";
 
 type AnalyticsPayload = {
   eventName: string;
@@ -20,6 +21,16 @@ export function isAnalyticsIgnored() {
   return localStorage.getItem(ANALYTICS_IGNORE_KEY) === "true";
 }
 
+export function applyAnalyticsIgnoreFromUrl() {
+  if (typeof window === "undefined") return false;
+  const params = new URLSearchParams(window.location.search);
+  const ignoreValue = params.get(ANALYTICS_IGNORE_QUERY_KEY);
+  if (ignoreValue !== "1" && ignoreValue !== "true") return false;
+
+  setAnalyticsIgnored(true);
+  return true;
+}
+
 export function setAnalyticsIgnored(ignored: boolean) {
   if (typeof window === "undefined") return;
   if (ignored) {
@@ -32,6 +43,7 @@ export function setAnalyticsIgnored(ignored: boolean) {
 
 export function trackAnalyticsEvent(payload: AnalyticsPayload) {
   if (typeof window === "undefined") return;
+  applyAnalyticsIgnoreFromUrl();
   if (isAnalyticsIgnored()) return;
 
   const body = JSON.stringify({
