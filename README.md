@@ -108,6 +108,10 @@ For production, use `https://fish-bowl-game.vercel.app/owner/analytics?key=YOUR_
 
 Use the **Ignore this device** control on the owner dashboard from any browser or phone you do not want counted. It stores a local opt-out flag in that browser only. The dashboard also shows an opt-out link you can open once in Chrome, Safari, your phone, or any other browser to set that flag before testing.
 
+The dashboard separates default category setup values from explicit category choices, so the default Mixed category does not look like a deliberate selection unless someone changes the category controls.
+
+Use the **Purge data** button on the owner dashboard to permanently clear test games, players, prompts, turns, draft cards, game events, and analytics. It asks for confirmation before deleting anything.
+
 Optional email notifications can be enabled with Resend:
 
 ```bash

@@ -83,9 +83,11 @@ export default function GamePage() {
   const [teamAssignmentMode, setTeamAssignmentMode] = useState<TeamAssignmentMode>(DEFAULT_TEAM_ASSIGNMENT_MODE);
   const [promptMode, setPromptMode] = useState<PromptMode>("free");
   const [promptCategories, setPromptCategories] = useState<string[]>([MIXED_PASS_PLAY_CATEGORY]);
+  const [promptCategoriesTouched, setPromptCategoriesTouched] = useState(false);
   const [playMode, setPlayMode] = useState<PlayMode>(DEFAULT_PLAY_MODE);
   const [passAndPlayCardCount, setPassAndPlayCardCount] = useState(getDefaultPassPlayCardCount(4));
   const [passAndPlayCategories, setPassAndPlayCategories] = useState<string[]>([MIXED_PASS_PLAY_CATEGORY]);
+  const [passAndPlayCategoriesTouched, setPassAndPlayCategoriesTouched] = useState(false);
   const [passAndPlayPlayers, setPassAndPlayPlayers] = useState<PassAndPlaySetupPlayer[]>(
     Array.from({ length: 4 }, (_, index) => ({ name: `Player ${index + 1}`, teamIndex: index % DEFAULT_TEAM_COUNT }))
   );
@@ -255,6 +257,7 @@ export default function GamePage() {
     if (!snapshot) return;
     const minimumExpectedPlayers = Math.max(1, snapshot.players.length);
     await runAction(async () => {
+      const activeCategoriesTouched = playMode === "pass_and_play" ? passAndPlayCategoriesTouched : promptCategoriesTouched;
       await saveGameSetup(
         snapshot.game.id,
         promptsPerPlayer,
@@ -278,6 +281,8 @@ export default function GamePage() {
         cardsDealtPerPlayer,
         cardsKeptPerPlayer,
         passAndPlayCardCount,
+        categoriesTouched: activeCategoriesTouched,
+        categorySelectionSource: activeCategoriesTouched ? "explicit" : "default",
         selectedCategories: playMode === "pass_and_play" ? passAndPlayCategories.join(",") : promptCategories.join(","),
         setupPlayMode: playMode,
         setupPromptMode: promptMode,
@@ -410,12 +415,14 @@ export default function GamePage() {
           setPromptMode={setPromptMode}
           promptCategories={promptCategories}
           setPromptCategories={setPromptCategories}
+          setPromptCategoriesTouched={setPromptCategoriesTouched}
           playMode={playMode}
           setPlayMode={setPlayMode}
           passAndPlayCardCount={passAndPlayCardCount}
           setPassAndPlayCardCount={setPassAndPlayCardCount}
           passAndPlayCategories={passAndPlayCategories}
           setPassAndPlayCategories={setPassAndPlayCategories}
+          setPassAndPlayCategoriesTouched={setPassAndPlayCategoriesTouched}
           passAndPlayPlayers={passAndPlayPlayers}
           setPassAndPlayPlayers={setPassAndPlayPlayers}
           setPassAndPlayPlayerCount={handlePassAndPlayPlayerCountChange}
@@ -553,12 +560,14 @@ function Setup({
   setPromptMode,
   promptCategories,
   setPromptCategories,
+  setPromptCategoriesTouched,
   playMode,
   setPlayMode,
   passAndPlayCardCount,
   setPassAndPlayCardCount,
   passAndPlayCategories,
   setPassAndPlayCategories,
+  setPassAndPlayCategoriesTouched,
   passAndPlayPlayers,
   setPassAndPlayPlayers,
   setPassAndPlayPlayerCount,
@@ -586,12 +595,14 @@ function Setup({
   setPromptMode: (mode: PromptMode) => void;
   promptCategories: string[];
   setPromptCategories: (categories: string[]) => void;
+  setPromptCategoriesTouched: (touched: boolean) => void;
   playMode: PlayMode;
   setPlayMode: (mode: PlayMode) => void;
   passAndPlayCardCount: number;
   setPassAndPlayCardCount: (count: number) => void;
   passAndPlayCategories: string[];
   setPassAndPlayCategories: (categories: string[]) => void;
+  setPassAndPlayCategoriesTouched: (touched: boolean) => void;
   passAndPlayPlayers: PassAndPlaySetupPlayer[];
   setPassAndPlayPlayers: (players: PassAndPlaySetupPlayer[]) => void;
   setPassAndPlayPlayerCount: (count: number) => void;
@@ -643,6 +654,7 @@ function Setup({
           promptsPerPlayer={promptsPerPlayer}
           setCardCount={setPassAndPlayCardCount}
           setCategories={setPassAndPlayCategories}
+          onTouched={() => setPassAndPlayCategoriesTouched(true)}
           setPlayerCount={setPassAndPlayPlayerCount}
           setPlayers={setPassAndPlayPlayers}
           setPromptMode={setPromptMode}
@@ -763,6 +775,7 @@ function Setup({
           familyFriendlyText={promptMode === "deck" ? "Uses simple, all-ages cards." : "Uses simple, all-ages prompts."}
           showFamilyFriendly
           setCategories={setPromptCategories}
+          onTouched={() => setPromptCategoriesTouched(true)}
         />
       ) : null}
       {playMode === "multi_device" && promptMode === "deck" ? (
@@ -823,6 +836,7 @@ function PassAndPlaySetup({
   promptsPerPlayer,
   setCardCount,
   setCategories,
+  onTouched,
   setPlayerCount,
   setPlayers,
   setPromptMode,
@@ -838,6 +852,7 @@ function PassAndPlaySetup({
   promptsPerPlayer: number;
   setCardCount: (count: number) => void;
   setCategories: (categories: string[]) => void;
+  onTouched: () => void;
   setPlayerCount: (count: number) => void;
   setPlayers: (players: PassAndPlaySetupPlayer[]) => void;
   setPromptMode: (mode: PromptMode) => void;
@@ -901,6 +916,7 @@ function PassAndPlaySetup({
           familyFriendlyText={promptMode === "deck" ? "Uses simple, all-ages cards." : "Uses simple, all-ages prompts."}
           showFamilyFriendly
           setCategories={setCategories}
+          onTouched={onTouched}
         />
       ) : null}
 
@@ -977,17 +993,20 @@ function CategorySelector({
   familyFriendlyText = "Uses simple, all-ages cards.",
   helpText,
   showFamilyFriendly = false,
-  setCategories
+  setCategories,
+  onTouched
 }: {
   categories: string[];
   familyFriendlyText?: string;
   helpText?: string;
   showFamilyFriendly?: boolean;
   setCategories: (categories: string[]) => void;
+  onTouched?: () => void;
 }) {
   const familyFriendlyEnabled = hasFamilyFriendlyDeckFilter(categories);
 
   function toggleCategory(categoryId: string) {
+    onTouched?.();
     if (categoryId === MIXED_PASS_PLAY_CATEGORY) {
       setCategories([MIXED_PASS_PLAY_CATEGORY]);
       return;
@@ -1001,6 +1020,7 @@ function CategorySelector({
   }
 
   function toggleFamilyFriendly() {
+    onTouched?.();
     setCategories(familyFriendlyEnabled ? [MIXED_PASS_PLAY_CATEGORY] : [MIXED_PASS_PLAY_CATEGORY, FAMILY_FRIENDLY_DECK_FILTER]);
   }
 

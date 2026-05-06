@@ -51,7 +51,7 @@ vercel --prod --yes
 vercel alias set <deployment-url> fish-bowl-game.vercel.app
 ```
 
-Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. It records Vercel geo headers and a salted IP hash. The dashboard has an "Ignore this device" browser-local opt-out for Austin's own devices. Optional owner email notifications use Resend env vars. Keep keys only in ignored env files, Vercel env vars, or a password manager.
+Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. It records Vercel geo headers and a salted IP hash. The dashboard has an "Ignore this device" browser-local opt-out for Austin's own devices and a confirmed "Purge data" control for clearing test data. Optional owner email notifications use Resend env vars. Keep keys only in ignored env files, Vercel env vars, or a password manager.
 
 ## Source Of Truth
 
