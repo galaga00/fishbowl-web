@@ -9,7 +9,7 @@ Start new task threads with:
 - Project name: Fish Bowl
 - Local repo path: `/Volumes/2TB_RED/_MY_PROJECTS_/codex/fish-bowl`
 - GitHub repo: `https://github.com/galaga00/fishbowl-web`
-- Notion project page: `https://www.notion.so/3541b2ce282781669d76f43df062d2de`
+- Notion project page and task log: `https://www.notion.so/3541b2ce282781669d76f43df062d2de`
 - Live app: `https://fish-bowl-game.vercel.app`
 - Hosting: Vercel project `fish-bowl`
 - Supabase project: `monikers-web`
@@ -56,7 +56,7 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 ## Source Of Truth
 
 - GitHub/repo files are source of truth for code.
-- Notion is the project map and status log, not a secret vault.
+- Notion's main Fish Bowl page is the project map and status log, not a secret vault.
 - `CODEX_HANDOFF.md` is a short, stable onboarding map. Do not use it as a changelog.
 
 ## Thread Workflow
@@ -71,5 +71,5 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 ## When To Update Things
 
 - Update GitHub for code, schema, docs, scripts, and handoff changes.
-- Update Notion for task summaries, infrastructure changes, URL changes, and current project status.
+- Update the main Fish Bowl Notion page for task summaries, infrastructure changes, URL changes, and current project status.
 - Update this file and Notion if local folder paths, live URLs, hosting project, Supabase project/ref, or secret-file locations change.
