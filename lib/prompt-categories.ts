@@ -1,4 +1,4 @@
-import { MIXED_PASS_PLAY_CATEGORY, PASS_PLAY_CATEGORY_OPTIONS } from "./pass-play-deck";
+import { hasFamilyFriendlyDeckFilter, MIXED_PASS_PLAY_CATEGORY, PASS_PLAY_CATEGORY_OPTIONS } from "./pass-play-deck";
 import type { PassPlayCategoryId } from "./pass-play-deck";
 
 export const SIMPLE_PROMPT_CATEGORIES = [
@@ -30,6 +30,29 @@ export const SIMPLE_PROMPT_CATEGORIES = [
   "Famous place",
   "School subject",
   "Holiday"
+];
+
+const FAMILY_PROMPT_CATEGORIES = [
+  "Animal",
+  "Food",
+  "Cartoon character",
+  "Toy",
+  "School subject",
+  "Book character",
+  "Video game character",
+  "Pet",
+  "Place at school",
+  "Thing in a backpack",
+  "Playground activity",
+  "Holiday",
+  "Board game",
+  "Vehicle",
+  "Something at the zoo",
+  "Something at a birthday party",
+  "Something you draw",
+  "Something you build",
+  "A silly job",
+  "A friendly monster"
 ];
 
 const CATEGORY_GROUPS: Record<PassPlayCategoryId, string[]> = {
@@ -121,6 +144,11 @@ export const COMBO_PROMPT_CATEGORIES = [
 
 export function getPromptCategoriesForPlayer(gameId: string, playerId: string, count: number, selectedCategoryIds: string[] = [MIXED_PASS_PLAY_CATEGORY]) {
   const seed = hashString(`${gameId}:${playerId}`);
+  if (hasFamilyFriendlyDeckFilter(selectedCategoryIds)) {
+    const familyCategories = shuffleWithSeed(FAMILY_PROMPT_CATEGORIES, seed);
+    return Array.from({ length: count }, (_, index) => familyCategories[index % familyCategories.length]);
+  }
+
   const selectedGroups = getSelectedGroups(selectedCategoryIds);
   const selectedSimple = selectedGroups.flatMap((group) => CATEGORY_GROUPS[group]).filter((category) => !COMBO_PROMPT_CATEGORIES.includes(category));
   const selectedCombo = selectedGroups.includes("situations") ? CATEGORY_GROUPS.situations : [];

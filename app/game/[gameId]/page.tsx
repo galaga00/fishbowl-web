@@ -653,7 +653,8 @@ function Setup({
               ? "Cards will be dealt from these categories. Mixed pulls from the full deck."
               : "Players will be asked for prompt ideas from these categories. Mixed spreads the prompts across the full set."
           }
-          showFamilyFriendly={promptMode === "deck"}
+          familyFriendlyText={promptMode === "deck" ? "Uses simple, all-ages cards." : "Uses simple, all-ages prompts."}
+          showFamilyFriendly
           setCategories={setPromptCategories}
         />
       ) : null}
@@ -790,7 +791,8 @@ function PassAndPlaySetup({
               ? "Cards will be loaded from these categories. Mixed pulls from the full deck."
               : "The shared prompt form will ask for ideas from these categories."
           }
-          showFamilyFriendly={promptMode === "deck"}
+          familyFriendlyText={promptMode === "deck" ? "Uses simple, all-ages cards." : "Uses simple, all-ages prompts."}
+          showFamilyFriendly
           setCategories={setCategories}
         />
       ) : null}
@@ -865,11 +867,13 @@ function PassAndPlaySetup({
 
 function CategorySelector({
   categories,
+  familyFriendlyText = "Uses simple, all-ages cards.",
   helpText,
   showFamilyFriendly = false,
   setCategories
 }: {
   categories: string[];
+  familyFriendlyText?: string;
   helpText?: string;
   showFamilyFriendly?: boolean;
   setCategories: (categories: string[]) => void;
@@ -904,7 +908,7 @@ function CategorySelector({
           onClick={toggleFamilyFriendly}
         >
           <strong>Family Friendly</strong>
-          <span>Uses simple, all-ages cards.</span>
+          <span>{familyFriendlyText}</span>
         </button>
       ) : null}
       <div className="category-toggle-grid">
