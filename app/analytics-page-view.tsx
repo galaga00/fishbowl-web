@@ -8,6 +8,8 @@ export function AnalyticsPageView() {
   const pathname = usePathname();
 
   useEffect(() => {
+    if (pathname.startsWith("/owner")) return;
+
     trackAnalyticsEvent({
       eventName: "page_view",
       gameId: getGameIdFromPath(pathname),

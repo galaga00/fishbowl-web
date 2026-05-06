@@ -103,6 +103,7 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
   const teamsByGame = groupBy(teams, "game_id");
   const recentEvents = events.slice(0, 80);
   const recentGames = games.slice(0, 40);
+  const knownGeoEvents = events.filter((event) => event.country || event.region || event.city);
 
   return (
     <main className="shell owner-shell">
@@ -134,9 +135,9 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
         <Breakdown title="Play modes" rows={toRows(countByValue(games.map((game) => game.play_mode)))} />
         <Breakdown title="Prompt modes" rows={toRows(countByValue(games.map((game) => game.prompt_mode)))} />
         <Breakdown title="Devices" rows={toRows(countByValue(events.map((event) => event.device_type ?? "unknown")))} />
-        <Breakdown title="Countries" rows={toRows(countByValue(events.map((event) => event.country ?? "unknown"))).slice(0, 12)} />
-        <Breakdown title="Regions" rows={toRows(countByValue(events.map((event) => formatLocationPart(event.region, event.country)))).slice(0, 12)} />
-        <Breakdown title="Cities" rows={toRows(countByValue(events.map((event) => formatLocation(event)))).slice(0, 12)} />
+        <Breakdown title="Known countries" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => event.country))).slice(0, 12)} />
+        <Breakdown title="Known regions" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => formatKnownLocationPart(event.region, event.country)))).slice(0, 12)} />
+        <Breakdown title="Known cities" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => formatKnownLocation(event)))).slice(0, 12)} />
       </section>
 
       <section className="card stack">
@@ -276,6 +277,15 @@ function countByValue(values: Array<string | null | undefined>) {
   return counts;
 }
 
+function countByKnownValue(values: Array<string | null | undefined>) {
+  const counts = new Map<string, number>();
+  values.forEach((value) => {
+    if (!value) return;
+    counts.set(value, (counts.get(value) ?? 0) + 1);
+  });
+  return counts;
+}
+
 function toRows(counts: Map<string, number>) {
   return Array.from(counts.entries()).sort((a, b) => b[1] - a[1]);
 }
@@ -295,8 +305,12 @@ function formatLocation(event: Pick<AnalyticsEventRow, "city" | "country" | "reg
   return [event.city, event.region, event.country].filter(Boolean).join(", ") || "unknown";
 }
 
-function formatLocationPart(value: string | null, country: string | null) {
-  return [value, country].filter(Boolean).join(", ") || "unknown";
+function formatKnownLocation(event: Pick<AnalyticsEventRow, "city" | "country" | "region">) {
+  return [event.city, event.region, event.country].filter(Boolean).join(", ") || null;
+}
+
+function formatKnownLocationPart(value: string | null, country: string | null) {
+  return [value, country].filter(Boolean).join(", ") || null;
 }
 
 function formatScores(teams: Team[]) {
