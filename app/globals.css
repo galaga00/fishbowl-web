@@ -73,6 +73,7 @@ a {
 
 .home-illustration-frame {
   position: relative;
+  z-index: 1;
   min-height: 0;
 }
 
@@ -99,6 +100,8 @@ a {
 }
 
 .home-title-lockup {
+  position: relative;
+  z-index: 1;
   display: grid;
   place-items: center;
   padding-top: max(2px, env(safe-area-inset-top));
@@ -133,7 +136,7 @@ a {
 .home-rule-round {
   display: block;
   min-height: 42px;
-  color: #de7c35;
+  color: #161513;
   font-size: clamp(1.7rem, 7vw, 2.45rem);
   line-height: 1;
   text-shadow: 0 2px 0 rgba(255, 255, 255, 0.62);
@@ -142,7 +145,7 @@ a {
 .home-rule-copy {
   display: block;
   align-self: start;
-  color: #73adc9;
+  color: #0f766e;
   line-height: 1.02;
 }
 
@@ -192,9 +195,26 @@ a {
   }
 }
 
+@keyframes confettiFall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -18svh, 0) rotate(var(--confetti-rotate));
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.92;
+    transform: translate3d(var(--confetti-sway), 118svh, 0) rotate(calc(var(--confetti-rotate) + 520deg));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home-title-letter,
-  .home-art-fish {
+  .home-art-fish,
+  .how-to-confetti span {
     animation: none;
   }
 }
@@ -214,7 +234,32 @@ a {
   min-height: 0;
 }
 
+.how-to-confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.how-to-confetti span {
+  position: absolute;
+  top: 0;
+  left: var(--confetti-left);
+  width: var(--confetti-size);
+  height: calc(var(--confetti-size) * 1.7);
+  border-radius: 2px;
+  background: var(--confetti-color);
+  box-shadow: 0 1px 0 rgba(22, 21, 19, 0.08);
+  opacity: 0;
+  animation: confettiFall var(--confetti-duration) linear infinite;
+  animation-delay: var(--confetti-delay);
+  will-change: transform, opacity;
+}
+
 .home-action-panel {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: 10px;
 }

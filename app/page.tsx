@@ -16,6 +16,16 @@ const howToPages = [
   { title: "Round 3", body: "Act out the card. No sounds!" },
   { body: "Team with the most points wins!" }
 ];
+const confettiColors = ["#de7c35", "#0f766e", "#73adc9", "#f7c948", "#ef6f6c", "#fffdf8"];
+const confettiPieces = Array.from({ length: 42 }, (_, index) => ({
+  color: confettiColors[index % confettiColors.length],
+  delay: `${(index % 14) * 0.16}s`,
+  duration: `${3.8 + (index % 5) * 0.35}s`,
+  left: `${(index * 23) % 100}%`,
+  rotate: `${(index * 37) % 180}deg`,
+  size: `${7 + (index % 4) * 2}px`,
+  sway: `${index % 2 === 0 ? "" : "-"}${18 + (index % 5) * 7}px`
+}));
 
 export default function Home() {
   const router = useRouter();
@@ -25,6 +35,7 @@ export default function Home() {
   const [joinCode, setJoinCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const isFinalHowToPage = mode === "howTo" && howToIndex === howToPages.length - 1;
 
   async function handleCreate() {
     setBusy(true);
@@ -75,6 +86,27 @@ export default function Home() {
         className={mode === "join" ? "home-art-stage joining" : mode === "howTo" ? "home-art-stage how-to-mode" : "home-art-stage"}
         aria-labelledby="home-title"
       >
+        {isFinalHowToPage ? (
+          <div className="how-to-confetti" aria-hidden="true">
+            {confettiPieces.map((piece, index) => (
+              <span
+                key={`confetti-${index}`}
+                style={
+                  {
+                    "--confetti-color": piece.color,
+                    "--confetti-delay": piece.delay,
+                    "--confetti-duration": piece.duration,
+                    "--confetti-left": piece.left,
+                    "--confetti-rotate": piece.rotate,
+                    "--confetti-size": piece.size,
+                    "--confetti-sway": piece.sway
+                  } as React.CSSProperties
+                }
+              />
+            ))}
+          </div>
+        ) : null}
+
         <div className="home-title-lockup">
           {mode === "howTo" ? (
             <h1 className="home-rule-title" id="home-title">
