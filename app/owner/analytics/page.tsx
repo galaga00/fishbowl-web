@@ -106,9 +106,8 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
   const recentEvents = events.slice(0, 80);
   const recentGames = games.slice(0, 40);
   const knownGeoEvents = events.filter((event) => event.country || event.region || event.city);
-  const setupEvents = events.filter((event) => event.event_name === "setup_saved");
-  const explicitSetupEvents = setupEvents.filter(isExplicitCategorySelection);
-  const defaultCategorySetupCount = setupEvents.length - explicitSetupEvents.length;
+  const startedEvents = events.filter((event) => event.event_name === "game_started");
+  const playersAtStart = startedEvents.reduce((total, event) => total + (event.player_count ?? 0), 0);
 
   return (
     <main className="shell owner-shell">
@@ -136,19 +135,16 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
         <MetricCard label="Turns played" value={turns.length} />
         <MetricCard label="Page views" value={countEvents(events, "page_view")} />
         <MetricCard label="Joins tracked" value={countEvents(events, "player_joined")} />
-        <MetricCard label="Default category setups" value={defaultCategorySetupCount} />
+        <MetricCard label="Games started" value={startedEvents.length} />
+        <MetricCard label="Players at start" value={playersAtStart} />
       </section>
 
       <section className="card stack">
-        <h2>Modes</h2>
-        <Breakdown title="Play modes" rows={toRows(countByValue(games.map((game) => game.play_mode)))} />
-        <Breakdown title="Prompt modes" rows={toRows(countByValue(games.map((game) => game.prompt_mode)))} />
+        <h2>Started game settings</h2>
+        <Breakdown title="Play modes" rows={toRows(countByValue(startedEvents.map((event) => event.play_mode)))} />
+        <Breakdown title="Prompt modes" rows={toRows(countByValue(startedEvents.map((event) => event.prompt_mode)))} />
         <Breakdown title="Devices" rows={toRows(countByValue(events.map((event) => event.device_type ?? "unknown")))} />
-        <Breakdown title="Saved game category pools" rows={toRows(countByKnownValue(games.flatMap((game) => game.prompt_categories ?? []))).slice(0, 16)} />
-        <Breakdown
-          title="Explicit category choices"
-          rows={toRows(countByKnownValue(explicitSetupEvents.flatMap((event) => getSelectedCategories(event)))).slice(0, 16)}
-        />
+        <Breakdown title="Categories used" rows={toRows(countByKnownValue(startedEvents.flatMap((event) => getSelectedCategories(event)))).slice(0, 16)} />
         <Breakdown title="Known countries" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => event.country))).slice(0, 12)} />
         <Breakdown title="Known regions" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => formatKnownLocationPart(event.region, event.country)))).slice(0, 12)} />
         <Breakdown title="Known cities" rows={toRows(countByKnownValue(knownGeoEvents.map((event) => formatKnownLocation(event)))).slice(0, 12)} />
@@ -309,10 +305,6 @@ function getSelectedCategories(event: AnalyticsEventRow) {
     .split(",")
     .map((category) => category.trim())
     .filter(Boolean);
-}
-
-function isExplicitCategorySelection(event: AnalyticsEventRow) {
-  return event.metadata?.categorySelectionSource === "explicit" || event.metadata?.categoriesTouched === true;
 }
 
 function toRows(counts: Map<string, number>) {

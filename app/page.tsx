@@ -28,10 +28,7 @@ export default function Home() {
         eventName: "game_created",
         gameId: game.id,
         playerId: player.id,
-        playMode: game.play_mode,
-        promptMode: game.prompt_mode,
         phase: game.phase,
-        playerCount: 1,
         metadata: { source: "home_create" }
       });
       router.push(`/game/${game.id}`);
@@ -53,8 +50,6 @@ export default function Home() {
         eventName: "player_joined",
         gameId: game.id,
         playerId: player.id,
-        playMode: game.play_mode,
-        promptMode: game.prompt_mode,
         phase: game.phase,
         metadata: { source: "home_join" }
       });

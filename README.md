@@ -87,7 +87,9 @@ ANALYTICS_IP_SALT=...
 
 ## Owner Analytics
 
-The app records lightweight analytics events such as page views, games created, players joined, setup saved, games started, turns, correct/skip actions, and finished games. It avoids login and does not collect player emails or accounts.
+The app records lightweight analytics events such as page views, games created, players joined, games started, turns, correct/skip actions, and finished games. It avoids login and does not collect player emails or accounts.
+
+Game settings such as play mode, prompt mode, categories, player count, team count, and prompt/card count are only attached to analytics once the host actually starts a game. Setup-screen changes are treated as drafts, not played-game data.
 
 On Vercel, analytics also stores approximate IP-derived location fields from request headers:
 
@@ -107,8 +109,6 @@ Set `OWNER_ANALYTICS_KEY` locally and in Vercel, then open:
 For production, use `https://fish-bowl-game.vercel.app/owner/analytics?key=YOUR_OWNER_ANALYTICS_KEY`. Keep the real key in `.env.local`, Vercel env vars, or a password manager.
 
 Use the **Ignore this device** control on the owner dashboard from any browser or phone you do not want counted. It stores a local opt-out flag in that browser only. The dashboard also shows an opt-out link you can open once in Chrome, Safari, your phone, or any other browser to set that flag before testing.
-
-The dashboard separates default category setup values from explicit category choices, so the default Mixed category does not look like a deliberate selection unless someone changes the category controls.
 
 Use the **Purge data** button on the owner dashboard to permanently clear test games, players, prompts, turns, draft cards, game events, and analytics. It asks for confirmation before deleting anything.
 
