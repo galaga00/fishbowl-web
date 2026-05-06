@@ -118,24 +118,30 @@ a {
 
 .home-title-lockup .home-rule-title {
   display: grid;
-  gap: 6px;
-  width: min(100%, 11.5em);
+  grid-template-rows: 42px minmax(74px, auto);
+  align-items: start;
+  gap: 4px;
+  width: min(100%, 12.5em);
   color: var(--accent);
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(1.55rem, 6.8vw, 2.25rem);
+  font-family: var(--font-title), Arial, Helvetica, sans-serif;
+  font-size: clamp(1.65rem, 6.8vw, 2.45rem);
   font-weight: 400;
-  line-height: 1.12;
+  line-height: 1;
   text-wrap: balance;
 }
 
-.home-rule-title strong {
+.home-rule-round {
   display: block;
-  font-size: clamp(1.6rem, 7vw, 2.25rem);
-  font-weight: 800;
+  min-height: 42px;
+  font-size: clamp(1.7rem, 7vw, 2.45rem);
+  line-height: 1;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.62);
 }
 
-.home-rule-title span {
+.home-rule-copy {
   display: block;
+  align-self: start;
+  line-height: 1.02;
 }
 
 .home-title-letter,
@@ -197,7 +203,7 @@ a {
 }
 
 .home-art-stage.how-to-mode {
-  grid-template-rows: clamp(120px, 24svh, 168px) minmax(0, 1fr) auto;
+  grid-template-rows: clamp(126px, 25svh, 172px) minmax(0, 1fr) auto;
   gap: 10px;
 }
 

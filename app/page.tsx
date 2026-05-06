@@ -78,8 +78,8 @@ export default function Home() {
         <div className="home-title-lockup">
           {mode === "howTo" ? (
             <h1 className="home-rule-title" id="home-title">
-              {howToPages[howToIndex].title ? <strong>{howToPages[howToIndex].title}</strong> : null}
-              <span>{howToPages[howToIndex].body}</span>
+              <span className="home-rule-round">{howToPages[howToIndex].title ?? ""}</span>
+              <span className="home-rule-copy">{howToPages[howToIndex].body}</span>
             </h1>
           ) : (
             <h1 id="home-title" aria-label="Fish Bowl">
