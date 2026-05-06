@@ -10,7 +10,7 @@ import { getPlayerStorageKey, normalizeCode } from "@/lib/game-utils";
 
 const titleLetters = Array.from("Fish Bowl");
 const howToPages = [
-  { body: "Pick the cards you want to use or create your own!" },
+  { title: "Pick the cards you want to use or create your own!", body: "" },
   { title: "Round 1", body: "Say anything to describe the card." },
   { title: "Round 2", body: "Use only one word." },
   { title: "Round 3", body: "Act out the card. No sounds!" },
