@@ -1,5 +1,7 @@
 "use client";
 
+const ANALYTICS_IGNORE_KEY = "fish-bowl-ignore-analytics";
+
 type AnalyticsPayload = {
   eventName: string;
   gameId?: string | null;
@@ -13,8 +15,24 @@ type AnalyticsPayload = {
   metadata?: Record<string, unknown>;
 };
 
+export function isAnalyticsIgnored() {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(ANALYTICS_IGNORE_KEY) === "true";
+}
+
+export function setAnalyticsIgnored(ignored: boolean) {
+  if (typeof window === "undefined") return;
+  if (ignored) {
+    localStorage.setItem(ANALYTICS_IGNORE_KEY, "true");
+  } else {
+    localStorage.removeItem(ANALYTICS_IGNORE_KEY);
+  }
+  window.dispatchEvent(new Event("fish-bowl-analytics-ignore-change"));
+}
+
 export function trackAnalyticsEvent(payload: AnalyticsPayload) {
   if (typeof window === "undefined") return;
+  if (isAnalyticsIgnored()) return;
 
   const body = JSON.stringify({
     ...payload,

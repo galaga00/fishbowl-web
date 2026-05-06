@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { IgnoreAnalyticsControl } from "./ignore-control";
 import { createServerSupabaseClient, hasServerSupabaseConfig } from "@/lib/supabase-server";
 import type { Game, Player, Prompt, Team, Turn } from "@/lib/types";
 
@@ -121,6 +122,8 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
       {(eventsResult.error || gamesResult.error || playersResult.error || promptsResult.error || teamsResult.error || turnsResult.error) ? (
         <p className="notice">Some analytics data could not be loaded. Check Supabase logs if this persists.</p>
       ) : null}
+
+      <IgnoreAnalyticsControl />
 
       <section className="analytics-grid">
         <MetricCard label="Games created" value={games.length} />

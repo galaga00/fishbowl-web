@@ -106,6 +106,8 @@ Set `OWNER_ANALYTICS_KEY` locally and in Vercel, then open:
 
 For production, use `https://fish-bowl-game.vercel.app/owner/analytics?key=YOUR_OWNER_ANALYTICS_KEY`. Keep the real key in `.env.local`, Vercel env vars, or a password manager.
 
+Use the **Ignore this device** control on the owner dashboard from any browser or phone you do not want counted. It stores a local opt-out flag in that browser only.
+
 Optional email notifications can be enabled with Resend:
 
 ```bash
