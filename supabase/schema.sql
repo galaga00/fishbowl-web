@@ -96,6 +96,10 @@ create table if not exists public.analytics_events (
   referrer text,
   user_agent text,
   device_type text,
+  ip_hash text,
+  country text,
+  region text,
+  city text,
   play_mode text,
   prompt_mode text,
   phase text,
@@ -129,9 +133,15 @@ create index if not exists prompts_game_id_status_idx on public.prompts(game_id,
 create index if not exists draft_cards_game_player_idx on public.draft_cards(game_id, player_id);
 create index if not exists turns_game_id_active_idx on public.turns(game_id, ended_at);
 create index if not exists game_events_game_id_undo_idx on public.game_events(game_id, undone_at, created_at desc);
+alter table public.analytics_events add column if not exists ip_hash text;
+alter table public.analytics_events add column if not exists country text;
+alter table public.analytics_events add column if not exists region text;
+alter table public.analytics_events add column if not exists city text;
 create index if not exists analytics_events_created_at_idx on public.analytics_events(created_at desc);
 create index if not exists analytics_events_game_id_idx on public.analytics_events(game_id, created_at desc);
 create index if not exists analytics_events_event_name_idx on public.analytics_events(event_name, created_at desc);
+create index if not exists analytics_events_location_idx on public.analytics_events(country, region, city);
+create index if not exists analytics_events_ip_hash_idx on public.analytics_events(ip_hash, created_at desc);
 
 alter table public.games add column if not exists prompts_per_player integer not null default 3;
 alter table public.games add column if not exists turn_duration_seconds integer not null default 60;
@@ -147,6 +157,10 @@ alter table public.games add column if not exists paused_at timestamptz;
 alter table public.games alter column phase set default 'setup';
 alter table public.prompts add column if not exists category text;
 alter table public.prompts add column if not exists description text;
+alter table public.analytics_events add column if not exists ip_hash text;
+alter table public.analytics_events add column if not exists country text;
+alter table public.analytics_events add column if not exists region text;
+alter table public.analytics_events add column if not exists city text;
 
 do $$
 begin

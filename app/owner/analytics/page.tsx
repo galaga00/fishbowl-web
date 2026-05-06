@@ -18,6 +18,10 @@ type AnalyticsEventRow = {
   path: string | null;
   referrer: string | null;
   device_type: string | null;
+  ip_hash: string | null;
+  country: string | null;
+  region: string | null;
+  city: string | null;
   play_mode: string | null;
   prompt_mode: string | null;
   phase: string | null;
@@ -130,6 +134,9 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
         <Breakdown title="Play modes" rows={toRows(countByValue(games.map((game) => game.play_mode)))} />
         <Breakdown title="Prompt modes" rows={toRows(countByValue(games.map((game) => game.prompt_mode)))} />
         <Breakdown title="Devices" rows={toRows(countByValue(events.map((event) => event.device_type ?? "unknown")))} />
+        <Breakdown title="Countries" rows={toRows(countByValue(events.map((event) => event.country ?? "unknown"))).slice(0, 12)} />
+        <Breakdown title="Regions" rows={toRows(countByValue(events.map((event) => formatLocationPart(event.region, event.country)))).slice(0, 12)} />
+        <Breakdown title="Cities" rows={toRows(countByValue(events.map((event) => formatLocation(event)))).slice(0, 12)} />
       </section>
 
       <section className="card stack">
@@ -183,6 +190,8 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
                 <th>Game</th>
                 <th>Path</th>
                 <th>Device</th>
+                <th>Location</th>
+                <th>IP hash</th>
                 <th>Referrer</th>
               </tr>
             </thead>
@@ -194,6 +203,8 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
                   <td>{event.game_id ? (gamesById.get(event.game_id)?.code ?? shortId(event.game_id)) : "none"}</td>
                   <td>{event.path ?? "none"}</td>
                   <td>{event.device_type ?? "unknown"}</td>
+                  <td>{formatLocation(event)}</td>
+                  <td>{event.ip_hash ? shortId(event.ip_hash) : "none"}</td>
                   <td>{event.referrer ? truncate(event.referrer, 34) : "direct"}</td>
                 </tr>
               ))}
@@ -278,6 +289,14 @@ function formatDate(value: string) {
 
 function formatMode(value: string) {
   return value.replaceAll("_", " ");
+}
+
+function formatLocation(event: Pick<AnalyticsEventRow, "city" | "country" | "region">) {
+  return [event.city, event.region, event.country].filter(Boolean).join(", ") || "unknown";
+}
+
+function formatLocationPart(value: string | null, country: string | null) {
+  return [value, country].filter(Boolean).join(", ") || "unknown";
 }
 
 function formatScores(teams: Team[]) {

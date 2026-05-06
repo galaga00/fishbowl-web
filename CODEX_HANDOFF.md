@@ -26,6 +26,11 @@ Safe-to-document env var names:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `OWNER_ANALYTICS_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `ANALYTICS_IP_SALT`
+- `RESEND_API_KEY`
+- `OWNER_NOTIFY_EMAIL`
+- `OWNER_NOTIFY_FROM`
+- `ANALYTICS_NOTIFY_EVENTS`
 
 Local ignored secret/config files:
 
@@ -46,7 +51,7 @@ vercel --prod --yes
 vercel alias set <deployment-url> fish-bowl-game.vercel.app
 ```
 
-Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. Keep the key only in ignored env files, Vercel env vars, or a password manager.
+Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. It records Vercel geo headers and a salted IP hash. Optional owner email notifications use Resend env vars. Keep keys only in ignored env files, Vercel env vars, or a password manager.
 
 ## Source Of Truth
 

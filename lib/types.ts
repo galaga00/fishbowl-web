@@ -103,6 +103,10 @@ export type AnalyticsEvent = {
   referrer: string | null;
   user_agent: string | null;
   device_type: string | null;
+  ip_hash: string | null;
+  country: string | null;
+  region: string | null;
+  city: string | null;
   play_mode: string | null;
   prompt_mode: string | null;
   phase: string | null;

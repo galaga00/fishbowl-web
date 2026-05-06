@@ -25,6 +25,7 @@ cp .env.example .env.local
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 OWNER_ANALYTICS_KEY=make-a-private-random-key
+ANALYTICS_IP_SALT=make-another-private-random-key
 ```
 
 7. Start the app:
@@ -79,6 +80,7 @@ Install Command: npm install
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 OWNER_ANALYTICS_KEY=...
+ANALYTICS_IP_SALT=...
 ```
 
 6. Deploy.
@@ -87,6 +89,15 @@ OWNER_ANALYTICS_KEY=...
 
 The app records lightweight analytics events such as page views, games created, players joined, setup saved, games started, turns, correct/skip actions, and finished games. It avoids login and does not collect player emails or accounts.
 
+On Vercel, analytics also stores approximate IP-derived location fields from request headers:
+
+- `country`
+- `region`
+- `city`
+- `ip_hash`
+
+The IP hash uses `ANALYTICS_IP_SALT`, so you can spot repeat networks without storing raw IP addresses.
+
 Set `OWNER_ANALYTICS_KEY` locally and in Vercel, then open:
 
 ```bash
@@ -94,6 +105,17 @@ Set `OWNER_ANALYTICS_KEY` locally and in Vercel, then open:
 ```
 
 For production, use `https://fish-bowl-game.vercel.app/owner/analytics?key=YOUR_OWNER_ANALYTICS_KEY`. Keep the real key in `.env.local`, Vercel env vars, or a password manager.
+
+Optional email notifications can be enabled with Resend:
+
+```bash
+RESEND_API_KEY=...
+OWNER_NOTIFY_EMAIL=you@example.com
+OWNER_NOTIFY_FROM=Fish Bowl <onboarding@resend.dev>
+ANALYTICS_NOTIFY_EVENTS=game_started
+```
+
+`ANALYTICS_NOTIFY_EVENTS` is a comma-separated list. Good options are `game_created` and `game_started`.
 
 If you use the debug seed script locally, keep `SUPABASE_SERVICE_ROLE_KEY` out of browser-facing code. It is optional and should only be added to trusted local or server environments.
 
