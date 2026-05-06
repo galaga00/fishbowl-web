@@ -76,11 +76,26 @@ a {
   min-height: 0;
 }
 
-.home-art {
+.home-art-layer {
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center center;
+}
+
+.home-art-bottom {
+  z-index: 1;
+}
+
+.home-art-fish {
+  z-index: 2;
+  animation: fishBob 4.8s ease-in-out infinite;
+  transform-origin: 48% 55%;
+  will-change: transform;
+}
+
+.home-art-top {
+  z-index: 3;
 }
 
 .home-title-lockup {
@@ -136,8 +151,20 @@ a {
   }
 }
 
+@keyframes fishBob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-9px) rotate(-0.6deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .home-title-letter {
+  .home-title-letter,
+  .home-art-fish {
     animation: none;
   }
 }

@@ -64,11 +64,27 @@ export default function Home() {
           </h1>
         </div>
 
-        <div className="home-illustration-frame">
+        <div className="home-illustration-frame" role="img" aria-label="A fish singing into a microphone inside a fish bowl.">
           <Image
-            className="home-art"
-            src={ASSETS.art.home.fishBowl}
-            alt="A placeholder drawing of a fish swimming inside a fish bowl."
+            className="home-art-layer home-art-bottom"
+            src={ASSETS.art.home.fishBowlLayers.bottom}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 520px) calc(100vw - 44px), 476px"
+          />
+          <Image
+            className="home-art-layer home-art-fish"
+            src={ASSETS.art.home.fishBowlLayers.fish}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 520px) calc(100vw - 44px), 476px"
+          />
+          <Image
+            className="home-art-layer home-art-top"
+            src={ASSETS.art.home.fishBowlLayers.top}
+            alt=""
             fill
             priority
             sizes="(max-width: 520px) calc(100vw - 44px), 476px"
