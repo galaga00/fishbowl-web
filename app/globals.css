@@ -995,7 +995,7 @@ a {
 
 .winner-stage {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .winner-stage > :not(.winner-confetti) {
@@ -1004,9 +1004,9 @@ a {
 }
 
 .winner-confetti {
-  position: absolute;
-  inset: -18px -14px -32px;
-  z-index: 3;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
   overflow: hidden;
   pointer-events: none;
 }
