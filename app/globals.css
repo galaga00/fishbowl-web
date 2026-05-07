@@ -317,8 +317,11 @@ a {
 .how-to-illustration-frame.bleed {
   width: calc(100% + 24px);
   max-width: none;
-  aspect-ratio: 1160 / 1465;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: auto;
   align-self: stretch;
+  overflow: hidden;
 }
 
 .how-to-art {
@@ -1001,7 +1004,7 @@ a {
 .winner-confetti {
   position: absolute;
   inset: -18px -14px -32px;
-  z-index: 0;
+  z-index: 3;
   overflow: hidden;
   pointer-events: none;
 }
