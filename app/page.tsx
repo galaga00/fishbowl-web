@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ASSETS } from "@/lib/assets";
 import { trackAnalyticsEvent } from "@/lib/analytics";
+import { CONFETTI_PIECES } from "@/lib/confetti";
 import { createGame, joinGame } from "@/lib/game-api";
 import { getPlayerStorageKey, normalizeCode } from "@/lib/game-utils";
 
@@ -16,16 +17,6 @@ const howToPages = [
   { title: "Round 3", body: "Act out the card. No sounds!" },
   { body: "Team with the most points wins!" }
 ];
-const confettiColors = ["#de7c35", "#0f766e", "#73adc9", "#f7c948", "#ef6f6c", "#fffdf8"];
-const confettiPieces = Array.from({ length: 42 }, (_, index) => ({
-  color: confettiColors[index % confettiColors.length],
-  delay: `${(index % 14) * 0.16}s`,
-  duration: `${3.8 + (index % 5) * 0.35}s`,
-  left: `${(index * 23) % 100}%`,
-  rotate: `${(index * 37) % 180}deg`,
-  size: `${7 + (index % 4) * 2}px`,
-  sway: `${index % 2 === 0 ? "" : "-"}${18 + (index % 5) * 7}px`
-}));
 
 export default function Home() {
   const router = useRouter();
@@ -90,7 +81,7 @@ export default function Home() {
       >
         {isFinalHowToPage ? (
           <div className="how-to-confetti" aria-hidden="true">
-            {confettiPieces.map((piece, index) => (
+            {CONFETTI_PIECES.map((piece, index) => (
               <span
                 key={`confetti-${index}`}
                 style={
@@ -141,7 +132,11 @@ export default function Home() {
         </div>
 
         {mode === "howTo" ? (
-          <div className="home-illustration-frame how-to-illustration-frame" role="img" aria-label="How to play artwork.">
+          <div
+            className={howToIndex === 0 ? "home-illustration-frame how-to-illustration-frame bleed" : "home-illustration-frame how-to-illustration-frame"}
+            role="img"
+            aria-label="How to play artwork."
+          >
             <Image
               className="how-to-art"
               src={ASSETS.art.howTo.steps[howToIndex]}

@@ -231,7 +231,8 @@ a {
 @media (prefers-reduced-motion: reduce) {
   .home-title-letter,
   .home-art-fish,
-  .how-to-confetti span {
+  .how-to-confetti span,
+  .winner-confetti span {
     animation: none;
   }
 }
@@ -259,7 +260,8 @@ a {
   pointer-events: none;
 }
 
-.how-to-confetti span {
+.how-to-confetti span,
+.winner-confetti span {
   position: absolute;
   top: 0;
   left: var(--confetti-left);
@@ -312,9 +314,20 @@ a {
   justify-self: center;
 }
 
+.how-to-illustration-frame.bleed {
+  width: calc(100% + 24px);
+  max-width: none;
+  aspect-ratio: 1160 / 1465;
+  align-self: stretch;
+}
+
 .how-to-art {
   object-fit: contain;
   object-position: center;
+}
+
+.how-to-illustration-frame.bleed .how-to-art {
+  object-fit: cover;
 }
 
 .how-to-nav {
@@ -973,6 +986,24 @@ a {
   border-radius: 8px;
   background: white;
   padding: 14px;
+}
+
+.winner-stage {
+  position: relative;
+  overflow: hidden;
+}
+
+.winner-stage > :not(.winner-confetti) {
+  position: relative;
+  z-index: 1;
+}
+
+.winner-confetti {
+  position: absolute;
+  inset: -18px -14px -32px;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .winner-card {

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { trackAnalyticsEvent } from "@/lib/analytics";
+import { CONFETTI_PIECES } from "@/lib/confetti";
 import {
   assignPlayerToTeam,
   endTurn,
@@ -1221,6 +1222,23 @@ function Lobby({
   const canStart = promptProgress.isComplete && allPlayersHaveTeams;
   const progressLabel = passAndPlayDeck ? "Card deck" : isDeckDraft ? "Draft progress" : "Prompt progress";
   const teamBalanceWarning = getTeamBalanceWarning(snapshot);
+  const startBlockMessage = getLobbyStartBlockMessage(snapshot, promptProgress);
+  const expectedPlayerWarning =
+    snapshot.game.expected_players && snapshot.players.length < snapshot.game.expected_players
+      ? `Are you sure? You set this game for ${snapshot.game.expected_players} players, but only ${snapshot.players.length} ${
+          snapshot.players.length === 1 ? "player is" : "players are"
+        } here. Missing players may not get into this round.`
+      : "";
+
+  function handleStartClick() {
+    if (startBlockMessage) {
+      window.alert(startBlockMessage);
+      return;
+    }
+
+    if (expectedPlayerWarning && !window.confirm(expectedPlayerWarning)) return;
+    onStart();
+  }
 
   return (
     <div className="stack">
@@ -1368,9 +1386,14 @@ function Lobby({
               : `${snapshot.game.prompts_per_player} / ${snapshot.game.prompts_per_player} prompts`}.
             {!allPlayersHaveTeams ? " Everyone also needs a team." : ""}
           </p>
-          <button className="button blue" disabled={busy || (!isDeckDraft && promptCount < 1) || !canStart} onClick={onStart}>
+          <button className="button blue" disabled={busy || (!isDeckDraft && promptCount < 1)} onClick={handleStartClick}>
             Start game
           </button>
+          {!canStart || expectedPlayerWarning ? (
+            <p className="muted tiny">
+              {!canStart ? "Tap Start game for a readiness message." : "You can start now, but fewer players are here than expected."}
+            </p>
+          ) : null}
         </section>
       ) : (
         <section className="card">
@@ -1380,6 +1403,49 @@ function Lobby({
       )}
     </div>
   );
+}
+
+function getLobbyStartBlockMessage(
+  snapshot: GameSnapshot,
+  promptProgress: { submittedTotal: number; requiredTotal: number; expectedTotal: number | null; isComplete: boolean }
+) {
+  const playersWithoutTeams = snapshot.players.filter((player) => !player.team_id);
+  if (playersWithoutTeams.length > 0) {
+    return `Everyone needs a team before the game starts. Still choosing: ${formatPlayerNames(playersWithoutTeams)}.`;
+  }
+
+  if (snapshot.game.play_mode === "pass_and_play") {
+    if (promptProgress.isComplete) return "";
+    const remaining = Math.max(0, promptProgress.requiredTotal - promptProgress.submittedTotal);
+    const itemLabel = snapshot.game.prompt_mode === "deck" ? "card" : "prompt";
+    return `This Pass & Play setup is not ready yet. Add ${remaining} more ${itemLabel}${remaining === 1 ? "" : "s"} before starting.`;
+  }
+
+  if (snapshot.game.prompt_mode === "deck") {
+    const unfinishedPlayers = snapshot.players.filter((player) => !hasPlayerDrafted(player.id, snapshot));
+    if (unfinishedPlayers.length > 0) {
+      return `Not everyone is done picking cards yet. Still picking: ${formatPlayerNames(unfinishedPlayers)}.`;
+    }
+  } else {
+    const unfinishedPlayers = snapshot.players.filter((player) => !hasPlayerSubmitted(player.id, snapshot.prompts, snapshot.game.prompts_per_player));
+    if (unfinishedPlayers.length > 0) {
+      return `Not everyone is done submitting prompts yet. Still working: ${formatPlayerNames(unfinishedPlayers)}.`;
+    }
+  }
+
+  if (!promptProgress.isComplete) {
+    return "The shared deck is not ready yet. Wait for everyone to finish before starting.";
+  }
+
+  return "";
+}
+
+function formatPlayerNames(players: Player[]) {
+  return players
+    .slice(0, 4)
+    .map((player) => player.name)
+    .join(", ")
+    .concat(players.length > 4 ? `, and ${players.length - 4} more` : "");
 }
 
 function TeamRosters({
@@ -1563,7 +1629,25 @@ function Play({
 
   if (snapshot.game.phase === "finished") {
     return (
-      <div className="stack">
+      <div className="stack winner-stage">
+        <div className="winner-confetti" aria-hidden="true">
+          {CONFETTI_PIECES.map((piece, index) => (
+            <span
+              key={`winner-confetti-${index}`}
+              style={
+                {
+                  "--confetti-color": piece.color,
+                  "--confetti-delay": piece.delay,
+                  "--confetti-duration": piece.duration,
+                  "--confetti-left": piece.left,
+                  "--confetti-rotate": piece.rotate,
+                  "--confetti-size": piece.size,
+                  "--confetti-sway": piece.sway
+                } as React.CSSProperties
+              }
+            />
+          ))}
+        </div>
         <Scoreboard snapshot={snapshot} celebrateWinner />
         <section className="card winner-card stack">
           <h2>Game finished</h2>
