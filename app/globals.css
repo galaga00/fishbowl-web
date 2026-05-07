@@ -317,10 +317,10 @@ a {
 .how-to-illustration-frame.bleed {
   width: calc(100% + 24px);
   max-width: none;
-  height: 100%;
+  height: calc(100% - clamp(28px, 6svh, 56px));
   min-height: 0;
   aspect-ratio: auto;
-  align-self: stretch;
+  align-self: start;
   overflow: hidden;
 }
 
@@ -331,6 +331,7 @@ a {
 
 .how-to-illustration-frame.bleed .how-to-art {
   object-fit: cover;
+  object-position: center top;
 }
 
 .how-to-nav {
