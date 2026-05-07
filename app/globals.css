@@ -317,8 +317,9 @@ a {
 .how-to-illustration-frame.bleed {
   width: calc(100% + 24px);
   max-width: none;
-  height: calc(100% - clamp(28px, 6svh, 56px));
+  height: calc(100% + clamp(58px, 12svh, 96px));
   min-height: 0;
+  margin-bottom: calc(clamp(58px, 12svh, 96px) * -1);
   aspect-ratio: auto;
   align-self: start;
   overflow: hidden;
