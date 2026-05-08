@@ -324,9 +324,24 @@ export default function GamePage() {
   const promptProgress = getPromptProgress(snapshot);
   const joinUrl = typeof window === "undefined" ? "" : `${window.location.origin}/game/${snapshot.game.id}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(joinUrl)}`;
+  const shareText = `Join my Fish Bowl game: ${joinUrl}`;
+  const prioritizePlay = snapshot.game.phase === "ready" || snapshot.game.phase === "playing" || snapshot.game.phase === "paused";
+
+  async function handleShareJoinLink() {
+    if (navigator.share) {
+      await navigator.share({
+        title: "Join my Fish Bowl game",
+        text: shareText,
+        url: joinUrl
+      });
+      return;
+    }
+
+    window.location.href = `sms:?&body=${encodeURIComponent(shareText)}`;
+  }
 
   return (
-    <main className="shell">
+    <main className={prioritizePlay ? "shell play-priority-shell" : "shell"}>
       <header className="topbar">
         <div className="brand">
           <strong>Fish Bowl</strong>
@@ -354,7 +369,7 @@ export default function GamePage() {
             </p>
           </div>
         </div>
-        {isHost && snapshot.game.phase !== "setup" && !isPassAndPlay(snapshot) ? (
+        {isHost && snapshot.game.phase === "lobby" && !isPassAndPlay(snapshot) ? (
           <div className="split">
             <Image className="qr" src={qrUrl} alt="QR code for joining this game" width={164} height={164} unoptimized />
             <div className="stack">
@@ -362,167 +377,177 @@ export default function GamePage() {
               <a className="input tiny" href={joinUrl}>
                 {joinUrl}
               </a>
+              <div className="button-row">
+                <button className="button accent" type="button" onClick={handleShareJoinLink}>
+                  Share
+                </button>
+                <a className="button secondary" href={`sms:?&body=${encodeURIComponent(shareText)}`}>
+                  Text
+                </a>
+              </div>
             </div>
           </div>
         ) : null}
       </section>
 
-      {!me ? (
-        <JoinThisGame
-          snapshot={snapshot}
-          onSubmit={handleJoin}
-          name={joinName}
-          setName={setJoinName}
-          busy={busy}
-          onReclaimPlayer={handleReclaimPlayer}
-        />
-      ) : snapshot.game.phase === "setup" ? (
-        <Setup
-          busy={busy}
-          isHost={isHost}
-          promptsPerPlayer={promptsPerPlayer}
-          setPromptsPerPlayer={setPromptsPerPlayer}
-          turnDurationSeconds={turnDurationSeconds}
-          setTurnDurationSeconds={setTurnDurationSeconds}
-          cardsDealtPerPlayer={cardsDealtPerPlayer}
-          setCardsDealtPerPlayer={setCardsDealtPerPlayer}
-          cardsKeptPerPlayer={cardsKeptPerPlayer}
-          setCardsKeptPerPlayer={setCardsKeptPerPlayer}
-          teamCount={teamCount}
-          setTeamCount={handleTeamCountChange}
-          teamNames={teamNames}
-          setTeamNames={setTeamNames}
-          expectedPlayers={expectedPlayers}
-          setExpectedPlayers={setExpectedPlayers}
-          teamAssignmentMode={teamAssignmentMode}
-          setTeamAssignmentMode={setTeamAssignmentMode}
-          promptMode={promptMode}
-          setPromptMode={setPromptMode}
-          promptCategories={promptCategories}
-          setPromptCategories={setPromptCategories}
-          playMode={playMode}
-          setPlayMode={setPlayMode}
-          passAndPlayCardCount={passAndPlayCardCount}
-          setPassAndPlayCardCount={setPassAndPlayCardCount}
-          passAndPlayCategories={passAndPlayCategories}
-          setPassAndPlayCategories={setPassAndPlayCategories}
-          passAndPlayPlayers={passAndPlayPlayers}
-          setPassAndPlayPlayers={setPassAndPlayPlayers}
-          setPassAndPlayPlayerCount={handlePassAndPlayPlayerCountChange}
-          onSave={handleSetupSave}
-        />
-      ) : snapshot.game.phase === "lobby" ? (
-        <Lobby
-          snapshot={snapshot}
-          me={me}
-          isHost={isHost}
-          busy={busy}
-          joinName={joinName}
-          setJoinName={setJoinName}
-          promptText={promptText}
-          setPromptText={setPromptText}
-          categoryPromptValues={categoryPromptValues}
-          setCategoryPromptValues={setCategoryPromptValues}
-          promptCount={promptCount}
-          promptProgress={promptProgress}
-          onNameSave={handleNameSave}
-          onPromptSubmit={handleSubmitPrompts}
-          onChooseTeam={handleChooseTeam}
-          onAssignPlayerToTeam={handleAssignPlayerToTeam}
-          onDraftCardToggle={handleDraftCardToggle}
-          onStart={() =>
-            runAction(async () => {
-              await startGame(snapshot);
-              const startedSnapshot = await loadSnapshot(snapshot.game.id);
-              trackSnapshotEvent("game_started", startedSnapshot, {
-                cardsDealtPerPlayer: startedSnapshot.game.cards_dealt_per_player,
-                cardsKeptPerPlayer: startedSnapshot.game.cards_kept_per_player,
-                expectedPlayers: startedSnapshot.game.expected_players,
-                passAndPlayCardCount: startedSnapshot.game.pass_play_card_count,
-                promptsPerPlayer: startedSnapshot.game.prompts_per_player,
-                selectedCategories: (startedSnapshot.game.prompt_categories ?? [MIXED_PASS_PLAY_CATEGORY]).join(","),
-                turnDurationSeconds: startedSnapshot.game.turn_duration_seconds
-              });
-            })
-          }
-        />
-      ) : (
-        <Play
-          snapshot={snapshot}
-          me={me}
-          activePlayer={activePlayer}
-          currentPrompt={currentPrompt}
-          busy={busy}
-          isHost={isHost}
-          onCorrect={() =>
-            runAction(async () => {
-              await markCorrect(snapshot);
-              trackSnapshotEvent("correct", snapshot, {
-                promptId: snapshot.game.current_prompt_id
-              });
-            })
-          }
-          onSkip={() =>
-            runAction(async () => {
-              await skipPrompt(snapshot);
-              trackSnapshotEvent("skip", snapshot, {
-                promptId: snapshot.game.current_prompt_id
-              });
-            })
-          }
-          onEndTurn={() =>
-            runAction(async () => {
-              await endTurn(snapshot);
-              trackSnapshotEvent("turn_ended", snapshot);
-            })
-          }
-          onStartTurn={() =>
-            runAction(async () => {
-              await startTurn(snapshot);
-              trackSnapshotEvent("turn_started", snapshot, {
-                activePlayerId: snapshot.game.active_player_id,
-                currentTeamId: snapshot.game.current_team_id
-              });
-            })
-          }
-          onPause={() =>
-            runAction(async () => {
-              await pauseGame(snapshot);
-              trackSnapshotEvent("game_paused", snapshot);
-            })
-          }
-          onResume={() =>
-            runAction(async () => {
-              await resumeGame(snapshot);
-              trackSnapshotEvent("game_resumed", snapshot);
-            })
-          }
-          onUndo={() =>
-            runAction(async () => {
-              await undoLastAction(snapshot);
-              trackSnapshotEvent("action_undone", snapshot, {
-                action: snapshot.latestUndoableEvent?.action ?? null
-              });
-            })
-          }
-          onFinishGame={() => {
-            if (window.confirm("End the game now?")) {
+      <div className="game-content">
+        {!me ? (
+          <JoinThisGame
+            snapshot={snapshot}
+            onSubmit={handleJoin}
+            name={joinName}
+            setName={setJoinName}
+            busy={busy}
+            onReclaimPlayer={handleReclaimPlayer}
+          />
+        ) : snapshot.game.phase === "setup" ? (
+          <Setup
+            busy={busy}
+            isHost={isHost}
+            promptsPerPlayer={promptsPerPlayer}
+            setPromptsPerPlayer={setPromptsPerPlayer}
+            turnDurationSeconds={turnDurationSeconds}
+            setTurnDurationSeconds={setTurnDurationSeconds}
+            cardsDealtPerPlayer={cardsDealtPerPlayer}
+            setCardsDealtPerPlayer={setCardsDealtPerPlayer}
+            cardsKeptPerPlayer={cardsKeptPerPlayer}
+            setCardsKeptPerPlayer={setCardsKeptPerPlayer}
+            teamCount={teamCount}
+            setTeamCount={handleTeamCountChange}
+            teamNames={teamNames}
+            setTeamNames={setTeamNames}
+            expectedPlayers={expectedPlayers}
+            setExpectedPlayers={setExpectedPlayers}
+            teamAssignmentMode={teamAssignmentMode}
+            setTeamAssignmentMode={setTeamAssignmentMode}
+            promptMode={promptMode}
+            setPromptMode={setPromptMode}
+            promptCategories={promptCategories}
+            setPromptCategories={setPromptCategories}
+            playMode={playMode}
+            setPlayMode={setPlayMode}
+            passAndPlayCardCount={passAndPlayCardCount}
+            setPassAndPlayCardCount={setPassAndPlayCardCount}
+            passAndPlayCategories={passAndPlayCategories}
+            setPassAndPlayCategories={setPassAndPlayCategories}
+            passAndPlayPlayers={passAndPlayPlayers}
+            setPassAndPlayPlayers={setPassAndPlayPlayers}
+            setPassAndPlayPlayerCount={handlePassAndPlayPlayerCountChange}
+            onSave={handleSetupSave}
+          />
+        ) : snapshot.game.phase === "lobby" ? (
+          <Lobby
+            snapshot={snapshot}
+            me={me}
+            isHost={isHost}
+            busy={busy}
+            joinName={joinName}
+            setJoinName={setJoinName}
+            promptText={promptText}
+            setPromptText={setPromptText}
+            categoryPromptValues={categoryPromptValues}
+            setCategoryPromptValues={setCategoryPromptValues}
+            promptCount={promptCount}
+            promptProgress={promptProgress}
+            onNameSave={handleNameSave}
+            onPromptSubmit={handleSubmitPrompts}
+            onChooseTeam={handleChooseTeam}
+            onAssignPlayerToTeam={handleAssignPlayerToTeam}
+            onDraftCardToggle={handleDraftCardToggle}
+            onStart={() =>
               runAction(async () => {
-                await finishGame(snapshot);
-                trackSnapshotEvent("game_finished", snapshot);
-              });
+                await startGame(snapshot);
+                const startedSnapshot = await loadSnapshot(snapshot.game.id);
+                trackSnapshotEvent("game_started", startedSnapshot, {
+                  cardsDealtPerPlayer: startedSnapshot.game.cards_dealt_per_player,
+                  cardsKeptPerPlayer: startedSnapshot.game.cards_kept_per_player,
+                  expectedPlayers: startedSnapshot.game.expected_players,
+                  passAndPlayCardCount: startedSnapshot.game.pass_play_card_count,
+                  promptsPerPlayer: startedSnapshot.game.prompts_per_player,
+                  selectedCategories: (startedSnapshot.game.prompt_categories ?? [MIXED_PASS_PLAY_CATEGORY]).join(","),
+                  turnDurationSeconds: startedSnapshot.game.turn_duration_seconds
+                });
+              })
             }
-          }}
-          onResetToLobby={() => {
-            if (window.confirm("Reset scores and return to the lobby?")) {
+          />
+        ) : (
+          <Play
+            snapshot={snapshot}
+            me={me}
+            activePlayer={activePlayer}
+            currentPrompt={currentPrompt}
+            busy={busy}
+            isHost={isHost}
+            onCorrect={() =>
               runAction(async () => {
-                await resetToLobby(snapshot);
-                trackSnapshotEvent("reset_to_lobby", snapshot);
-              });
+                await markCorrect(snapshot);
+                trackSnapshotEvent("correct", snapshot, {
+                  promptId: snapshot.game.current_prompt_id
+                });
+              })
             }
-          }}
-        />
-      )}
+            onSkip={() =>
+              runAction(async () => {
+                await skipPrompt(snapshot);
+                trackSnapshotEvent("skip", snapshot, {
+                  promptId: snapshot.game.current_prompt_id
+                });
+              })
+            }
+            onEndTurn={() =>
+              runAction(async () => {
+                await endTurn(snapshot);
+                trackSnapshotEvent("turn_ended", snapshot);
+              })
+            }
+            onStartTurn={() =>
+              runAction(async () => {
+                await startTurn(snapshot);
+                trackSnapshotEvent("turn_started", snapshot, {
+                  activePlayerId: snapshot.game.active_player_id,
+                  currentTeamId: snapshot.game.current_team_id
+                });
+              })
+            }
+            onPause={() =>
+              runAction(async () => {
+                await pauseGame(snapshot);
+                trackSnapshotEvent("game_paused", snapshot);
+              })
+            }
+            onResume={() =>
+              runAction(async () => {
+                await resumeGame(snapshot);
+                trackSnapshotEvent("game_resumed", snapshot);
+              })
+            }
+            onUndo={() =>
+              runAction(async () => {
+                await undoLastAction(snapshot);
+                trackSnapshotEvent("action_undone", snapshot, {
+                  action: snapshot.latestUndoableEvent?.action ?? null
+                });
+              })
+            }
+            onFinishGame={() => {
+              if (window.confirm("End the game now?")) {
+                runAction(async () => {
+                  await finishGame(snapshot);
+                  trackSnapshotEvent("game_finished", snapshot);
+                });
+              }
+            }}
+            onResetToLobby={() => {
+              if (window.confirm("Reset scores and return to the lobby?")) {
+                runAction(async () => {
+                  await resetToLobby(snapshot);
+                  trackSnapshotEvent("reset_to_lobby", snapshot);
+                });
+              }
+            }}
+          />
+        )}
+      </div>
 
       {error ? <p className="notice">{error}</p> : null}
     </main>
@@ -596,6 +621,11 @@ function Setup({
   setPassAndPlayPlayerCount: (count: number) => void;
   onSave: (event: FormEvent<HTMLFormElement>) => void;
 }) {
+  const [setupStep, setSetupStep] = useState(0);
+  const stepLabels = ["Mode", "Prompts", "Teams", "Review"];
+  const isFirstStep = setupStep === 0;
+  const isLastStep = setupStep === stepLabels.length - 1;
+
   if (!isHost) {
     return (
       <section className="card">
@@ -606,209 +636,213 @@ function Setup({
   }
 
   return (
-    <form className="card stack" onSubmit={onSave}>
-      <h2>Game setup</h2>
-      <div className="field">
-        <label>Play mode</label>
-        <div className="segmented">
-          <button
-            className={playMode === "multi_device" ? "segment active" : "segment"}
-            type="button"
-            onClick={() => setPlayMode("multi_device")}
-          >
-            <strong>Everyone joins</strong>
-            <span>Players use their own phones.</span>
-          </button>
-          <button
-            className={playMode === "pass_and_play" ? "segment active" : "segment"}
-            type="button"
-            onClick={() => {
-              setPlayMode("pass_and_play");
-              if (playMode !== "pass_and_play") setPromptMode("deck");
-            }}
-          >
-            <strong>Pass & Play</strong>
-            <span>One shared device, passed around.</span>
-          </button>
+    <form className="card setup-wizard stack" onSubmit={onSave}>
+      <div className="setup-wizard-heading">
+        <div>
+          <span className="muted tiny">Step {setupStep + 1} of {stepLabels.length}</span>
+          <h2>{stepLabels[setupStep]}</h2>
         </div>
-      </div>
-      {playMode === "pass_and_play" ? (
-        <PassAndPlaySetup
-          cardCount={passAndPlayCardCount}
-          categories={passAndPlayCategories}
-          playerCount={passAndPlayPlayers.length}
-          players={passAndPlayPlayers}
-          promptMode={promptMode}
-          promptsPerPlayer={promptsPerPlayer}
-          setCardCount={setPassAndPlayCardCount}
-          setCategories={setPassAndPlayCategories}
-          setPlayerCount={setPassAndPlayPlayerCount}
-          setPlayers={setPassAndPlayPlayers}
-          setPromptMode={setPromptMode}
-          setPromptsPerPlayer={setPromptsPerPlayer}
-          teamCount={teamCount}
-          teamNames={teamNames}
-        />
-      ) : null}
-      <div className="split">
-        {playMode === "multi_device" ? (
-          <div className="field">
-          <label htmlFor="expectedPlayers">Expected players</label>
-          <input
-            className="input"
-            id="expectedPlayers"
-            inputMode="numeric"
-            min={1}
-            max={200}
-            pattern="[0-9]*"
-            type="text"
-            value={expectedPlayers}
-            onChange={(event) => setExpectedPlayers(event.target.value.replace(/\D/g, ""))}
-            placeholder="Optional"
-          />
-          </div>
-        ) : null}
-        <div className="field">
-          <label htmlFor="teamCount">Teams</label>
-          <MobileNumberInput
-            id="teamCount"
-            min={1}
-            max={12}
-            value={teamCount}
-            onValueChange={setTeamCount}
-          />
-        </div>
-      </div>
-      {playMode === "multi_device" ? (
-        <div className="split">
-          <div className="field">
-            <label htmlFor="promptCount">Prompts per player</label>
-            <MobileNumberInput
-              disabled={promptMode === "deck"}
-              id="promptCount"
-              min={1}
-              max={20}
-              value={promptsPerPlayer}
-              onValueChange={setPromptsPerPlayer}
-            />
-          </div>
-          <div className="field">
-            <label>Team assignment</label>
-            <div className="segmented">
-              <button
-                className={teamAssignmentMode === "auto" ? "segment active" : "segment"}
-                type="button"
-                onClick={() => setTeamAssignmentMode("auto")}
-              >
-                Auto
-              </button>
-              <button
-                className={teamAssignmentMode === "choose" ? "segment active" : "segment"}
-                type="button"
-                onClick={() => setTeamAssignmentMode("choose")}
-              >
-                Players choose
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
-      <div className="field">
-        <label>Turn timer</label>
-        <div className="segmented">
-          {TURN_DURATION_OPTIONS.map((seconds) => (
+        <div className="wizard-progress" aria-label="Setup progress">
+          {stepLabels.map((label, index) => (
             <button
-              className={turnDurationSeconds === seconds ? "segment active" : "segment"}
+              aria-label={`Go to ${label}`}
+              className={index === setupStep ? "wizard-dot active" : index < setupStep ? "wizard-dot complete" : "wizard-dot"}
+              key={label}
               type="button"
-              key={seconds}
-              onClick={() => setTurnDurationSeconds(seconds)}
-            >
-              {seconds}s
-            </button>
+              onClick={() => setSetupStep(index)}
+            />
           ))}
         </div>
       </div>
-      {playMode === "multi_device" ? (
-        <div className="field">
-          <label>Prompt mode</label>
-          <div className="segmented">
-            <button className={promptMode === "free" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("free")}>
-              <strong>Anything goes</strong>
-              <span>Players write their own prompts.</span>
-            </button>
-            <button className={promptMode === "category" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("category")}>
-              <strong>Category prompts</strong>
-              <span>Players write from assigned categories.</span>
-            </button>
-            <button
-              className={promptMode === "deck" ? "segment active" : "segment"}
-              type="button"
-              onClick={() => setPromptMode("deck")}
-            >
-              <strong>Deck draft</strong>
-              <span>Players choose cards from a shared deck.</span>
-            </button>
-          </div>
-        </div>
-      ) : null}
-      {playMode === "multi_device" && promptMode !== "free" ? (
-        <CategorySelector
-          categories={promptCategories}
-          helpText={
-            promptMode === "deck"
-              ? "Cards will be dealt from these categories. Mixed pulls from the full deck."
-              : "Players will be asked for prompt ideas from these categories. Mixed spreads the prompts across the full set."
-          }
-          familyFriendlyText={promptMode === "deck" ? "Uses simple, all-ages cards." : "Uses simple, all-ages prompts."}
-          showFamilyFriendly
-          setCategories={setPromptCategories}
-        />
-      ) : null}
-      {playMode === "multi_device" && promptMode === "deck" ? (
-        <div className="split">
+
+      {setupStep === 0 ? (
+        <div className="stack">
           <div className="field">
-            <label htmlFor="cardsDealt">Cards dealt</label>
-            <MobileNumberInput
-              id="cardsDealt"
-              min={1}
-              max={20}
-              value={cardsDealtPerPlayer}
-              onCommit={(nextCount) => setCardsKeptPerPlayer(Math.min(cardsKeptPerPlayer, nextCount))}
-              onValueChange={setCardsDealtPerPlayer}
-            />
+            <label>Play mode</label>
+            <div className="segmented">
+              <button className={playMode === "multi_device" ? "segment active" : "segment"} type="button" onClick={() => setPlayMode("multi_device")}>
+                <strong>Everyone joins</strong>
+                <span>Players use their own phones.</span>
+              </button>
+              <button
+                className={playMode === "pass_and_play" ? "segment active" : "segment"}
+                type="button"
+                onClick={() => {
+                  setPlayMode("pass_and_play");
+                  if (playMode !== "pass_and_play") setPromptMode("deck");
+                }}
+              >
+                <strong>Pass & Play</strong>
+                <span>One shared device, passed around.</span>
+              </button>
+            </div>
           </div>
           <div className="field">
-            <label htmlFor="cardsKept">Cards kept</label>
-            <MobileNumberInput
-              id="cardsKept"
-              min={1}
-              max={cardsDealtPerPlayer}
-              value={cardsKeptPerPlayer}
-              onValueChange={setCardsKeptPerPlayer}
-            />
+            <label>Turn timer</label>
+            <div className="segmented">
+              {TURN_DURATION_OPTIONS.map((seconds) => (
+                <button className={turnDurationSeconds === seconds ? "segment active" : "segment"} type="button" key={seconds} onClick={() => setTurnDurationSeconds(seconds)}>
+                  {seconds}s
+                </button>
+              ))}
+            </div>
           </div>
+          {playMode === "multi_device" ? (
+            <div className="field">
+              <label htmlFor="expectedPlayers">Expected players</label>
+              <input className="input" id="expectedPlayers" inputMode="numeric" min={1} max={200} pattern="[0-9]*" type="text" value={expectedPlayers} onChange={(event) => setExpectedPlayers(event.target.value.replace(/\D/g, ""))} placeholder="Optional" />
+            </div>
+          ) : null}
         </div>
       ) : null}
-      <div className="stack">
-        {teamNames.map((name, index) => (
-          <div className="field" key={index}>
-            <label htmlFor={`team-${index}`}>Team {index + 1}</label>
-            <input
-              className="input"
-              id={`team-${index}`}
-              value={name}
-              onChange={(event) => {
-                const nextNames = [...teamNames];
-                nextNames[index] = event.target.value;
-                setTeamNames(nextNames);
-              }}
-            />
+
+      {setupStep === 1 ? (
+        playMode === "pass_and_play" ? (
+          <PassAndPlaySetup
+            cardCount={passAndPlayCardCount}
+            categories={passAndPlayCategories}
+            playerCount={passAndPlayPlayers.length}
+            players={passAndPlayPlayers}
+            promptMode={promptMode}
+            promptsPerPlayer={promptsPerPlayer}
+            setCardCount={setPassAndPlayCardCount}
+            setCategories={setPassAndPlayCategories}
+            setPlayerCount={setPassAndPlayPlayerCount}
+            setPlayers={setPassAndPlayPlayers}
+            setPromptMode={setPromptMode}
+            setPromptsPerPlayer={setPromptsPerPlayer}
+            teamCount={teamCount}
+            teamNames={teamNames}
+            showPlayers={false}
+          />
+        ) : (
+          <div className="stack">
+            <div className="field">
+              <label>Prompt mode</label>
+              <div className="segmented">
+                <button className={promptMode === "free" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("free")}>
+                  <strong>Anything goes</strong>
+                  <span>Players write their own prompts.</span>
+                </button>
+                <button className={promptMode === "category" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("category")}>
+                  <strong>Category prompts</strong>
+                  <span>Players write from assigned categories.</span>
+                </button>
+                <button className={promptMode === "deck" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("deck")}>
+                  <strong>Deck draft</strong>
+                  <span>Players choose cards from a shared deck.</span>
+                </button>
+              </div>
+            </div>
+            <div className="field">
+              <label htmlFor="promptCount">Prompts per player</label>
+              <MobileNumberInput disabled={promptMode === "deck"} id="promptCount" min={1} max={20} value={promptsPerPlayer} onValueChange={setPromptsPerPlayer} />
+            </div>
+            {promptMode !== "free" ? (
+              <CategorySelector
+                categories={promptCategories}
+                helpText={promptMode === "deck" ? "Cards will be dealt from these categories. Mixed pulls from the full deck." : "Players will be asked for prompt ideas from these categories. Mixed spreads the prompts across the full set."}
+                familyFriendlyText={promptMode === "deck" ? "Uses simple, all-ages cards." : "Uses simple, all-ages prompts."}
+                showFamilyFriendly
+                setCategories={setPromptCategories}
+              />
+            ) : null}
+            {promptMode === "deck" ? (
+              <div className="split">
+                <div className="field">
+                  <label htmlFor="cardsDealt">Cards dealt</label>
+                  <MobileNumberInput id="cardsDealt" min={1} max={20} value={cardsDealtPerPlayer} onCommit={(nextCount) => setCardsKeptPerPlayer(Math.min(cardsKeptPerPlayer, nextCount))} onValueChange={setCardsDealtPerPlayer} />
+                </div>
+                <div className="field">
+                  <label htmlFor="cardsKept">Cards kept</label>
+                  <MobileNumberInput id="cardsKept" min={1} max={cardsDealtPerPlayer} value={cardsKeptPerPlayer} onValueChange={setCardsKeptPerPlayer} />
+                </div>
+              </div>
+            ) : null}
           </div>
-        ))}
+        )
+      ) : null}
+
+      {setupStep === 2 ? (
+        <div className="stack">
+          <div className="split">
+            <div className="field">
+              <label htmlFor="teamCount">Teams</label>
+              <MobileNumberInput id="teamCount" min={1} max={12} value={teamCount} onValueChange={setTeamCount} />
+            </div>
+            {playMode === "multi_device" ? (
+              <div className="field">
+                <label>Team assignment</label>
+                <div className="segmented">
+                  <button className={teamAssignmentMode === "auto" ? "segment active" : "segment"} type="button" onClick={() => setTeamAssignmentMode("auto")}>
+                    Auto
+                  </button>
+                  <button className={teamAssignmentMode === "choose" ? "segment active" : "segment"} type="button" onClick={() => setTeamAssignmentMode("choose")}>
+                    Players choose
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+          <div className="stack">
+            {teamNames.map((name, index) => (
+              <div className="field" key={index}>
+                <label htmlFor={`team-${index}`}>Team {index + 1}</label>
+                <input className="input" id={`team-${index}`} value={name} onChange={(event) => {
+                  const nextNames = [...teamNames];
+                  nextNames[index] = event.target.value;
+                  setTeamNames(nextNames);
+                }} />
+              </div>
+            ))}
+          </div>
+          {playMode === "pass_and_play" ? (
+            <PassAndPlaySetup
+              cardCount={passAndPlayCardCount}
+              categories={passAndPlayCategories}
+              playerCount={passAndPlayPlayers.length}
+              players={passAndPlayPlayers}
+              promptMode={promptMode}
+              promptsPerPlayer={promptsPerPlayer}
+              setCardCount={setPassAndPlayCardCount}
+              setCategories={setPassAndPlayCategories}
+              setPlayerCount={setPassAndPlayPlayerCount}
+              setPlayers={setPassAndPlayPlayers}
+              setPromptMode={setPromptMode}
+              setPromptsPerPlayer={setPromptsPerPlayer}
+              teamCount={teamCount}
+              teamNames={teamNames}
+              showPrompts={false}
+            />
+          ) : null}
+        </div>
+      ) : null}
+
+      {setupStep === 3 ? (
+        <div className="setup-review-grid">
+          <div><span>Mode</span><strong>{playMode === "pass_and_play" ? "Pass & Play" : "Everyone joins"}</strong></div>
+          <div><span>Prompts</span><strong>{promptMode === "deck" ? "Built-in deck" : promptMode === "category" ? "Categories" : "Anything goes"}</strong></div>
+          <div><span>Teams</span><strong>{teamCount}</strong></div>
+          <div><span>Timer</span><strong>{turnDurationSeconds}s</strong></div>
+          <div><span>Players</span><strong>{playMode === "pass_and_play" ? passAndPlayPlayers.length : expectedPlayers || "Open"}</strong></div>
+          <div><span>Cards</span><strong>{playMode === "pass_and_play" && promptMode === "deck" ? passAndPlayCardCount : promptMode === "deck" ? `${cardsKeptPerPlayer} kept` : `${promptsPerPlayer} each`}</strong></div>
+        </div>
+      ) : null}
+
+      <div className="wizard-actions">
+        <button className="button secondary" disabled={isFirstStep || busy} type="button" onClick={() => setSetupStep((step) => Math.max(0, step - 1))}>
+          Back
+        </button>
+        {isLastStep ? (
+          <button className="button accent" disabled={busy}>
+            Create lobby
+          </button>
+        ) : (
+          <button className="button accent" disabled={busy} type="button" onClick={() => setSetupStep((step) => Math.min(stepLabels.length - 1, step + 1))}>
+            Next
+          </button>
+        )}
       </div>
-      <button className="button accent" disabled={busy}>
-        Create lobby
-      </button>
     </form>
   );
 }
@@ -826,6 +860,8 @@ function PassAndPlaySetup({
   setPlayers,
   setPromptMode,
   setPromptsPerPlayer,
+  showPlayers = true,
+  showPrompts = true,
   teamCount,
   teamNames
 }: {
@@ -841,6 +877,8 @@ function PassAndPlaySetup({
   setPlayers: (players: PassAndPlaySetupPlayer[]) => void;
   setPromptMode: (mode: PromptMode) => void;
   setPromptsPerPlayer: (count: number) => void;
+  showPlayers?: boolean;
+  showPrompts?: boolean;
   teamCount: number;
   teamNames: string[];
 }) {
@@ -851,59 +889,59 @@ function PassAndPlaySetup({
 
   return (
     <section className="setup-panel stack">
-      <div className="field">
-        <label>Pass & Play prompts</label>
-        <div className="segmented">
-          <button className={promptMode === "deck" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("deck")}>
-            <strong>Built-in deck</strong>
-            <span>Load cards automatically.</span>
-          </button>
-          <button className={promptMode === "free" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("free")}>
-            <strong>Write prompts</strong>
-            <span>Players make the deck together.</span>
-          </button>
-          <button className={promptMode === "category" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("category")}>
-            <strong>Category prompts</strong>
-            <span>Players write from assigned categories.</span>
-          </button>
-        </div>
-      </div>
-
-      <div className="split">
-        <div className="field">
-          <label htmlFor="passPlayerCount">Players</label>
-          <MobileNumberInput id="passPlayerCount" min={2} max={40} value={playerCount} onValueChange={setPlayerCount} />
-        </div>
-        {promptMode === "deck" ? (
+      {showPrompts ? (
+        <>
           <div className="field">
-            <label htmlFor="passCardCount">Cards in game</label>
-            <MobileNumberInput id="passCardCount" min={10} max={80} value={cardCount} onValueChange={setCardCount} />
-            <p className="muted tiny">Default adjusts by player count to stay near a 40-50 card game.</p>
+            <label>Pass & Play prompts</label>
+            <div className="segmented">
+              <button className={promptMode === "deck" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("deck")}>
+                <strong>Built-in deck</strong>
+                <span>Load cards automatically.</span>
+              </button>
+              <button className={promptMode === "free" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("free")}>
+                <strong>Write prompts</strong>
+                <span>Players make the deck together.</span>
+              </button>
+              <button className={promptMode === "category" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("category")}>
+                <strong>Category prompts</strong>
+                <span>Players write from assigned categories.</span>
+              </button>
+            </div>
           </div>
-        ) : (
-          <div className="field">
-            <label htmlFor="passPromptCount">Prompts per player</label>
-            <MobileNumberInput id="passPromptCount" min={1} max={20} value={promptsPerPlayer} onValueChange={setPromptsPerPlayer} />
-            <p className="muted tiny">Pass the phone around during the lobby and collect this many prompts per player.</p>
-          </div>
-        )}
-      </div>
 
-      {promptMode !== "free" ? (
-        <CategorySelector
-          categories={categories}
-          helpText={
-            promptMode === "deck"
-              ? "Cards will be loaded from these categories. Mixed pulls from the full deck."
-              : "The shared prompt form will ask for ideas from these categories."
-          }
-          familyFriendlyText={promptMode === "deck" ? "Uses simple, all-ages cards." : "Uses simple, all-ages prompts."}
-          showFamilyFriendly
-          setCategories={setCategories}
-        />
+          <div className="split">
+            <div className="field">
+              <label htmlFor="passPlayerCount">Players</label>
+              <MobileNumberInput id="passPlayerCount" min={2} max={40} value={playerCount} onValueChange={setPlayerCount} />
+            </div>
+            {promptMode === "deck" ? (
+              <div className="field">
+                <label htmlFor="passCardCount">Cards in game</label>
+                <MobileNumberInput id="passCardCount" min={10} max={80} value={cardCount} onValueChange={setCardCount} />
+                <p className="muted tiny">Default adjusts by player count to stay near a 40-50 card game.</p>
+              </div>
+            ) : (
+              <div className="field">
+                <label htmlFor="passPromptCount">Prompts per player</label>
+                <MobileNumberInput id="passPromptCount" min={1} max={20} value={promptsPerPlayer} onValueChange={setPromptsPerPlayer} />
+                <p className="muted tiny">Pass the phone around during the lobby and collect this many prompts per player.</p>
+              </div>
+            )}
+          </div>
+
+          {promptMode !== "free" ? (
+            <CategorySelector
+              categories={categories}
+              helpText={promptMode === "deck" ? "Cards will be loaded from these categories. Mixed pulls from the full deck." : "The shared prompt form will ask for ideas from these categories."}
+              familyFriendlyText={promptMode === "deck" ? "Uses simple, all-ages cards." : "Uses simple, all-ages prompts."}
+              showFamilyFriendly
+              setCategories={setCategories}
+            />
+          ) : null}
+        </>
       ) : null}
 
-      <div className="stack">
+      {showPlayers ? <div className="stack">
         <h3>Players</h3>
         {players.map((player, index) => (
           <div className="player-setup-row" key={index}>
@@ -948,9 +986,9 @@ function PassAndPlaySetup({
             </div>
           </div>
         ))}
-      </div>
+      </div> : null}
 
-      <div className="team-rosters">
+      {showPlayers ? <div className="team-rosters">
         {groupedPlayers.map((team, teamIndex) => (
           <section className="team-roster" key={teamIndex}>
             <div className="team-roster-heading">
@@ -966,7 +1004,7 @@ function PassAndPlaySetup({
             </ul>
           </section>
         ))}
-      </div>
+      </div> : null}
     </section>
   );
 }
@@ -1007,17 +1045,17 @@ function CategorySelector({
     <div className="field">
       <label>Categories</label>
       {helpText ? <p className="muted tiny">{helpText}</p> : null}
-      {showFamilyFriendly ? (
-        <button
-          className={familyFriendlyEnabled ? "team-choice selected family-choice" : "team-choice family-choice"}
-          type="button"
-          onClick={toggleFamilyFriendly}
-        >
-          <strong>Family Friendly</strong>
-          <span>{familyFriendlyText}</span>
-        </button>
-      ) : null}
       <div className="category-toggle-grid">
+        {showFamilyFriendly ? (
+          <button
+            className={familyFriendlyEnabled ? "team-choice selected" : "team-choice"}
+            type="button"
+            onClick={toggleFamilyFriendly}
+          >
+            <strong>Family Friendly</strong>
+            <span>{familyFriendlyEnabled ? "Included" : familyFriendlyText}</span>
+          </button>
+        ) : null}
         <button
           className={!familyFriendlyEnabled && categories.includes(MIXED_PASS_PLAY_CATEGORY) ? "team-choice selected" : "team-choice"}
           type="button"
@@ -1664,18 +1702,8 @@ function Play({
   }
 
   return (
-    <div className="stack">
-      <Scoreboard snapshot={snapshot} />
-      <section className="card stack">
-        <div className="round-banner">
-          <span>Round {snapshot.game.round_number}</span>
-          <strong>{getRoundName(snapshot.game.round_number)}</strong>
-        </div>
-        <div className="round-meta">
-          <span>Turn {snapshot.game.turn_number}</span>
-          <span>{snapshot.game.turn_duration_seconds}s timer</span>
-          <span>{activePlayer?.name ?? "Someone"} is up</span>
-        </div>
+    <div className="stack play-stage">
+      <section className="card stack game-top-card">
         {snapshot.game.phase === "ready" ? (
           <div className={snapshot.game.round_number > 1 ? "ready-panel round-transition stack" : "ready-panel stack"}>
             {snapshot.game.round_number > 1 ? (
@@ -1707,8 +1735,11 @@ function Play({
         ) : null}
         {isTurnRunning ? (
           <>
-            <div className={secondsLeft <= 10 ? "timer urgent" : "timer"} aria-live="polite">
-              {secondsLeft}s
+            <div className="turn-focus">
+              <div className="prompt">{isController ? currentPrompt?.text ?? "No prompt" : "Waiting..."}</div>
+              <div className={secondsLeft <= 10 ? "timer urgent" : "timer"} aria-live="polite">
+                {secondsLeft}s
+              </div>
             </div>
             <p className="muted">
               {isController
@@ -1717,7 +1748,6 @@ function Play({
                   : "Show this screen to no one."
                 : "Wait for your turn."}
             </p>
-            <div className="prompt">{isController ? currentPrompt?.text ?? "No prompt" : "Waiting..."}</div>
             {isController && currentPrompt?.description ? <p className="card-note">{currentPrompt.description}</p> : null}
           </>
         ) : null}
@@ -1731,25 +1761,38 @@ function Play({
                 Skip
               </button>
             </div>
-            <button className="button danger" disabled={busy} onClick={onEndTurn}>
+            <button
+              className="button danger"
+              disabled={busy}
+              onClick={() => {
+                if (window.confirm("Are you sure?")) onEndTurn();
+              }}
+            >
               End turn
             </button>
           </div>
         ) : null}
-        {isHost ? (
-          <HostPlayControls
-            busy={busy}
-            canUndo={Boolean(snapshot.latestUndoableEvent)}
-            isPaused={isPaused}
-            isTurnRunning={isTurnRunning}
-            onFinishGame={onFinishGame}
-            onPause={onPause}
-            onResetToLobby={onResetToLobby}
-            onResume={onResume}
-            onUndo={onUndo}
-          />
-        ) : null}
+        <div className="round-meta play-details">
+          <span>Round {snapshot.game.round_number}: {getRoundName(snapshot.game.round_number)}</span>
+          <span>Turn {snapshot.game.turn_number}</span>
+          <span>{snapshot.game.turn_duration_seconds}s timer</span>
+          <span>{activePlayer?.name ?? "Someone"} is up</span>
+        </div>
       </section>
+      <Scoreboard snapshot={snapshot} />
+      {isHost ? (
+        <HostPlayControls
+          busy={busy}
+          canUndo={Boolean(snapshot.latestUndoableEvent)}
+          isPaused={isPaused}
+          isTurnRunning={isTurnRunning}
+          onFinishGame={onFinishGame}
+          onPause={onPause}
+          onResetToLobby={onResetToLobby}
+          onResume={onResume}
+          onUndo={onUndo}
+        />
+      ) : null}
     </div>
   );
 }
