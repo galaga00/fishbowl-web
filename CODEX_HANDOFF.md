@@ -46,10 +46,15 @@ Secrets belong in local ignored env files, Vercel/Supabase dashboards, or a pass
 npm install
 npm run dev -- --hostname 0.0.0.0
 npm run lint
+npm run test:e2e
 npm run build
 vercel --prod --yes
 vercel alias set <deployment-url> fish-bowl-game.vercel.app
 ```
+
+End-to-end testing uses Playwright with one headless Chromium worker by default. Run `npx playwright install chromium` once on a new machine, then `npm run test:e2e`. Use `npm run test:e2e:headed` or `npm run test:e2e:ui` only when you want to watch/debug the browser. Coverage includes host-only Pass & Play setup/gameplay, second-browser joining/realtime, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams. Test-created Supabase games are cleaned up when `.env.local` has Supabase env vars.
+
+Card deck target-fill review artifacts live in `card-review/target-fill/`. After review Markdown is updated, run `npm run cards:apply-target-fill` to regenerate `lib/target-fill-deck.ts` from cards still marked Keep in `candidates.json`; the generated deck is wired into `STARTER_DECK`, and family-friendly additions are included in the family-friendly filter.
 
 Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. It records Vercel geo headers and a salted IP hash. The dashboard has an "Ignore this device" browser-local opt-out for Austin's own devices and a confirmed "Purge data" control for clearing test data. Optional owner email notifications use Resend env vars. Keep keys only in ignored env files, Vercel env vars, or a password manager.
 
@@ -65,6 +70,7 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 - Check `git status --short --branch` before editing.
 - Keep changes scoped to the requested task.
 - Run `npm run lint` and `npm run build` before committing/deploying when code changes.
+- Run `npm run test:e2e` when game flow, setup/lobby behavior, or user-facing controls change.
 - Commit useful completed work to `main`, push to GitHub, deploy to Vercel when the user wants the live app updated.
 - After deployment, keep `https://fish-bowl-game.vercel.app` pointed at the newest production deployment.
 

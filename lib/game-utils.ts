@@ -129,22 +129,12 @@ export function getNextTurnAssignment(snapshot: GameSnapshot) {
   if (teamsWithPlayers.length === 0) return null;
 
   const activeTeamIndex = teamsWithPlayers.findIndex((entry) => entry.team.id === snapshot.game.current_team_id);
-  const safeActiveTeamIndex = activeTeamIndex >= 0 ? activeTeamIndex : 0;
+  const nextTeamIndex = activeTeamIndex >= 0 ? (activeTeamIndex + 1) % teamsWithPlayers.length : 0;
+  const nextTeamEntry = teamsWithPlayers[nextTeamIndex];
+  const playerCycleIndex = Math.floor(Math.max(snapshot.game.turn_number, 0) / teamsWithPlayers.length);
+  const nextPlayer = nextTeamEntry.players[playerCycleIndex % nextTeamEntry.players.length];
 
-  for (let offset = 1; offset <= teamsWithPlayers.length; offset += 1) {
-    const nextTeamEntry = teamsWithPlayers[(safeActiveTeamIndex + offset) % teamsWithPlayers.length];
-    if (nextTeamEntry.players.length === 0) continue;
-
-    const previousTeamEntry = teamsWithPlayers[safeActiveTeamIndex];
-    const previousPlayerIndex =
-      previousTeamEntry?.team.id === nextTeamEntry.team.id
-        ? previousTeamEntry.players.findIndex((player) => player.id === snapshot.game.active_player_id)
-        : -1;
-    const nextPlayer = nextTeamEntry.players[(previousPlayerIndex + 1 + nextTeamEntry.players.length) % nextTeamEntry.players.length];
-    return { player: nextPlayer, team: nextTeamEntry.team };
-  }
-
-  return null;
+  return { player: nextPlayer, team: nextTeamEntry.team };
 }
 
 function getTeamsWithPlayers(snapshot: GameSnapshot) {

@@ -61,6 +61,33 @@ Suggested test flow:
 5. Host watches lobby updates, then starts the game.
 6. The active player uses Correct, Skip, and End turn.
 
+## End-to-End Testing
+
+This project uses Playwright for automated browser testing. The default E2E command runs one headless Chromium browser at a time, so you do not need to manually open a host tab, player tab, incognito window, and phone simulator just to check the game loop.
+
+First-time setup:
+
+```bash
+npx playwright install chromium
+```
+
+Run the E2E suite:
+
+```bash
+npm run test:e2e
+```
+
+The Playwright config starts `npm run dev` for you at `http://127.0.0.1:3000`, reuses an already-running local server when available, and stores screenshots/traces only when a test fails. The suite covers the host-only Pass & Play path, joining from a second browser context, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams.
+
+Useful variants:
+
+```bash
+npm run test:e2e:headed
+npm run test:e2e:ui
+```
+
+Use headed or UI mode only when you want to watch or debug the browser. Test-created games are deleted from Supabase after each test when `.env.local` has the normal Supabase env vars.
+
 ## Vercel Deployment
 
 1. Push this folder to a GitHub repo.
