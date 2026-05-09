@@ -753,13 +753,23 @@ export async function markCorrect(snapshot: GameSnapshot) {
   const promptId = snapshot.game.current_prompt_id;
   const teamId = snapshot.game.current_team_id;
   if (!promptId || !teamId) return;
-  await recordUndoPoint(snapshot, "correct");
 
   const team = snapshot.teams.find((candidate) => candidate.id === teamId);
   const turn = snapshot.activeTurn;
+  const { data: updatedPrompts, error: promptError } = await supabase
+    .from("prompts")
+    .update({ status: "correct" })
+    .eq("id", promptId)
+    .eq("game_id", snapshot.game.id)
+    .eq("status", "active")
+    .select("id");
+
+  if (promptError) throw promptError;
+  if (!updatedPrompts || updatedPrompts.length === 0) return;
+
+  await recordUndoPoint(snapshot, "correct");
 
   const updates = [
-    supabase.from("prompts").update({ status: "correct" }).eq("id", promptId),
     supabase.from("teams").update({ score: (team?.score ?? 0) + 1 }).eq("id", teamId)
   ];
 

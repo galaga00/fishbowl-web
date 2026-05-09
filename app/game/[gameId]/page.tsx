@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -92,6 +92,7 @@ export default function GamePage() {
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const actionInFlightRef = useRef(false);
 
   const refresh = useCallback(async () => {
     const nextSnapshot = await loadSnapshot(gameId);
@@ -140,6 +141,8 @@ export default function GamePage() {
   }, [snapshot]);
 
   async function runAction(action: () => Promise<void>) {
+    if (actionInFlightRef.current) return;
+    actionInFlightRef.current = true;
     setBusy(true);
     setError("");
     try {
@@ -148,6 +151,7 @@ export default function GamePage() {
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "Something went wrong.");
     } finally {
+      actionInFlightRef.current = false;
       setBusy(false);
     }
   }

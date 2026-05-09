@@ -94,7 +94,30 @@ function getFilteredStarterDeck(selectedCategories: string[]) {
     ? STARTER_DECK.filter((card) => isFamilyFriendlyCard(card.id))
     : STARTER_DECK;
 
-  return sourceCards.map((card) => ({ ...card, category: getCardCategory(card) }));
+  return uniqueCardsByVisibleTitle(sourceCards.map((card) => ({ ...card, category: getCardCategory(card) })));
+}
+
+function uniqueCardsByVisibleTitle(cards: PassPlayDeckCard[]) {
+  const seenTitles = new Set<string>();
+  const uniqueCards: PassPlayDeckCard[] = [];
+
+  for (const card of cards) {
+    const normalizedTitle = normalizeVisibleTitle(card.title);
+    if (seenTitles.has(normalizedTitle)) continue;
+    seenTitles.add(normalizedTitle);
+    uniqueCards.push(card);
+  }
+
+  return uniqueCards;
+}
+
+function normalizeVisibleTitle(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/^the\s+/, "")
+    .replace(/&/g, "and")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
 
 function getCardCategory(card: StarterDeckCard): PassPlayCategoryId {
