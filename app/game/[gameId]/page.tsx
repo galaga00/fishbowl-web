@@ -1307,8 +1307,6 @@ function Lobby({
     }
 
     setDraftReadyToastVisible(true);
-    const timeoutId = window.setTimeout(() => setDraftReadyToastVisible(false), 4500);
-    return () => window.clearTimeout(timeoutId);
   }, [draftIsReady, needsTeam]);
 
   function handleStartClick() {
