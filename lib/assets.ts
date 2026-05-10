@@ -10,7 +10,7 @@ export const ASSETS = {
     },
     howTo: {
       steps: [
-        "/assets/art/how-to/step-1_v3.png",
+        "/assets/art/how-to/step-1.png",
         "/assets/art/how-to/step-2.png",
         "/assets/art/how-to/step-3.png",
         "/assets/art/how-to/step-4.png",
