@@ -1244,8 +1244,12 @@ function Lobby({
   onTeamStepContinue: () => void;
   onStart: () => void;
 }) {
+  const [draftReadyToastVisible, setDraftReadyToastVisible] = useState(false);
+  const [selectedDraftOrder, setSelectedDraftOrder] = useState<string[]>([]);
   const myPromptCount = getPromptCountForPlayer(me.id, snapshot.prompts);
-  const myDraftCards = snapshot.draftCards.filter((card) => card.player_id === me.id);
+  const myDraftCards = useMemo(() => snapshot.draftCards.filter((card) => card.player_id === me.id), [me.id, snapshot.draftCards]);
+  const selectedDraftIds = useMemo(() => myDraftCards.filter((card) => card.selected).map((card) => card.id), [myDraftCards]);
+  const selectedDraftSignature = selectedDraftIds.join("|");
   const myDraftSelectedCount = getDraftSelectedCountForPlayer(me.id, snapshot);
   const passAndPlay = isPassAndPlay(snapshot);
   const isDeckDraft = snapshot.game.prompt_mode === "deck";
@@ -1272,6 +1276,8 @@ function Lobby({
   const needsTeam = canSelfSwitchTeams && !me.team_id;
   const assignedTeam = snapshot.teams.find((team) => team.id === me.team_id) ?? null;
   const showTeamStep = !isHost && !passAndPlay && (needsTeam || !teamStepAcknowledged);
+  const requiredDraftCount = snapshot.game.cards_kept_per_player;
+  const draftIsReady = isDeckDraft && myDraftSelectedCount >= requiredDraftCount;
   const allPlayersHaveTeams = snapshot.players.every((player) => Boolean(player.team_id));
   const canStart = promptProgress.isComplete && allPlayersHaveTeams;
   const progressLabel = passAndPlayDeck ? "Card deck" : isDeckDraft ? "Draft progress" : "Prompt progress";
@@ -1283,6 +1289,27 @@ function Lobby({
           snapshot.players.length === 1 ? "player is" : "players are"
         } here. Missing players may not get into this round.`
       : "";
+
+  useEffect(() => {
+    setSelectedDraftOrder((currentOrder) => {
+      const nextOrder = currentOrder.filter((cardId) => selectedDraftIds.includes(cardId));
+      for (const cardId of selectedDraftIds) {
+        if (!nextOrder.includes(cardId)) nextOrder.push(cardId);
+      }
+      return nextOrder;
+    });
+  }, [selectedDraftIds, selectedDraftSignature]);
+
+  useEffect(() => {
+    if (!draftIsReady || needsTeam) {
+      setDraftReadyToastVisible(false);
+      return;
+    }
+
+    setDraftReadyToastVisible(true);
+    const timeoutId = window.setTimeout(() => setDraftReadyToastVisible(false), 4500);
+    return () => window.clearTimeout(timeoutId);
+  }, [draftIsReady, needsTeam]);
 
   function handleStartClick() {
     if (startBlockMessage) {
@@ -1302,28 +1329,39 @@ function Lobby({
       </p>
     </section>
   ) : isDeckDraft ? (
-    <section className="card stack">
+    <section className="card stack draft-pick-card">
       <h2>Pick your cards</h2>
-      <p className="task-callout">
+      <p className={draftIsReady ? "task-callout success" : "task-callout"}>
         {needsTeam
           ? "Choose a team first."
-          : `Pick ${snapshot.game.cards_kept_per_player} cards for the shared deck. Selected ${myDraftSelectedCount} of ${snapshot.game.cards_kept_per_player}.`}
+          : draftIsReady
+            ? "You're ready. Waiting for the host to start. Tap a picked card if you want to swap."
+            : `Pick ${requiredDraftCount} cards for the shared deck. You have picked ${myDraftSelectedCount} of ${requiredDraftCount}.`}
       </p>
       <div className="draft-grid">
-        {myDraftCards.map((card) => (
-          <button
-            className={card.selected ? "draft-card selected" : "draft-card"}
-            disabled={busy || needsTeam || (!card.selected && myDraftSelectedCount >= snapshot.game.cards_kept_per_player)}
-            key={card.id}
-            onClick={() => onDraftCardToggle(card.id, !card.selected)}
-            type="button"
-          >
-            <span className={card.selected ? "pill" : "pill pending"}>{card.selected ? "Picked" : "Available"}</span>
-            <strong>{card.title}</strong>
-            <span>{card.description}</span>
-          </button>
-        ))}
+        {myDraftCards.map((card) => {
+          const pickIndex = selectedDraftOrder.indexOf(card.id);
+          return (
+            <button
+              className={card.selected ? (draftIsReady ? "draft-card selected ready" : "draft-card selected picking") : "draft-card"}
+              disabled={busy || needsTeam || (!card.selected && myDraftSelectedCount >= requiredDraftCount)}
+              key={card.id}
+              onClick={() => onDraftCardToggle(card.id, !card.selected)}
+              type="button"
+            >
+              {pickIndex >= 0 ? <span className="pick-order">{pickIndex + 1} / {requiredDraftCount}</span> : null}
+              <span className={card.selected ? "pill" : "pill pending"}>{card.selected ? "Picked" : "Available"}</span>
+              <strong>{card.title}</strong>
+              <span>{card.description}</span>
+            </button>
+          );
+        })}
       </div>
+      {draftReadyToastVisible ? (
+        <div className="ready-toast" role="status" aria-live="polite">
+          You&apos;re ready. Waiting for the host.
+        </div>
+      ) : null}
     </section>
   ) : (
     <form className="card stack" onSubmit={onPromptSubmit}>
@@ -1698,6 +1736,7 @@ function Play({
   const isController = isActive || (isHost && passAndPlay);
   const [now, setNow] = useState(Date.now());
   const [autoEndedTurnId, setAutoEndedTurnId] = useState<string | null>(null);
+  const [confirmingEndTurn, setConfirmingEndTurn] = useState(false);
   const secondsLeft = getTurnSecondsLeft(snapshot.activeTurn?.started_at, snapshot.game.turn_duration_seconds, now);
   const isTurnRunning = snapshot.game.phase === "playing";
   const isPaused = snapshot.game.phase === "paused";
@@ -1713,6 +1752,10 @@ function Play({
     setAutoEndedTurnId(snapshot.activeTurn.id);
     onEndTurn();
   }, [autoEndedTurnId, isController, isTurnRunning, onEndTurn, secondsLeft, snapshot.activeTurn]);
+
+  useEffect(() => {
+    if (!isTurnRunning) setConfirmingEndTurn(false);
+  }, [isTurnRunning, snapshot.activeTurn?.id]);
 
   if (snapshot.game.phase === "finished") {
     return (
@@ -1801,24 +1844,53 @@ function Play({
           </>
         ) : null}
         {isController && isTurnRunning ? (
-          <div className="stack">
-            <div className="button-row">
-              <button className="button accent" disabled={busy || secondsLeft <= 0} onClick={onCorrect}>
-                Correct
-              </button>
-              <button className="button warn" disabled={busy || secondsLeft <= 0} onClick={onSkip}>
-                Skip
-              </button>
-            </div>
+          <div className="turn-actions">
             <button
-              className="button danger"
-              disabled={busy}
+              className="button correct-action"
+              disabled={busy || secondsLeft <= 0}
               onClick={() => {
-                if (window.confirm("Are you sure?")) onEndTurn();
+                setConfirmingEndTurn(false);
+                onCorrect();
               }}
             >
-              End turn
+              Correct
             </button>
+            <button
+              className="button skip-action"
+              disabled={busy || secondsLeft <= 0}
+              onClick={() => {
+                setConfirmingEndTurn(false);
+                onSkip();
+              }}
+            >
+              Skip
+            </button>
+            <div className="end-turn-panel">
+              {confirmingEndTurn ? (
+                <div className="end-turn-confirm">
+                  <span>End this turn?</span>
+                  <div className="button-row">
+                    <button className="button secondary compact-button" disabled={busy} onClick={() => setConfirmingEndTurn(false)}>
+                      Cancel
+                    </button>
+                    <button
+                      className="button danger compact-button"
+                      disabled={busy}
+                      onClick={() => {
+                        setConfirmingEndTurn(false);
+                        onEndTurn();
+                      }}
+                    >
+                      End now
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button className="button danger ghost-danger" disabled={busy} onClick={() => setConfirmingEndTurn(true)}>
+                  End turn
+                </button>
+              )}
+            </div>
           </div>
         ) : null}
         <div className="round-meta play-details">

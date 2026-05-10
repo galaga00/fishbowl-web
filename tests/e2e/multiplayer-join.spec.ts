@@ -98,6 +98,18 @@ test.describe("Multiplayer joining", () => {
       await expect(playerPage.getByText("You're on Team 2.")).toBeVisible();
       await playerPage.getByRole("button", { name: "Continue" }).click();
       await expect(playerPage.getByRole("heading", { name: "Pick your cards" })).toBeVisible();
+
+      const draftCards = playerPage.locator(".draft-card");
+      for (let index = 0; index < 5; index += 1) {
+        await draftCards.nth(index).click();
+      }
+      await expect(playerPage.getByText("You're ready. Waiting for the host to start.")).toBeVisible();
+      await expect(playerPage.locator(".pick-order", { hasText: "5 / 5" })).toBeVisible();
+      await expect(playerPage.locator(".ready-toast")).toBeVisible();
+
+      await draftCards.nth(0).click();
+      await expect(playerPage.getByText("You have picked 4 of 5.")).toBeVisible();
+      await expect(playerPage.locator(".ready-toast")).toHaveCount(0);
     } finally {
       await playerContext.close();
     }
