@@ -1201,7 +1201,9 @@ a {
   min-height: 46px;
   border: 1px solid #9f1d17;
   background: #b42318;
-  color: white;
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.28);
 }
 
 .end-turn-confirm {
