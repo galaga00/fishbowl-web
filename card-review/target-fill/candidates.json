@@ -14380,5 +14380,2489 @@
     "title": "Al-Masjid Al-Haram",
     "description": "The Great Mosque of Mecca, Islam's holiest mosque and the site surrounding the Kaaba.",
     "source": "curated-description"
+  },
+  {
+    "status": "KEEP",
+    "category": "places_objects",
+    "categoryLabel": "Places & Things",
+    "id": "places_objects-roman-empire",
+    "title": "Roman Empire",
+    "description": "The ancient Mediterranean empire centered on Rome, known for emperors, legions, roads, aqueducts, and the Colosseum.",
+    "source": "curated-description"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-pizza",
+    "title": "Pizza",
+    "description": "A round baked dish with crust, sauce, cheese, and toppings cut into slices.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-sushi",
+    "title": "Sushi",
+    "description": "Bite-sized Japanese rice rolls or pieces often served with fish, seaweed, soy sauce, and wasabi.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-taco",
+    "title": "Taco",
+    "description": "A folded tortilla filled with meat, beans, vegetables, salsa, cheese, or other toppings.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-burger",
+    "title": "Burger",
+    "description": "A sandwich built around a patty in a bun, usually with lettuce, tomato, cheese, and condiments.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-french-fries",
+    "title": "French fries",
+    "description": "Thin strips of potato fried until crisp and often dipped in ketchup or sauce.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-ice-cream",
+    "title": "Ice cream",
+    "description": "A frozen sweet dessert served in scoops, cones, cups, sundaes, or milkshakes.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-pancakes",
+    "title": "Pancakes",
+    "description": "Flat breakfast cakes cooked on a griddle and often stacked with butter and syrup.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-waffles",
+    "title": "Waffles",
+    "description": "Crisp grid-patterned breakfast cakes with pockets for syrup, fruit, or whipped cream.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-spaghetti",
+    "title": "Spaghetti",
+    "description": "Long pasta noodles usually twirled around a fork and served with sauce.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-ramen",
+    "title": "Ramen",
+    "description": "A noodle soup with broth, toppings, and a steaming bowl built for slurping.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-curry",
+    "title": "Curry",
+    "description": "A richly spiced dish with sauce, vegetables, meat, or legumes often served with rice.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-burrito",
+    "title": "Burrito",
+    "description": "A large rolled tortilla stuffed with fillings like rice, beans, meat, cheese, and salsa.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-nachos",
+    "title": "Nachos",
+    "description": "Tortilla chips piled with melted cheese, salsa, jalapenos, beans, or other toppings.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-donut",
+    "title": "Donut",
+    "description": "A ring-shaped or filled fried pastry often glazed, frosted, or covered in sprinkles.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-cupcake",
+    "title": "Cupcake",
+    "description": "A small individual cake baked in a paper liner and topped with frosting.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-wedding-cake",
+    "title": "Wedding cake",
+    "description": "A tall decorated cake cut at a wedding, often stacked in tiers with frosting and flowers.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-popcorn",
+    "title": "Popcorn",
+    "description": "Puffed corn kernels eaten by the handful, especially during movies or games.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-hot-dog",
+    "title": "Hot dog",
+    "description": "A sausage served in a long bun with toppings like mustard, ketchup, onions, or relish.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-sandwich",
+    "title": "Sandwich",
+    "description": "Fillings such as meat, cheese, vegetables, or spreads layered between slices of bread.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-grilled-cheese",
+    "title": "Grilled cheese",
+    "description": "A toasted sandwich with melted cheese stretching between buttery slices of bread.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-chicken-wings",
+    "title": "Chicken wings",
+    "description": "Small pieces of chicken tossed in sauce and eaten with fingers, often with napkins nearby.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-fried-rice",
+    "title": "Fried rice",
+    "description": "Rice stir-fried with vegetables, egg, sauce, and sometimes meat or tofu.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-dumplings",
+    "title": "Dumplings",
+    "description": "Small pockets of dough filled with savory ingredients and steamed, boiled, or pan-fried.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-quesadilla",
+    "title": "Quesadilla",
+    "description": "A tortilla folded around melted cheese and fillings, then cooked until warm and crisp.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-pho",
+    "title": "Pho",
+    "description": "A Vietnamese noodle soup with fragrant broth, herbs, rice noodles, and thin slices of meat.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-bagel",
+    "title": "Bagel",
+    "description": "A chewy ring-shaped bread often sliced and topped with cream cheese.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-pretzel",
+    "title": "Pretzel",
+    "description": "A twisted bread snack with a salty crust, often soft and warm or small and crunchy.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-croissant",
+    "title": "Croissant",
+    "description": "A flaky crescent-shaped pastry with buttery layers and a crisp golden outside.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-cinnamon-roll",
+    "title": "Cinnamon roll",
+    "description": "A spiral pastry swirled with cinnamon sugar and often covered in icing.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-chocolate-chip-cookie",
+    "title": "Chocolate chip cookie",
+    "description": "A sweet cookie dotted with chocolate chips and usually best when warm.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-brownie",
+    "title": "Brownie",
+    "description": "A dense chocolate dessert square with a fudgy middle or cakey crumb.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-apple-pie",
+    "title": "Apple pie",
+    "description": "A baked pie filled with sliced apples, cinnamon, and a flaky crust.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-guacamole",
+    "title": "Guacamole",
+    "description": "A creamy avocado dip often mixed with lime, salt, onion, tomato, or cilantro.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-salsa",
+    "title": "Salsa",
+    "description": "A chunky or smooth sauce made with tomatoes, peppers, onions, herbs, and spice.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-hummus",
+    "title": "Hummus",
+    "description": "A creamy chickpea dip blended with tahini, lemon, garlic, and olive oil.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-avocado-toast",
+    "title": "Avocado toast",
+    "description": "Toast topped with mashed avocado and extras like egg, chili flakes, or lemon.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-smoothie",
+    "title": "Smoothie",
+    "description": "A blended drink made from fruit, yogurt, milk, juice, ice, or greens.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-milkshake",
+    "title": "Milkshake",
+    "description": "A thick cold drink blended from ice cream and milk, often topped with whipped cream.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-coffee",
+    "title": "Coffee",
+    "description": "A hot or iced caffeinated drink brewed from roasted beans and served black or with milk.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-espresso",
+    "title": "Espresso",
+    "description": "A small strong shot of coffee with a concentrated flavor and thin crema on top.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-bubble-tea",
+    "title": "Bubble tea",
+    "description": "A sweet tea drink with chewy tapioca pearls sipped through a wide straw.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-lemonade",
+    "title": "Lemonade",
+    "description": "A tart sweet drink made with lemon juice, water, and sugar, often served cold.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-hot-chocolate",
+    "title": "Hot chocolate",
+    "description": "A warm chocolate drink often topped with whipped cream or marshmallows.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-soda",
+    "title": "Soda",
+    "description": "A fizzy sweet drink from a can, bottle, fountain, or fast-food cup.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-tea",
+    "title": "Tea",
+    "description": "A hot or iced drink brewed from leaves and served plain, sweetened, or with milk.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-orange-juice",
+    "title": "Orange juice",
+    "description": "A bright citrus drink squeezed from oranges, commonly served at breakfast.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-watermelon",
+    "title": "Watermelon",
+    "description": "A large green melon with juicy red flesh, black seeds, and picnic-slice energy.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-strawberry",
+    "title": "Strawberry",
+    "description": "A small red berry with seeds on the outside and a sweet tart flavor.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-banana",
+    "title": "Banana",
+    "description": "A curved yellow fruit peeled from the top and eaten as a quick snack.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-pineapple",
+    "title": "Pineapple",
+    "description": "A tropical fruit with a spiky outside, leafy crown, and sweet golden chunks.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-pickle",
+    "title": "Pickle",
+    "description": "A cucumber preserved in brine, known for crunch, sour flavor, and sandwich spears.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-hot-sauce",
+    "title": "Hot sauce",
+    "description": "A spicy condiment poured in drops or splashes to add heat to food.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-ketchup",
+    "title": "Ketchup",
+    "description": "A red tomato condiment squeezed onto fries, burgers, hot dogs, or nuggets.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-peanut-butter",
+    "title": "Peanut butter",
+    "description": "A thick nutty spread used on sandwiches, toast, crackers, and apples.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "food_drink",
+    "categoryLabel": "Food & Drink",
+    "id": "food_drink-mac-and-cheese",
+    "title": "Mac and cheese",
+    "description": "Pasta covered in creamy melted cheese sauce, often baked or served from a pot.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-soccer",
+    "title": "Soccer",
+    "description": "A global sport where players kick a ball toward goals while avoiding hands.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-basketball",
+    "title": "Basketball",
+    "description": "A court sport where teams dribble, pass, and shoot a ball through a hoop.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-baseball",
+    "title": "Baseball",
+    "description": "A bat-and-ball sport with pitching, hitting, bases, gloves, and home runs.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-football",
+    "title": "Football",
+    "description": "An American field sport with touchdowns, helmets, passing, blocking, and yard lines.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-tennis",
+    "title": "Tennis",
+    "description": "A racket sport where players hit a ball over a net inside court lines.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-golf",
+    "title": "Golf",
+    "description": "A sport where players use clubs to hit a ball into distant holes in as few strokes as possible.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-swimming",
+    "title": "Swimming",
+    "description": "A race or exercise in water using strokes like freestyle, backstroke, breaststroke, and butterfly.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-track-and-field",
+    "title": "Track and field",
+    "description": "A collection of running, jumping, and throwing events often held in a stadium.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-gymnastics",
+    "title": "Gymnastics",
+    "description": "A sport built around flips, balance, strength, and routines on mats or apparatus.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-volleyball",
+    "title": "Volleyball",
+    "description": "A team sport where players bump, set, and spike a ball over a net.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-hockey",
+    "title": "Hockey",
+    "description": "A fast sport played with sticks, a puck or ball, goals, and quick skating or running.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-boxing",
+    "title": "Boxing",
+    "description": "A combat sport where gloved fighters punch, block, dodge, and work inside a ring.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-wrestling",
+    "title": "Wrestling",
+    "description": "A grappling sport focused on takedowns, holds, pins, and body control.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-skateboarding",
+    "title": "Skateboarding",
+    "description": "A board sport with rolling, balancing, ramps, tricks, and wheels underfoot.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-surfing",
+    "title": "Surfing",
+    "description": "A water sport where riders balance on a board while catching ocean waves.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-skiing",
+    "title": "Skiing",
+    "description": "A snow sport where riders glide downhill or across trails on two long skis.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-snowboarding",
+    "title": "Snowboarding",
+    "description": "A snow sport where riders stand sideways on one board and carve down slopes.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-cycling",
+    "title": "Cycling",
+    "description": "A sport or activity built around pedaling bikes on roads, tracks, trails, or hills.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-bowling",
+    "title": "Bowling",
+    "description": "A lane game where players roll a heavy ball to knock down pins.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-table-tennis",
+    "title": "Table tennis",
+    "description": "A quick paddle game played on a small table with a lightweight bouncing ball.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-badminton",
+    "title": "Badminton",
+    "description": "A racket sport where players hit a feathered shuttlecock back and forth over a net.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-rugby",
+    "title": "Rugby",
+    "description": "A rough team sport with running, tackling, passing backward, and carrying an oval ball.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-cricket-match",
+    "title": "Cricket match",
+    "description": "A bat-and-ball contest with wickets, bowlers, batters, fielders, and long innings.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-pickleball",
+    "title": "Pickleball",
+    "description": "A paddle sport combining tennis-like courts, a plastic ball, and quick net play.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-marathon",
+    "title": "Marathon",
+    "description": "A long-distance running race of 26.2 miles, known for endurance and finish lines.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-relay-race",
+    "title": "Relay race",
+    "description": "A team race where runners pass a baton from one teammate to the next.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-penalty-kick",
+    "title": "Penalty kick",
+    "description": "A soccer shot taken from the penalty spot with only the goalkeeper to beat.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-free-throw",
+    "title": "Free throw",
+    "description": "An uncontested basketball shot from the line after a foul.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-home-run",
+    "title": "Home run",
+    "description": "A baseball hit that lets the batter circle all the bases and score.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-touchdown",
+    "title": "Touchdown",
+    "description": "A football score made by carrying or catching the ball in the end zone.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-slam-dunk",
+    "title": "Slam dunk",
+    "description": "A basketball shot where a player jumps and forcefully puts the ball through the hoop.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-goalkeeper",
+    "title": "Goalkeeper",
+    "description": "The player who guards the goal and tries to stop shots from scoring.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-referee",
+    "title": "Referee",
+    "description": "The official who watches the game, blows the whistle, and enforces the rules.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-whistle",
+    "title": "Whistle",
+    "description": "A small loud tool used by referees, coaches, and lifeguards to stop or signal play.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-scoreboard",
+    "title": "Scoreboard",
+    "description": "The display that shows the score, clock, period, inning, or other game information.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-trophy",
+    "title": "Trophy",
+    "description": "A shiny prize awarded to winners, often lifted overhead after a championship.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-medal",
+    "title": "Medal",
+    "description": "A round award worn on a ribbon for finishing first, second, third, or completing an event.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-podium",
+    "title": "Podium",
+    "description": "The raised platform where top finishers stand for medals and photos.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-stadium",
+    "title": "Stadium",
+    "description": "A large venue with seats around a field, court, track, or ice surface.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-jersey",
+    "title": "Jersey",
+    "description": "A sports shirt with team colors, a number, and sometimes a player's name.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-sneakers",
+    "title": "Sneakers",
+    "description": "Athletic shoes used for running, jumping, training, and everyday sports style.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-helmet",
+    "title": "Helmet",
+    "description": "Protective headgear used in sports like football, hockey, cycling, and skiing.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-baseball-bat",
+    "title": "Baseball bat",
+    "description": "A wooden or metal club swung to hit pitched baseballs.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-tennis-racket",
+    "title": "Tennis racket",
+    "description": "A handled frame with strings used to hit a tennis ball.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-golf-club",
+    "title": "Golf club",
+    "description": "A long-handled club used to drive, chip, or putt a golf ball.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-soccer-ball",
+    "title": "Soccer ball",
+    "description": "A round patterned ball kicked, passed, trapped, and shot in soccer.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-basketball-hoop",
+    "title": "Basketball hoop",
+    "description": "A raised rim with a net where basketball players aim their shots.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-skateboard",
+    "title": "Skateboard",
+    "description": "A short board with four wheels used for riding, tricks, ramps, and street skating.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-michael-jordan",
+    "title": "Michael Jordan",
+    "description": "A globally famous basketball legend known for championships, soaring dunks, and the number 23.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-world-cup",
+    "title": "World Cup",
+    "description": "A major international tournament where national teams compete for one of sports' biggest trophies.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-muhammad-ali",
+    "title": "Muhammad Ali",
+    "description": "A legendary boxer known for speed, charisma, heavyweight titles, and unforgettable confidence.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-simone-biles",
+    "title": "Simone Biles",
+    "description": "A world-famous gymnast known for explosive flips, balance, Olympic medals, and named skills.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-lionel-messi",
+    "title": "Lionel Messi",
+    "description": "A globally famous soccer star known for dribbling, scoring, playmaking, and World Cup glory.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-lebron-james",
+    "title": "LeBron James",
+    "description": "A world-famous basketball star known for power, passing, scoring, and long NBA dominance.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-tiger-woods",
+    "title": "Tiger Woods",
+    "description": "A globally known golfer famous for clutch putts, red Sunday shirts, and major championships.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-usain-bolt",
+    "title": "Usain Bolt",
+    "description": "A world-famous sprinter known for Olympic gold medals, record speed, and lightning-bolt poses.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "sports",
+    "categoryLabel": "Sports",
+    "id": "sports-olympics",
+    "title": "Olympics",
+    "description": "A global multi-sport event with national teams, medals, opening ceremonies, and elite athletes.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-solar-system",
+    "title": "Solar system",
+    "description": "The Sun and the planets, moons, asteroids, and comets that orbit around it.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-earth",
+    "title": "Earth",
+    "description": "Our home planet, known for oceans, continents, atmosphere, weather, and life.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-moon",
+    "title": "Moon",
+    "description": "Earth's natural satellite, visible at night in phases from crescent to full.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-mars",
+    "title": "Mars",
+    "description": "The red planet, known for dusty landscapes, rovers, and dreams of future exploration.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-saturn",
+    "title": "Saturn",
+    "description": "A giant planet famous for wide bright rings made of ice and rock.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-black-hole",
+    "title": "Black hole",
+    "description": "A region of space with gravity so strong that not even light can escape.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-gravity-force",
+    "title": "Gravity (force)",
+    "description": "The force that pulls objects toward each other and keeps feet on the ground.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-telescope",
+    "title": "Telescope",
+    "description": "An instrument that makes distant objects like planets, stars, and galaxies easier to see.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-microscope",
+    "title": "Microscope",
+    "description": "A tool that magnifies tiny things such as cells, germs, fibers, or crystals.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-robot",
+    "title": "Robot",
+    "description": "A machine designed to move, sense, or perform tasks automatically.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-artificial-intelligence",
+    "title": "Artificial intelligence",
+    "description": "Computer systems that can generate, classify, predict, or respond in ways that seem intelligent.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-smartphone",
+    "title": "Smartphone",
+    "description": "A pocket computer with a touchscreen, apps, camera, calls, texts, and internet access.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-laptop",
+    "title": "Laptop",
+    "description": "A portable computer that folds open with a screen, keyboard, trackpad, and battery.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-wi-fi",
+    "title": "Wi-Fi",
+    "description": "Wireless networking that lets phones, computers, and devices connect to the internet.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-bluetooth",
+    "title": "Bluetooth",
+    "description": "Short-range wireless technology used for earbuds, speakers, keyboards, cars, and controllers.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-gps",
+    "title": "GPS",
+    "description": "Satellite navigation that helps phones, cars, and maps figure out location and directions.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-3d-printer",
+    "title": "3D printer",
+    "description": "A machine that builds physical objects layer by layer from digital designs.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-drone",
+    "title": "Drone",
+    "description": "A remote-controlled or automated flying device with spinning rotors and sometimes a camera.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-electric-car",
+    "title": "Electric car",
+    "description": "A car powered by batteries and motors instead of a gasoline engine.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-solar-panel",
+    "title": "Solar panel",
+    "description": "A flat panel that converts sunlight into electricity, often seen on roofs or fields.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-wind-turbine",
+    "title": "Wind turbine",
+    "description": "A tall machine with huge blades that spin in the wind to generate electricity.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-rocket-launch",
+    "title": "Rocket launch",
+    "description": "The fiery liftoff of a spacecraft pushed upward by powerful engines.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-satellite",
+    "title": "Satellite",
+    "description": "An object orbiting Earth or another body, used for communication, maps, weather, or science.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-space-station",
+    "title": "Space station",
+    "description": "A crewed laboratory orbiting Earth where astronauts live and work in microgravity.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-astronaut",
+    "title": "Astronaut",
+    "description": "A person trained to travel and work in space, often wearing a bulky suit.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-dna",
+    "title": "DNA",
+    "description": "The molecule that carries genetic instructions, often pictured as a twisting double helix.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-gene",
+    "title": "Gene",
+    "description": "A segment of DNA that influences traits and helps pass information from parents to offspring.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-vaccine",
+    "title": "Vaccine",
+    "description": "A medical preparation that trains the immune system to recognize and fight disease.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-antibiotic",
+    "title": "Antibiotic",
+    "description": "A medicine used to kill bacteria or slow their growth during infections.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-x-ray",
+    "title": "X-ray",
+    "description": "A medical image that can show bones and hidden structures inside the body.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-mri-scanner",
+    "title": "MRI scanner",
+    "description": "A large medical machine that uses magnets and radio waves to create detailed body images.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-stethoscope",
+    "title": "Stethoscope",
+    "description": "A doctor's listening tool used on the chest or back to hear heartbeats and breathing.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-thermometer",
+    "title": "Thermometer",
+    "description": "A device that measures temperature, often used to check for fever or weather.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-calculator",
+    "title": "Calculator",
+    "description": "A device or app used to add, subtract, multiply, divide, and solve equations.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-keyboard",
+    "title": "Keyboard",
+    "description": "A set of keys used to type letters, numbers, shortcuts, and commands into a computer.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-computer-mouse",
+    "title": "Computer mouse",
+    "description": "A hand-controlled device used to point, click, drag, and scroll on a screen.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-video-call",
+    "title": "Video call",
+    "description": "A live conversation where people see and hear each other through screens and cameras.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-cloud-storage",
+    "title": "Cloud storage",
+    "description": "Online storage that keeps files accessible from different devices through the internet.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-password",
+    "title": "Password",
+    "description": "A secret word, phrase, or code used to unlock an account or device.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-qr-code",
+    "title": "QR code",
+    "description": "A square scannable pattern that opens a link, menu, ticket, or digital information.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-barcode",
+    "title": "Barcode",
+    "description": "A striped code scanned at stores to identify products and prices.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-microchip",
+    "title": "Microchip",
+    "description": "A tiny electronic circuit that helps computers, cards, phones, and devices process information.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-circuit-board",
+    "title": "Circuit board",
+    "description": "A flat board holding electronic parts and pathways inside computers and gadgets.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-battery",
+    "title": "Battery",
+    "description": "A stored power source used to run phones, toys, cars, remotes, and electronics.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-magnet",
+    "title": "Magnet",
+    "description": "An object that pulls on iron and can stick to metal surfaces like a refrigerator.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-laser",
+    "title": "Laser",
+    "description": "A focused beam of light used in scanners, pointers, surgery, cutting, and experiments.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-fiber-optic-cable",
+    "title": "Fiber optic cable",
+    "description": "A cable that sends information as pulses of light through thin glass fibers.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-virtual-reality-headset",
+    "title": "Virtual reality headset",
+    "description": "A wearable screen system that makes digital worlds surround the viewer.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-augmented-reality",
+    "title": "Augmented reality",
+    "description": "Technology that overlays digital objects or labels on the real world through a screen.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-self-driving-car",
+    "title": "Self-driving car",
+    "description": "A vehicle designed to steer, brake, and navigate using sensors, cameras, and software.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-smartwatch",
+    "title": "Smartwatch",
+    "description": "A wrist device that tracks time, messages, health data, workouts, and apps.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-streaming-service",
+    "title": "Streaming service",
+    "description": "An online platform for watching shows, movies, or videos without downloading files first.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-search-engine",
+    "title": "Search engine",
+    "description": "A website that finds pages, images, videos, and answers from across the internet.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-email-inbox",
+    "title": "Email inbox",
+    "description": "The place where digital messages arrive, pile up, get searched, and sometimes get ignored.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-spam-filter",
+    "title": "Spam filter",
+    "description": "Software that tries to catch unwanted messages before they clutter an inbox.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-web-browser",
+    "title": "Web browser",
+    "description": "An app used to visit websites, open tabs, search, bookmark, and download files.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-app-store",
+    "title": "App store",
+    "description": "A digital marketplace for downloading phone, tablet, computer, or TV apps.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-firewall",
+    "title": "Firewall",
+    "description": "A security system that helps block unwanted network traffic from reaching a device or server.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-data-center",
+    "title": "Data center",
+    "description": "A building full of servers, cables, cooling systems, and backup power for online services.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-usb-cable",
+    "title": "USB cable",
+    "description": "A cable used to charge devices or move data between electronics.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "science_tech",
+    "categoryLabel": "Science & Tech",
+    "id": "science_tech-touchscreen",
+    "title": "Touchscreen",
+    "description": "A display controlled by tapping, swiping, pinching, and pressing directly on the glass.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-chef",
+    "title": "Chef",
+    "description": "A professional cook who plans dishes, leads a kitchen, and plates food for guests.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-teacher",
+    "title": "Teacher",
+    "description": "A person who leads lessons, explains ideas, grades work, and manages a classroom.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-firefighter",
+    "title": "Firefighter",
+    "description": "An emergency worker trained to fight fires, rescue people, and use hoses and gear.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-nurse",
+    "title": "Nurse",
+    "description": "A healthcare worker who cares for patients, checks vital signs, and helps with treatment.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-doctor",
+    "title": "Doctor",
+    "description": "A medical professional who examines patients, diagnoses illness, and recommends treatment.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-dentist",
+    "title": "Dentist",
+    "description": "A healthcare professional who cleans, fixes, and checks teeth and gums.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-veterinarian",
+    "title": "Veterinarian",
+    "description": "An animal doctor who treats pets, livestock, and other creatures when they are sick or hurt.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-pilot",
+    "title": "Pilot",
+    "description": "A person trained to fly aircraft and guide passengers or cargo through the sky.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-flight-attendant",
+    "title": "Flight attendant",
+    "description": "An airline crew member who helps passengers, demonstrates safety, and serves during flights.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-mechanic",
+    "title": "Mechanic",
+    "description": "A worker who repairs engines, brakes, tires, and other parts of vehicles or machines.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-electrician",
+    "title": "Electrician",
+    "description": "A tradesperson who installs and repairs wiring, outlets, lights, panels, and electrical systems.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-plumber",
+    "title": "Plumber",
+    "description": "A tradesperson who fixes pipes, sinks, toilets, drains, leaks, and water systems.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-carpenter",
+    "title": "Carpenter",
+    "description": "A builder who works with wood to make frames, cabinets, furniture, and structures.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-architect",
+    "title": "Architect",
+    "description": "A designer who plans buildings, drawings, layouts, and how spaces should function.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-librarian",
+    "title": "Librarian",
+    "description": "A person who organizes books, helps people find information, and manages library spaces.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-photographer",
+    "title": "Photographer",
+    "description": "A person who uses a camera to capture portraits, events, products, nature, or news.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-graphic-designer",
+    "title": "Graphic designer",
+    "description": "A visual designer who creates logos, layouts, posters, packaging, and digital artwork.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-software-developer",
+    "title": "Software developer",
+    "description": "A person who writes, tests, and maintains code for apps, websites, or systems.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-barista",
+    "title": "Barista",
+    "description": "A coffee shop worker who makes espresso drinks, pours milk, and calls out orders.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-baker",
+    "title": "Baker",
+    "description": "A person who makes bread, cakes, cookies, pastries, and other oven-baked foods.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-farmer",
+    "title": "Farmer",
+    "description": "A person who grows crops, raises animals, and works with land, weather, and equipment.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-gardener",
+    "title": "Gardener",
+    "description": "A person who plants, waters, trims, weeds, and cares for flowers, lawns, or vegetables.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-florist",
+    "title": "Florist",
+    "description": "A person who arranges flowers into bouquets, centerpieces, wreaths, and gifts.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-hair-stylist",
+    "title": "Hair stylist",
+    "description": "A person who cuts, colors, washes, and styles hair for clients.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-makeup-artist",
+    "title": "Makeup artist",
+    "description": "A person who applies cosmetics for photos, performances, weddings, costumes, or everyday looks.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-tailor",
+    "title": "Tailor",
+    "description": "A person who alters, repairs, measures, and fits clothing.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-mail-carrier",
+    "title": "Mail carrier",
+    "description": "A worker who delivers letters, packages, and mail along a route.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-delivery-driver",
+    "title": "Delivery driver",
+    "description": "A driver who brings food, groceries, packages, or supplies to homes and businesses.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-train-conductor",
+    "title": "Train conductor",
+    "description": "A rail worker who checks tickets, helps passengers, and coordinates movement on a train.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-journalist",
+    "title": "Journalist",
+    "description": "A person who reports news, interviews sources, researches facts, and writes stories.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-news-anchor",
+    "title": "News anchor",
+    "description": "A broadcaster who presents news stories from a studio or live location.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-weather-reporter",
+    "title": "Weather reporter",
+    "description": "A broadcaster who explains forecasts, maps, storms, temperatures, and umbrellas.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-lawyer",
+    "title": "Lawyer",
+    "description": "A professional who gives legal advice, writes arguments, and represents clients.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-judge",
+    "title": "Judge",
+    "description": "A courtroom official who listens to cases, interprets law, and makes rulings.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-police-officer",
+    "title": "Police officer",
+    "description": "A public safety worker who responds to calls, enforces laws, and patrols communities.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-security-guard",
+    "title": "Security guard",
+    "description": "A worker who watches entrances, checks badges, patrols areas, and protects property.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-lifeguard",
+    "title": "Lifeguard",
+    "description": "A trained watcher at a pool or beach who helps swimmers and responds to emergencies.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-coach",
+    "title": "Coach",
+    "description": "A person who trains players, plans practice, gives advice, and leads a team.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-yoga-instructor",
+    "title": "Yoga instructor",
+    "description": "A teacher who guides breathing, stretching, balance poses, and calm movement.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-personal-trainer",
+    "title": "Personal trainer",
+    "description": "A fitness coach who plans workouts, counts reps, and helps with exercise goals.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-dj",
+    "title": "DJ",
+    "description": "A performer who plays, mixes, and transitions music for crowds, parties, or radio.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-singer",
+    "title": "Singer",
+    "description": "A performer who uses their voice for songs, concerts, recordings, or musicals.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-actor",
+    "title": "Actor",
+    "description": "A performer who plays characters on stage, television, film, or in sketches.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-magician",
+    "title": "Magician",
+    "description": "A performer who creates illusions with cards, coins, props, misdirection, and showmanship.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-comedian",
+    "title": "Comedian",
+    "description": "A performer who tells jokes, stories, or observations to make an audience laugh.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-painter",
+    "title": "Painter",
+    "description": "A person who creates images or designs using brushes, colors, canvas, walls, or paper.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-sculptor",
+    "title": "Sculptor",
+    "description": "An artist who shapes clay, stone, metal, wood, or other materials into forms.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-pottery",
+    "title": "Pottery",
+    "description": "A hobby or craft that shapes clay into bowls, mugs, plates, and decorative pieces.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-knitting",
+    "title": "Knitting",
+    "description": "A yarn craft using needles to make scarves, sweaters, blankets, and soft patterns.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-woodworking",
+    "title": "Woodworking",
+    "description": "A hobby or trade that cuts, sands, joins, and finishes wood into useful objects.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-birdwatching",
+    "title": "Birdwatching",
+    "description": "A hobby where people identify birds by sight, sound, feathers, and field guides.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-camping",
+    "title": "Camping",
+    "description": "An outdoor hobby with tents, sleeping bags, campfires, flashlights, and nature sounds.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-hiking",
+    "title": "Hiking",
+    "description": "Walking trails through parks, forests, hills, or mountains for exercise and views.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-fishing",
+    "title": "Fishing",
+    "description": "A hobby using rods, lines, hooks, bait, and patience to catch fish.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-chess-club",
+    "title": "Chess club",
+    "description": "A group hobby where players meet to play chess, study moves, and compete.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-book-club",
+    "title": "Book club",
+    "description": "A group that reads the same book and meets to discuss characters, twists, and opinions.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-karaoke",
+    "title": "Karaoke",
+    "description": "A hobby or party activity where people sing along to backing tracks and lyrics on a screen.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "jobs_hobbies",
+    "categoryLabel": "Jobs & Hobbies",
+    "id": "jobs_hobbies-scrapbooking",
+    "title": "Scrapbooking",
+    "description": "A craft hobby that arranges photos, stickers, paper, captions, and memories into albums.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-rickroll",
+    "title": "Rickroll",
+    "description": "A prank link that unexpectedly sends someone to Rick Astley's Never Gonna Give You Up.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-doge",
+    "title": "Doge",
+    "description": "A Shiba Inu meme with broken-caption phrases like much wow and very funny.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-distracted-boyfriend",
+    "title": "Distracted Boyfriend",
+    "description": "A stock-photo meme where a man turns to look at someone else while his girlfriend reacts.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-this-is-fine",
+    "title": "This Is Fine",
+    "description": "A comic panel meme where a calm dog sits in a room that is on fire.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-woman-yelling-at-cat",
+    "title": "Woman Yelling at Cat",
+    "description": "A reaction meme pairing an angry reality-TV moment with a confused white cat at dinner.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-drakeposting",
+    "title": "Drakeposting",
+    "description": "A two-panel reaction format where Drake rejects one thing and approves another.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-galaxy-brain",
+    "title": "Galaxy Brain",
+    "description": "A meme format that shows ideas becoming more absurd as brains glow larger and brighter.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-grumpy-cat",
+    "title": "Grumpy Cat",
+    "description": "A famous frowning cat meme used for sarcastic, annoyed, or unimpressed captions.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-nyan-cat",
+    "title": "Nyan Cat",
+    "description": "A pixel-art flying cat with a Pop-Tart body leaving a rainbow trail.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-among-us-sus",
+    "title": "Among Us sus",
+    "description": "A gaming meme about calling someone suspicious, often with colorful crewmates and emergency meetings.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-the-backrooms",
+    "title": "The Backrooms",
+    "description": "An internet horror concept about endless yellow rooms, buzzing lights, and unsettling empty spaces.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-skibidi-toilet",
+    "title": "Skibidi Toilet",
+    "description": "A surreal video meme series about singing toilet heads and bizarre escalating battles.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-italian-brainrot",
+    "title": "Italian brainrot",
+    "description": "A 2025 meme style built around absurd AI-generated animal-object characters with faux-Italian names.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-6-7-meme",
+    "title": "6-7 meme",
+    "description": "A 2025 TikTok and Reels meme based on repeating six seven with gestures and chaotic edits.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-npc-streaming",
+    "title": "NPC streaming",
+    "description": "A livestream trend where creators repeat game-like catchphrases and motions after receiving gifts.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-girl-dinner",
+    "title": "Girl dinner",
+    "description": "A meme about assembling a low-effort snack plate and calling it dinner.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-girl-math",
+    "title": "Girl math",
+    "description": "A joking meme about funny personal logic used to justify spending or budgeting.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-very-demure",
+    "title": "Very demure",
+    "description": "A catchphrase meme about presenting something as modest, mindful, polished, or quietly dramatic.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-let-him-cook",
+    "title": "Let him cook",
+    "description": "A phrase used when someone wants others to wait and see what a person is making or planning.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-main-character-energy",
+    "title": "Main character energy",
+    "description": "A meme phrase for acting like the star of a movie, montage, or dramatic life moment.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-canon-event",
+    "title": "Canon event",
+    "description": "A meme about an unavoidable life moment that supposedly must happen for character development.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-rizz",
+    "title": "Rizz",
+    "description": "Internet slang for charm or flirting ability, often exaggerated in jokes and captions.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-delulu",
+    "title": "Delulu",
+    "description": "Internet slang for playful delusion, usually about unrealistic confidence, romance, or plans.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-aura-farming",
+    "title": "Aura farming",
+    "description": "A meme phrase about posing, acting cool, or collecting imaginary style points.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-ohio-meme",
+    "title": "Ohio meme",
+    "description": "A meme shorthand for something weird, chaotic, or absurd happening as if only in Ohio.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-sigma-face",
+    "title": "Sigma face",
+    "description": "A reaction meme built around exaggerated serious expressions and lone-wolf confidence jokes.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-chill-guy",
+    "title": "Chill guy",
+    "description": "A laid-back character meme used for calm, unbothered, or low-stress reactions.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-little-miss-meme",
+    "title": "Little Miss meme",
+    "description": "A format using Little Miss-style characters labeled with oddly specific personality traits.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-spotify-wrapped",
+    "title": "Spotify Wrapped",
+    "description": "An annual music recap that becomes a flood of jokes about taste, habits, and listening stats.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-duolingo-owl",
+    "title": "Duolingo owl",
+    "description": "A meme about the green language app mascot acting intense about missed lessons.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-bereal-notification",
+    "title": "BeReal notification",
+    "description": "A meme about the daily app alert demanding an immediate authentic photo.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-wednesday-dance",
+    "title": "Wednesday dance",
+    "description": "A viral dance meme inspired by Wednesday Addams with stiff moves and dramatic attitude.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-barbenheimer",
+    "title": "Barbenheimer",
+    "description": "A 2023 movie-event meme about pairing Barbie and Oppenheimer as a double feature.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-labubu",
+    "title": "Labubu",
+    "description": "A viral collectible toy craze tied to blind boxes, bag charms, and social-media flexes.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-pov-meme",
+    "title": "POV meme",
+    "description": "A caption format where the viewer is placed inside a specific situation or point of view.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-fit-check",
+    "title": "Fit check",
+    "description": "A social-media format for showing off an outfit from shoes to accessories.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-capcut-template",
+    "title": "CapCut template",
+    "description": "A reusable short-video editing format that spreads through TikTok and Reels trends.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-tiktok-shop-haul",
+    "title": "TikTok shop haul",
+    "description": "A video trend where someone shows a pile of online purchases and quick product reactions.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-brainrot",
+    "title": "Brainrot",
+    "description": "Internet slang for absurd, repetitive, or overly online content that gets stuck in your head.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-unhinged-powerpoint-night",
+    "title": "Unhinged PowerPoint night",
+    "description": "A party trend where friends present silly slideshow arguments on overly specific topics.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-side-eye",
+    "title": "Side eye",
+    "description": "A reaction meme for suspicion, judgment, disbelief, or quietly noticing something awkward.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-bombastic-side-eye",
+    "title": "Bombastic side eye",
+    "description": "A dramatic version of side eye used for exaggerated judgment or comic disapproval.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-pedro-pascal-eating-sandwich",
+    "title": "Pedro Pascal eating sandwich",
+    "description": "A reaction meme showing Pedro Pascal chewing while looking tired, awkward, or emotionally done.",
+    "source": "curated-new-category-review"
+  },
+  {
+    "status": "KEEP",
+    "category": "internet_memes",
+    "categoryLabel": "Internet & Memes",
+    "id": "internet_memes-kevin-james-shrug",
+    "title": "Kevin James shrug",
+    "description": "A reaction image of Kevin James smirking and shrugging with sheepish confidence.",
+    "source": "curated-new-category-review"
   }
 ]

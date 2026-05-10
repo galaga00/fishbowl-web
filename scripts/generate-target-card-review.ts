@@ -4,13 +4,15 @@ import { STARTER_DECK } from "../lib/starter-deck";
 import {
   FAMILY_FRIENDLY_DECK_FILTER,
   MIXED_PASS_PLAY_CATEGORY,
-  PASS_PLAY_CATEGORY_OPTIONS,
   type PassPlayCategoryId,
   type PassPlayDeckCard,
   filterStarterDeckByCategories
 } from "../lib/pass-play-deck";
 
-type FillCategoryId = PassPlayCategoryId;
+type FillCategoryId = Extract<
+  PassPlayCategoryId,
+  "people" | "movies" | "music" | "fiction_games" | "places_objects" | "animals_nature"
+>;
 type ReviewCategoryId = FillCategoryId | "family_friendly";
 
 type CandidateCard = {
@@ -185,10 +187,15 @@ const WIKIPEDIA_CATEGORY_FALLBACKS: Partial<Record<FillCategoryId, string[]>> = 
 };
 
 const CATEGORY_LABELS: Record<ReviewCategoryId, string> = {
-  ...Object.fromEntries(PASS_PLAY_CATEGORY_OPTIONS.map((category) => [category.id, category.label])),
+  people: "People & Celebrities",
+  movies: "Movies & TV",
+  music: "Music",
+  fiction_games: "Fiction & Games",
+  places_objects: "Places & Things",
+  animals_nature: "Animals & Nature",
   family_friendly: "Family Friendly"
-} as unknown as Record<ReviewCategoryId, string>;
-const CATEGORY_IDS: FillCategoryId[] = PASS_PLAY_CATEGORY_OPTIONS.map((category) => category.id);
+};
+const CATEGORY_IDS: FillCategoryId[] = ["people", "movies", "music", "fiction_games", "places_objects", "animals_nature"];
 const REVIEW_CATEGORY_IDS: ReviewCategoryId[] = [...CATEGORY_IDS, "family_friendly"];
 const currentDeck = filterStarterDeckByCategories([MIXED_PASS_PLAY_CATEGORY]) as PassPlayDeckCard[];
 const currentFamilyDeck = filterStarterDeckByCategories([MIXED_PASS_PLAY_CATEGORY, FAMILY_FRIENDLY_DECK_FILTER]);

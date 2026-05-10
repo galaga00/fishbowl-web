@@ -34,7 +34,7 @@ export const FAMILY_DECK: StarterDeckCard[] = [
   { id: "family-rainbow", title: "Rainbow", description: "Colorful arcs that can appear in the sky after rain.", category: "animals_nature" },
   { id: "family-volcano", title: "Volcano", description: "A mountain that can erupt with lava, ash, and smoke.", category: "animals_nature" },
   { id: "family-tornado", title: "Tornado", description: "A spinning funnel of wind that reaches from a storm cloud to the ground.", category: "animals_nature" },
-  { id: "family-pizza", title: "Pizza", description: "A cheesy food with sauce and toppings, usually sliced into triangles.", category: "places_objects" },
+  { id: "family-pizza", title: "Pizza", description: "A cheesy food with sauce and toppings, usually sliced into triangles.", category: "food_drink" },
   { id: "family-ice-cream-cone", title: "Ice Cream Cone", description: "A cold treat stacked on a crunchy cone.", category: "places_objects" },
   { id: "family-backpack", title: "Backpack", description: "A bag worn on your back for school, trips, or supplies.", category: "places_objects" },
   { id: "family-bicycle", title: "Bicycle", description: "A two-wheeled ride powered by pedaling.", category: "places_objects" },
@@ -67,8 +67,8 @@ export const FAMILY_DECK: StarterDeckCard[] = [
   { id: "family-ukulele", title: "Ukulele", description: "A small string instrument often used for cheerful songs.", category: "music" },
   { id: "family-kidz-bop", title: "KIDZ BOP", description: "Pop songs performed in kid-friendly versions by young singers.", category: "music" },
   { id: "family-school-principal", title: "School Principal", description: "The person in charge of a school.", category: "people" },
-  { id: "family-librarian", title: "Librarian", description: "A person who helps people find books and use the library.", category: "people" },
+  { id: "family-librarian", title: "Librarian", description: "A person who helps people find books and use the library.", category: "jobs_hobbies" },
   { id: "family-crossing-guard", title: "Crossing Guard", description: "A person who helps kids cross the street safely.", category: "people" },
-  { id: "family-mail-carrier", title: "Mail Carrier", description: "A person who delivers letters and packages.", category: "people" },
-  { id: "family-firefighter", title: "Firefighter", description: "A person trained to put out fires and help in emergencies.", category: "people" }
+  { id: "family-mail-carrier", title: "Mail Carrier", description: "A person who delivers letters and packages.", category: "jobs_hobbies" },
+  { id: "family-firefighter", title: "Firefighter", description: "A person trained to put out fires and help in emergencies.", category: "jobs_hobbies" }
 ];

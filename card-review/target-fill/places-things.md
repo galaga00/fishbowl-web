@@ -1,6 +1,6 @@
 # Places & Things Review
 
-Target total: 440. Current total: 59. Candidate additions: 100.
+Target total: 440. Current total: 59. Candidate additions: 101.
 
 How to review:
 - Leave `- [x] Keep` checked for cards you like.
@@ -705,4 +705,11 @@ Source: http://www.wikidata.org/entity/Q5859
 Category: places_objects
 Title: Al-Masjid Al-Haram
 Description: The Great Mosque of Mecca, Islam's holiest mosque and the site surrounding the Kaaba.
+Source: curated-description
+
+## Roman Empire
+- [x] Keep
+Category: places_objects
+Title: Roman Empire
+Description: The ancient Mediterranean empire centered on Rome, known for emperors, legions, roads, aqueducts, and the Colosseum.
 Source: curated-description

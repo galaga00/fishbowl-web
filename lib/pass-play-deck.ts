@@ -7,7 +7,12 @@ export type PassPlayCategoryId =
   | "music"
   | "fiction_games"
   | "places_objects"
-  | "animals_nature";
+  | "animals_nature"
+  | "food_drink"
+  | "sports"
+  | "science_tech"
+  | "jobs_hobbies"
+  | "internet_memes";
 
 export const MIXED_PASS_PLAY_CATEGORY = "mixed";
 export const FAMILY_FRIENDLY_DECK_FILTER = "family_friendly";
@@ -18,7 +23,12 @@ export const PASS_PLAY_CATEGORY_OPTIONS: Array<{ id: PassPlayCategoryId; label: 
   { id: "music", label: "Music" },
   { id: "fiction_games", label: "Fiction & Games" },
   { id: "places_objects", label: "Places & Things" },
-  { id: "animals_nature", label: "Animals & Nature" }
+  { id: "animals_nature", label: "Animals & Nature" },
+  { id: "food_drink", label: "Food & Drink" },
+  { id: "sports", label: "Sports" },
+  { id: "science_tech", label: "Science & Tech" },
+  { id: "jobs_hobbies", label: "Jobs & Hobbies" },
+  { id: "internet_memes", label: "Internet & Memes" }
 ];
 
 export type PassPlayDeckCard = StarterDeckCard & {

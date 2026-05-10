@@ -162,7 +162,7 @@ export function isFamilyFriendlyCard(cardId: string) {
 }
 
 function isSportsCard(card: StarterDeckCard) {
-  if (card.category === "sports") return true;
+  if (card.category === "sports") return false;
   if (card.id.startsWith("tmdb-movie-")) return false;
 
   const text = `${card.id} ${card.title} ${card.description}`.toLowerCase();

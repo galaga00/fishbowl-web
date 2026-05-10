@@ -114,6 +114,56 @@ const CATEGORY_GROUPS: Record<PassPlayCategoryId, string[]> = {
     "Weather event",
     "Natural landmark",
     "Pet"
+  ],
+  food_drink: [
+    "Food",
+    "Drink",
+    "Dessert",
+    "Snack",
+    "Breakfast food",
+    "Restaurant order",
+    "Ingredient",
+    "Condiment"
+  ],
+  sports: [
+    "Sport",
+    "Sports equipment",
+    "Sports move",
+    "Sports place",
+    "Famous athlete",
+    "Game rule",
+    "Trophy or medal",
+    "Olympic event"
+  ],
+  science_tech: [
+    "Gadget",
+    "Space thing",
+    "Science tool",
+    "Computer thing",
+    "Medical tool",
+    "Invention",
+    "Internet thing",
+    "Energy source"
+  ],
+  jobs_hobbies: [
+    "Job",
+    "Hobby",
+    "Creative activity",
+    "Outdoor activity",
+    "Trade skill",
+    "Performer",
+    "Community helper",
+    "Group activity"
+  ],
+  internet_memes: [
+    "Internet meme",
+    "Viral phrase",
+    "Reaction image",
+    "Social media trend",
+    "TikTok trend",
+    "Online slang",
+    "Viral character",
+    "Meme format"
   ]
 };
 
