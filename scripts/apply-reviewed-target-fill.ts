@@ -123,7 +123,7 @@ function inferFamilyCategory(candidate: ReviewCandidate) {
   }
 
   if (/\b(dance|game|hide and seek|hopscotch|jump|parade|party|play|race|sing|sleepover|tag|talent show|treasure hunt)\b/.test(text)) {
-    return "situations";
+    return "places_objects";
   }
 
   return "places_objects";

@@ -105,15 +105,6 @@ const CATEGORY_GROUPS: Record<PassPlayCategoryId, string[]> = {
     "App or website",
     "Famous place"
   ],
-  situations: [
-    "A celebrity doing a chore",
-    "An animal with a job",
-    "A fictional character at the grocery store",
-    "A historical figure using modern technology",
-    "A superhero with a boring problem",
-    "A villain doing customer service",
-    "A movie character at a wedding"
-  ],
   animals_nature: [
     "Animal",
     "Dinosaur",
@@ -151,20 +142,11 @@ export function getPromptCategoriesForPlayer(gameId: string, playerId: string, c
 
   const selectedGroups = getSelectedGroups(selectedCategoryIds);
   const selectedSimple = selectedGroups.flatMap((group) => CATEGORY_GROUPS[group]).filter((category) => !COMBO_PROMPT_CATEGORIES.includes(category));
-  const selectedCombo = selectedGroups.includes("situations") ? CATEGORY_GROUPS.situations : [];
   const simple = shuffleWithSeed(selectedSimple.length > 0 ? selectedSimple : SIMPLE_PROMPT_CATEGORIES, seed);
-  const combo = shuffleWithSeed(selectedCombo.length > 0 ? selectedCombo : COMBO_PROMPT_CATEGORIES, seed * 13 + 7);
-  const comboTarget =
-    selectedCombo.length > 0 && selectedSimple.length === 0
-      ? count
-      : selectedGroups.includes("situations")
-        ? Math.max(1, Math.round(count * 0.25))
-        : 0;
   const categories: string[] = [];
 
   for (let index = 0; index < count; index += 1) {
-    const shouldUseCombo = index >= count - comboTarget;
-    categories.push(shouldUseCombo ? combo[index % combo.length] : simple[index % simple.length]);
+    categories.push(simple[index % simple.length]);
   }
 
   return shuffleWithSeed(categories, seed * 31 + 11);

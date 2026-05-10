@@ -7,7 +7,8 @@ Start new task threads with:
 ## Project Map
 
 - Project name: Fish Bowl
-- Local repo path: `/Volumes/2TB_RED/_MY_PROJECTS_/codex/fish-bowl`
+- Local repo path: `/Volumes/2TB_RED/_MY_PROJECTS_/codex/Fish Bowl/local`
+- Source artwork path: `/Volumes/2TB_RED/_MY_PROJECTS_/codex/Fish Bowl/source`
 - GitHub repo: `https://github.com/galaga00/fishbowl-web`
 - Notion project page and task log: `https://www.notion.so/3541b2ce282781669d76f43df062d2de`
 - Live app: `https://fish-bowl-game.vercel.app`

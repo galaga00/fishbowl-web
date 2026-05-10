@@ -5,8 +5,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-chess",
     "title": "chess",
-    "description": "strategy board game.",
-    "source": "http://www.wikidata.org/entity/Q718"
+    "description": "A strategy board game where kings, queens, bishops, knights, rooks, and pawns battle across a checkered board.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -41,8 +41,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-checkers",
     "title": "checkers",
-    "description": "board game.",
-    "source": "http://www.wikidata.org/entity/Q1293"
+    "description": "A two-player board game where pieces move diagonally and jump opponents to capture them.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -77,8 +77,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-monopoly",
     "title": "Monopoly",
-    "description": "economics-themed board game.",
-    "source": "http://www.wikidata.org/entity/Q17243"
+    "description": "A real-estate board game about buying properties, charging rent, and trying not to go bankrupt.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -662,8 +662,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-conan-the-barbarian",
     "title": "Conan the Barbarian",
-    "description": "fictional character created by Robert E. Howard.",
-    "source": "http://www.wikidata.org/entity/Q189169"
+    "description": "A sword-swinging fantasy warrior known for brute strength, survival, and pulp adventure.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -671,8 +671,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-hannibal-lecter",
     "title": "Hannibal Lecter",
-    "description": "fictional character created by Thomas Harris.",
-    "source": "http://www.wikidata.org/entity/Q211013"
+    "description": "A brilliant and terrifying fictional cannibal psychiatrist with polished manners and a chilling stare.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -698,8 +698,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-c-3po",
     "title": "C-3PO",
-    "description": "A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.",
-    "source": "http://www.wikidata.org/entity/Q51787"
+    "description": "A fussy golden Star Wars protocol droid known for etiquette, translation, worrying, and arguing with R2-D2.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1184,8 +1184,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-the-settlers-of-catan",
     "title": "The Settlers of Catan",
-    "description": "board game.",
-    "source": "http://www.wikidata.org/entity/Q17271"
+    "description": "A resource-trading board game about building roads, settlements, and cities on a hex-tile island.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1202,8 +1202,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-two-face",
     "title": "Two-Face",
-    "description": "A DC Comics character tied to capes, villains, secret identities, and comic-book drama.",
-    "source": "http://www.wikidata.org/entity/Q295599"
+    "description": "A scarred Batman villain who flips a coin to decide his split-personality crimes.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1229,8 +1229,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-batgirl",
     "title": "Batgirl",
-    "description": "A DC Comics character tied to capes, villains, secret identities, and comic-book drama.",
-    "source": "http://www.wikidata.org/entity/Q753713"
+    "description": "A Gotham superhero with a bat-themed suit, detective skills, gadgets, and ties to Batman.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1301,8 +1301,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-kermit-the-frog",
     "title": "Kermit the Frog",
-    "description": "Muppet character.",
-    "source": "http://www.wikidata.org/entity/Q1107971"
+    "description": "The green Muppet frog with a banjo, gentle leadership, and the song Rainbow Connection.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1310,8 +1310,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-hawkeye",
     "title": "Hawkeye",
-    "description": "A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.",
-    "source": "http://www.wikidata.org/entity/Q19095"
+    "description": "A Marvel archer known for a bow, trick arrows, sharp aim, and Avengers-level action.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1373,8 +1373,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-snakes-and-ladders",
     "title": "snakes and ladders",
-    "description": "board game.",
-    "source": "http://www.wikidata.org/entity/Q697302"
+    "description": "A classic board game where players climb ladders, slide down snakes, and race to the final square.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1391,8 +1391,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-count-dooku",
     "title": "Count Dooku",
-    "description": "A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.",
-    "source": "http://www.wikidata.org/entity/Q51727"
+    "description": "A refined Star Wars Sith lord and former Jedi, known for a curved lightsaber and aristocratic menace.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1400,8 +1400,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-doctor-doom",
     "title": "Doctor Doom",
-    "description": "A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.",
-    "source": "http://www.wikidata.org/entity/Q430178"
+    "description": "The armored ruler of Latveria, a Marvel villain with a metal mask, genius inventions, and sorcery.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1445,8 +1445,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-robin",
     "title": "Robin",
-    "description": "A DC Comics character tied to capes, villains, secret identities, and comic-book drama.",
-    "source": "http://www.wikidata.org/entity/Q59996"
+    "description": "Batman's acrobatic sidekick, known for a bright costume, detective work, and youthful crimefighting.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1544,8 +1544,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-riddler",
     "title": "Riddler",
-    "description": "A DC Comics character tied to capes, villains, secret identities, and comic-book drama.",
-    "source": "http://www.wikidata.org/entity/Q836789"
+    "description": "A Batman villain obsessed with puzzles, question marks, elaborate traps, and proving his cleverness.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1571,8 +1571,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-itachi-uchiha",
     "title": "Itachi Uchiha",
-    "description": "A Naruto character tied to ninja villages, jutsu, rivalries, and anime battles.",
-    "source": "http://www.wikidata.org/entity/Q1043344"
+    "description": "A calm Naruto shinobi with Sharingan eyes, black cloak, crows, and a tragic bond with Sasuke.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1598,8 +1598,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-slender-man",
     "title": "Slender Man",
-    "description": "A recognizable fictional character with a distinctive look, personality, or story role.",
-    "source": "http://www.wikidata.org/entity/Q7540067"
+    "description": "A tall faceless internet horror figure in a black suit, often linked to forests and eerie photos.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1724,8 +1724,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-battleship",
     "title": "Battleship",
-    "description": "guessing game.",
-    "source": "http://www.wikidata.org/entity/Q953491"
+    "description": "A guessing board game where players call grid coordinates to find and sink hidden ships.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1742,8 +1742,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-boba-fett",
     "title": "Boba Fett",
-    "description": "A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.",
-    "source": "http://www.wikidata.org/entity/Q51790"
+    "description": "A helmeted Star Wars bounty hunter with Mandalorian armor, a jetpack, and a famously quiet menace.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1769,8 +1769,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-abraham-van-helsing",
     "title": "Abraham Van Helsing",
-    "description": "fictional character created by Bram Stoker.",
-    "source": "http://www.wikidata.org/entity/Q1622359"
+    "description": "The vampire-hunting professor from Dracula, known for garlic, stakes, and occult expertise.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1823,8 +1823,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-ahsoka-tano",
     "title": "Ahsoka Tano",
-    "description": "A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.",
-    "source": "http://www.wikidata.org/entity/Q51755"
+    "description": "An orange-and-white former Jedi with twin lightsabers, montrals, and a close history with Anakin.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1832,8 +1832,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-woody-woodpecker",
     "title": "Woody Woodpecker",
-    "description": "fictional bird.",
-    "source": "http://www.wikidata.org/entity/Q741321"
+    "description": "A red-headed cartoon bird known for a wild laugh, mischief, and rapid-fire pecking.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1841,8 +1841,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-magneto",
     "title": "Magneto",
-    "description": "A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.",
-    "source": "http://www.wikidata.org/entity/Q840291"
+    "description": "An X-Men mutant master of magnetism, often shown with a helmet, cape, and militant mutant cause.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -1994,8 +1994,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-risk",
     "title": "Risk",
-    "description": "board game.",
-    "source": "http://www.wikidata.org/entity/Q12541"
+    "description": "A world-conquest board game about armies, territories, dice battles, and fragile alliances.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -2003,8 +2003,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-senet",
     "title": "Senet",
-    "description": "ancient Egyptian board game.",
-    "source": "http://www.wikidata.org/entity/Q582169"
+    "description": "An ancient Egyptian board game played on a grid of squares with racing pieces and symbolic rules.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -2048,8 +2048,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-captain-nemo",
     "title": "Captain Nemo",
-    "description": "fictional character created by Jules Verne.",
-    "source": "http://www.wikidata.org/entity/Q1046049"
+    "description": "Jules Verne's mysterious submarine captain who commands the Nautilus under the sea.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -5694,7 +5694,7 @@
     "id": "animals_nature-coyote",
     "title": "Coyote",
     "description": "The coyote is a species of canine also known as the American jackal, prairie wolf, and brush wolf.",
-    "source": "https://en.wikipedia.org/wiki/Coyote"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6090,7 +6090,7 @@
     "id": "animals_nature-weasel",
     "title": "Weasel",
     "description": "Weasels are mammals of the genus Mustela of the family Mustelidae.",
-    "source": "https://en.wikipedia.org/wiki/Weasel"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6099,7 +6099,7 @@
     "id": "animals_nature-whale",
     "title": "Whale",
     "description": "Whales are a widely distributed and diverse group of fully aquatic placental marine mammals.",
-    "source": "https://en.wikipedia.org/wiki/Whale"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6134,8 +6134,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-zebra",
     "title": "Zebra",
-    "description": "Zebras are African equines with distinctive black-and-white striped coats.",
-    "source": "https://en.wikipedia.org/wiki/Zebra"
+    "description": "A striped African equine with black-and-white coats, herd behavior, and a horse-like body.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6161,8 +6161,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-canary",
     "title": "Canary",
-    "description": "The Atlantic canary, known worldwide simply as the wild canary and also called the island canary, common canary, or canary, is a small passerine bird belonging to the genus Serinus in...",
-    "source": "https://en.wikipedia.org/wiki/Atlantic_canary"
+    "description": "A small yellow songbird often associated with bright color, cheerful singing, and birdcages.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6188,8 +6188,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-cockatoo",
     "title": "Cockatoo",
-    "description": "A cockatoo is any of the 21 species of parrots belonging to the family Cacatuidae, the only family in the superfamily Cacatuoidea.",
-    "source": "https://en.wikipedia.org/wiki/Cockatoo"
+    "description": "A crested parrot known for expressive head feathers, loud calls, and a curved beak.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6197,8 +6197,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-crane",
     "title": "Crane",
-    "description": "The red-crowned crane, also called the Japanese crane and the Manchurian crane, is a large Northeast Asian crane among the rarest cranes in the world.",
-    "source": "https://en.wikipedia.org/wiki/Red-crowned_crane"
+    "description": "A tall long-legged bird with a graceful neck, broad wings, and elaborate courtship dances.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6206,8 +6206,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-crow",
     "title": "Crow",
-    "description": "A crow is a bird of the genus Corvus, or more broadly, a synonym for all of Corvus.",
-    "source": "https://en.wikipedia.org/wiki/Crow"
+    "description": "A clever black bird known for cawing, shiny feathers, and solving problems in groups.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6215,8 +6215,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-duck",
     "title": "Duck",
-    "description": "Duck is the common name for numerous species of waterfowl in the family Anatidae.",
-    "source": "https://en.wikipedia.org/wiki/Duck"
+    "description": "A water bird with a broad bill, webbed feet, waddling walk, and familiar quacking call.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6242,8 +6242,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-falcon",
     "title": "Falcon",
-    "description": "Falcons are birds of prey in the genus Falco, which includes about 40 species.",
-    "source": "https://en.wikipedia.org/wiki/Falcon"
+    "description": "A fast bird of prey with pointed wings, sharp talons, and diving hunting flights.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6422,8 +6422,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-sparrow",
     "title": "Sparrow",
-    "description": "World Sparrow Day is a day designated to raise awareness of the house sparrow and then other common birds to urban environments, and of threats to their populations, observed on 20 March.",
-    "source": "https://en.wikipedia.org/wiki/World_Sparrow_Day"
+    "description": "A small brown or gray songbird often seen hopping near sidewalks, feeders, and bushes.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6440,8 +6440,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-swan",
     "title": "Swan",
-    "description": "Swans are birds of the genus Cygnus within the family Anatidae.",
-    "source": "https://en.wikipedia.org/wiki/Swan"
+    "description": "A large graceful water bird with a long curved neck, broad wings, and webbed feet.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6584,8 +6584,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-lobster",
     "title": "Lobster",
-    "description": "Lobsters are malacostracan decapod crustaceans of the family Nephropidae or its synonym Homaridae.",
-    "source": "https://en.wikipedia.org/wiki/Lobster"
+    "description": "A large clawed crustacean with a hard shell, long antennae, and a curling tail.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6611,8 +6611,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-oyster",
     "title": "Oyster",
-    "description": "Animals are multicellular, eukaryotic organisms belonging to the biological kingdom Animalia.",
-    "source": "https://en.wikipedia.org/wiki/Animal"
+    "description": "A shellfish with rough hinged shells, often found in reefs and sometimes known for pearls.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6620,8 +6620,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-pufferfish",
     "title": "Pufferfish",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A round fish famous for puffing itself up into a spiky balloon shape when threatened.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6629,8 +6629,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-salmon",
     "title": "Salmon",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A fish known for swimming upstream, leaping through rivers, and returning to spawn.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6647,8 +6647,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-seahorse",
     "title": "Seahorse",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A tiny upright-swimming fish with a curled tail, horse-like head, and delicate snout.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6656,8 +6656,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-sea-cucumber",
     "title": "Sea cucumber",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A soft tube-shaped ocean animal that crawls along the seafloor and can look like a leathery cucumber.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6665,8 +6665,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-sea-turtle",
     "title": "Sea turtle",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A marine reptile with flippers and a hard shell, known for nesting on sandy beaches.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6674,8 +6674,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-sea-urchin",
     "title": "Sea urchin",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A round spiny sea creature that clings to rocks and moves with tiny tube feet.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6683,8 +6683,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-shrimp",
     "title": "Shrimp",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A small curved crustacean with long antennae, many legs, and a quick backward flicking swim.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6692,8 +6692,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-squid",
     "title": "Squid",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A fast-swimming cephalopod with tentacles, fins, a torpedo-shaped body, and ink for escape.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6701,8 +6701,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-starfish",
     "title": "Starfish",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A sea star with five or more arms that creeps along the ocean floor on tiny tube feet.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6710,8 +6710,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-stingray",
     "title": "Stingray",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A flat ray that glides along the seafloor with wide wings and a long tail.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6719,8 +6719,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-swordfish",
     "title": "Swordfish",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A large fast fish with a long sword-like bill and a sleek powerful body.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6728,8 +6728,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-trout",
     "title": "Trout",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
-    "source": "generated-animals-nature-list"
+    "description": "A freshwater fish often found in cold streams and lakes, known for quick darts and spotted sides.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -6980,8 +6980,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-dragonfly",
     "title": "Dragonfly",
-    "description": "A dragonfly is a flying insect belonging to the infraorder Anisoptera below the order Odonata.",
-    "source": "https://en.wikipedia.org/wiki/Dragonfly"
+    "description": "A long-bodied flying insect with two pairs of clear wings and quick darting flight over water.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7187,8 +7187,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-bamboo",
     "title": "Bamboo",
-    "description": "Bamboos are a diverse group of mostly evergreen perennial flowering plants making up the subfamily Bambusoideae of the grass family Poaceae.",
-    "source": "https://en.wikipedia.org/wiki/Bamboo"
+    "description": "A fast-growing woody grass with tall jointed stalks, often seen in groves or panda habitats.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7205,8 +7205,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-cherry-blossom",
     "title": "Cherry blossom",
-    "description": "The cherry blossom, or sakura, is the flower of trees in Prunus subgenus Cerasus.",
-    "source": "https://en.wikipedia.org/wiki/Cherry_blossom"
+    "description": "A delicate pink or white spring flower from cherry trees, often seen in blooming rows.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7385,8 +7385,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-rose",
     "title": "Rose",
-    "description": "A rose is either a woody perennial flowering plant of the genus Rosa, in the family Rosaceae, or the flower it bears.",
-    "source": "https://en.wikipedia.org/wiki/Rose"
+    "description": "A thorny flowering shrub known for layered fragrant blooms in red, pink, white, or yellow.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7449,7 +7449,7 @@
     "id": "animals_nature-aurora",
     "title": "Aurora",
     "description": "A shimmering natural light display in the sky, most often seen near polar regions.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7466,8 +7466,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-bay",
     "title": "Bay",
-    "description": "A bay is a recessed, coastal body of water that directly connects to a larger main body of water, such as an ocean, a lake, or another bay.",
-    "source": "https://en.wikipedia.org/wiki/Bay"
+    "description": "A broad curve of water partly enclosed by land, often calmer than the open sea.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7476,7 +7476,7 @@
     "id": "animals_nature-beach",
     "title": "Beach",
     "description": "A sandy or pebbly shore where land meets the ocean, lake, or river.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7485,7 +7485,7 @@
     "id": "animals_nature-blizzard",
     "title": "Blizzard",
     "description": "A severe snowstorm with strong winds, blowing snow, and very low visibility.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7493,8 +7493,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-canyon",
     "title": "Canyon",
-    "description": "A canyon, gorge or chasm, is a deep cleft between escarpments or cliffs resulting from weathering and the erosive activity of a river over geologic time scales.",
-    "source": "https://en.wikipedia.org/wiki/Canyon"
+    "description": "A deep valley with steep sides, often carved over time by a river.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7503,7 +7503,7 @@
     "id": "animals_nature-cave",
     "title": "Cave",
     "description": "A natural underground hollow or chamber, often found in rock or cliffs.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7512,7 +7512,7 @@
     "id": "animals_nature-cloud",
     "title": "Cloud",
     "description": "A visible mass of tiny water droplets or ice crystals floating in the sky.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7521,7 +7521,7 @@
     "id": "animals_nature-coral-reef",
     "title": "Coral reef",
     "description": "An underwater ecosystem built by coral, often full of colorful fish and sea life.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7530,7 +7530,7 @@
     "id": "animals_nature-desert",
     "title": "Desert",
     "description": "A dry landscape with little rainfall, sparse plants, and extreme temperatures.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7539,7 +7539,7 @@
     "id": "animals_nature-dew",
     "title": "Dew",
     "description": "Tiny drops of water that form on cool surfaces, especially in the morning.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7556,8 +7556,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-fog",
     "title": "Fog",
-    "description": "Fog is a visible aerosol consisting of tiny water droplets or ice crystals held in the air near the Earth's surface.",
-    "source": "https://en.wikipedia.org/wiki/Fog"
+    "description": "A low cloud near the ground that makes the air look misty and hard to see through.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7566,7 +7566,7 @@
     "id": "animals_nature-forest",
     "title": "Forest",
     "description": "A large area covered with trees, plants, and wildlife.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7575,7 +7575,7 @@
     "id": "animals_nature-geyser",
     "title": "Geyser",
     "description": "A hot spring that periodically erupts, shooting water and steam into the air.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7584,7 +7584,7 @@
     "id": "animals_nature-glacier",
     "title": "Glacier",
     "description": "A massive, slow-moving sheet or river of ice formed from compacted snow.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7593,7 +7593,7 @@
     "id": "animals_nature-hail",
     "title": "Hail",
     "description": "Balls or pellets of ice that fall from storm clouds.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7611,7 +7611,7 @@
     "id": "animals_nature-iceberg",
     "title": "Iceberg",
     "description": "A huge floating piece of freshwater ice that has broken off from a glacier.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7619,8 +7619,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-island",
     "title": "Island",
-    "description": "A piece of land completely surrounded by water.",
-    "source": "generated-animals-nature-list"
+    "description": "A piece of land completely surrounded by water, from tiny tropical islands to large landmasses.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7628,8 +7628,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-lagoon",
     "title": "Lagoon",
-    "description": "A shallow body of water separated from a larger sea by sandbars, reefs, or islands.",
-    "source": "generated-animals-nature-list"
+    "description": "A shallow body of water separated from a larger sea by a reef, sandbar, or barrier island.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7638,7 +7638,7 @@
     "id": "animals_nature-lake",
     "title": "Lake",
     "description": "A large inland body of standing water surrounded by land.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7647,7 +7647,7 @@
     "id": "animals_nature-lightning",
     "title": "Lightning",
     "description": "A bright electrical flash in the sky during a storm.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7674,7 +7674,7 @@
     "id": "animals_nature-mountain",
     "title": "Mountain",
     "description": "A large natural rise of the Earth's surface, usually with steep sides and a summit.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7692,7 +7692,7 @@
     "id": "animals_nature-oasis",
     "title": "Oasis",
     "description": "A fertile spot in a desert where water allows plants to grow.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7701,7 +7701,7 @@
     "id": "animals_nature-pond",
     "title": "Pond",
     "description": "A small body of still freshwater, usually shallower than a lake.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7710,7 +7710,7 @@
     "id": "animals_nature-prairie",
     "title": "Prairie",
     "description": "A wide open grassland with few trees.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7719,7 +7719,7 @@
     "id": "animals_nature-rainstorm",
     "title": "Rainstorm",
     "description": "A storm with heavy rain, often accompanied by wind, thunder, or lightning.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7728,7 +7728,7 @@
     "id": "animals_nature-river",
     "title": "River",
     "description": "A natural flowing stream of water that usually empties into a lake, sea, or ocean.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7737,7 +7737,7 @@
     "id": "animals_nature-sand-dune",
     "title": "Sand dune",
     "description": "A hill or ridge of sand shaped by wind.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7746,7 +7746,7 @@
     "id": "animals_nature-savanna",
     "title": "Savanna",
     "description": "A warm grassland ecosystem with scattered trees and seasonal rainfall.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7754,8 +7754,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-snowflake",
     "title": "Snowflake",
-    "description": "A snowflake is a single ice crystal that is large enough to fall through the Earth's atmosphere as snow.",
-    "source": "https://en.wikipedia.org/wiki/Snowflake"
+    "description": "A tiny ice crystal with a delicate, often six-sided shape.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7773,7 +7773,7 @@
     "id": "animals_nature-swamp",
     "title": "Swamp",
     "description": "A wetland with standing water and water-loving trees or plants.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7782,7 +7782,7 @@
     "id": "animals_nature-tide-pool",
     "title": "Tide pool",
     "description": "A shallow pool of seawater left on rocky shores when the tide goes out.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7790,8 +7790,8 @@
     "categoryLabel": "Animals & Nature",
     "id": "animals_nature-valley",
     "title": "Valley",
-    "description": "A valley is an elongated low area often running between hills or mountains and typically containing a river or stream running from one end to the other.",
-    "source": "https://en.wikipedia.org/wiki/Valley"
+    "description": "A low area between hills or mountains, often with a river running through it.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7800,7 +7800,7 @@
     "id": "animals_nature-waterfall",
     "title": "Waterfall",
     "description": "A place where a river or stream drops from a height over rock.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7809,7 +7809,7 @@
     "id": "animals_nature-whirlpool",
     "title": "Whirlpool",
     "description": "A spinning body of water caused by opposing currents or flowing around obstacles.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -7818,7 +7818,7 @@
     "id": "animals_nature-windstorm",
     "title": "Windstorm",
     "description": "A storm marked by strong winds that can bend trees and blow debris.",
-    "source": "generated-animals-nature-list"
+    "source": "curated-description"
   },
   {
     "status": "KEEP",
@@ -8438,8 +8438,8 @@
     "categoryLabel": "Fiction & Games",
     "id": "fiction_games-borat",
     "title": "Borat",
-    "description": "fictional character created and portrayed by Sacha Baron Cohen.",
-    "source": "http://www.wikidata.org/entity/Q5651141"
+    "description": "Sacha Baron Cohen's fictional Kazakh reporter known for awkward interviews and outrageous misunderstandings.",
+    "source": "curated-description"
   },
   {
     "status": "KEEP",

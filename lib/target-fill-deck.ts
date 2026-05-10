@@ -6,7 +6,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-chess",
     "title": "chess",
-    "description": "strategy board game.",
+    "description": "A strategy board game where kings, queens, bishops, knights, rooks, and pawns battle across a checkered board.",
     "category": "fiction_games"
   },
   {
@@ -30,7 +30,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-checkers",
     "title": "checkers",
-    "description": "board game.",
+    "description": "A two-player board game where pieces move diagonally and jump opponents to capture them.",
     "category": "fiction_games"
   },
   {
@@ -54,7 +54,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-monopoly",
     "title": "Monopoly",
-    "description": "economics-themed board game.",
+    "description": "A real-estate board game about buying properties, charging rent, and trying not to go bankrupt.",
     "category": "fiction_games"
   },
   {
@@ -444,13 +444,13 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-conan-the-barbarian",
     "title": "Conan the Barbarian",
-    "description": "fictional character created by Robert E. Howard.",
+    "description": "A sword-swinging fantasy warrior known for brute strength, survival, and pulp adventure.",
     "category": "fiction_games"
   },
   {
     "id": "target-fill-fiction_games-hannibal-lecter",
     "title": "Hannibal Lecter",
-    "description": "fictional character created by Thomas Harris.",
+    "description": "A brilliant and terrifying fictional cannibal psychiatrist with polished manners and a chilling stare.",
     "category": "fiction_games"
   },
   {
@@ -468,7 +468,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-c-3po",
     "title": "C-3PO",
-    "description": "A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.",
+    "description": "A fussy golden Star Wars protocol droid known for etiquette, translation, worrying, and arguing with R2-D2.",
     "category": "fiction_games"
   },
   {
@@ -792,7 +792,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-the-settlers-of-catan",
     "title": "The Settlers of Catan",
-    "description": "board game.",
+    "description": "A resource-trading board game about building roads, settlements, and cities on a hex-tile island.",
     "category": "fiction_games"
   },
   {
@@ -804,7 +804,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-two-face",
     "title": "Two-Face",
-    "description": "A DC Comics character tied to capes, villains, secret identities, and comic-book drama.",
+    "description": "A scarred Batman villain who flips a coin to decide his split-personality crimes.",
     "category": "fiction_games"
   },
   {
@@ -822,7 +822,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-batgirl",
     "title": "Batgirl",
-    "description": "A DC Comics character tied to capes, villains, secret identities, and comic-book drama.",
+    "description": "A Gotham superhero with a bat-themed suit, detective skills, gadgets, and ties to Batman.",
     "category": "fiction_games"
   },
   {
@@ -870,13 +870,13 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-kermit-the-frog",
     "title": "Kermit the Frog",
-    "description": "Muppet character.",
+    "description": "The green Muppet frog with a banjo, gentle leadership, and the song Rainbow Connection.",
     "category": "fiction_games"
   },
   {
     "id": "target-fill-fiction_games-hawkeye",
     "title": "Hawkeye",
-    "description": "A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.",
+    "description": "A Marvel archer known for a bow, trick arrows, sharp aim, and Avengers-level action.",
     "category": "fiction_games"
   },
   {
@@ -918,7 +918,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-snakes-and-ladders",
     "title": "snakes and ladders",
-    "description": "board game.",
+    "description": "A classic board game where players climb ladders, slide down snakes, and race to the final square.",
     "category": "fiction_games"
   },
   {
@@ -930,13 +930,13 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-count-dooku",
     "title": "Count Dooku",
-    "description": "A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.",
+    "description": "A refined Star Wars Sith lord and former Jedi, known for a curved lightsaber and aristocratic menace.",
     "category": "fiction_games"
   },
   {
     "id": "target-fill-fiction_games-doctor-doom",
     "title": "Doctor Doom",
-    "description": "A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.",
+    "description": "The armored ruler of Latveria, a Marvel villain with a metal mask, genius inventions, and sorcery.",
     "category": "fiction_games"
   },
   {
@@ -966,7 +966,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-robin",
     "title": "Robin",
-    "description": "A DC Comics character tied to capes, villains, secret identities, and comic-book drama.",
+    "description": "Batman's acrobatic sidekick, known for a bright costume, detective work, and youthful crimefighting.",
     "category": "fiction_games"
   },
   {
@@ -1032,7 +1032,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-riddler",
     "title": "Riddler",
-    "description": "A DC Comics character tied to capes, villains, secret identities, and comic-book drama.",
+    "description": "A Batman villain obsessed with puzzles, question marks, elaborate traps, and proving his cleverness.",
     "category": "fiction_games"
   },
   {
@@ -1050,7 +1050,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-itachi-uchiha",
     "title": "Itachi Uchiha",
-    "description": "A Naruto character tied to ninja villages, jutsu, rivalries, and anime battles.",
+    "description": "A calm Naruto shinobi with Sharingan eyes, black cloak, crows, and a tragic bond with Sasuke.",
     "category": "fiction_games"
   },
   {
@@ -1068,7 +1068,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-slender-man",
     "title": "Slender Man",
-    "description": "A recognizable fictional character with a distinctive look, personality, or story role.",
+    "description": "A tall faceless internet horror figure in a black suit, often linked to forests and eerie photos.",
     "category": "fiction_games"
   },
   {
@@ -1152,7 +1152,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-battleship",
     "title": "Battleship",
-    "description": "guessing game.",
+    "description": "A guessing board game where players call grid coordinates to find and sink hidden ships.",
     "category": "fiction_games"
   },
   {
@@ -1164,7 +1164,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-boba-fett",
     "title": "Boba Fett",
-    "description": "A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.",
+    "description": "A helmeted Star Wars bounty hunter with Mandalorian armor, a jetpack, and a famously quiet menace.",
     "category": "fiction_games"
   },
   {
@@ -1182,7 +1182,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-abraham-van-helsing",
     "title": "Abraham Van Helsing",
-    "description": "fictional character created by Bram Stoker.",
+    "description": "The vampire-hunting professor from Dracula, known for garlic, stakes, and occult expertise.",
     "category": "fiction_games"
   },
   {
@@ -1218,19 +1218,19 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-ahsoka-tano",
     "title": "Ahsoka Tano",
-    "description": "A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.",
+    "description": "An orange-and-white former Jedi with twin lightsabers, montrals, and a close history with Anakin.",
     "category": "fiction_games"
   },
   {
     "id": "target-fill-fiction_games-woody-woodpecker",
     "title": "Woody Woodpecker",
-    "description": "fictional bird.",
+    "description": "A red-headed cartoon bird known for a wild laugh, mischief, and rapid-fire pecking.",
     "category": "fiction_games"
   },
   {
     "id": "target-fill-fiction_games-magneto",
     "title": "Magneto",
-    "description": "A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.",
+    "description": "An X-Men mutant master of magnetism, often shown with a helmet, cape, and militant mutant cause.",
     "category": "fiction_games"
   },
   {
@@ -1332,13 +1332,13 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-risk",
     "title": "Risk",
-    "description": "board game.",
+    "description": "A world-conquest board game about armies, territories, dice battles, and fragile alliances.",
     "category": "fiction_games"
   },
   {
     "id": "target-fill-fiction_games-senet",
     "title": "Senet",
-    "description": "ancient Egyptian board game.",
+    "description": "An ancient Egyptian board game played on a grid of squares with racing pieces and symbolic rules.",
     "category": "fiction_games"
   },
   {
@@ -1368,7 +1368,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-captain-nemo",
     "title": "Captain Nemo",
-    "description": "fictional character created by Jules Verne.",
+    "description": "Jules Verne's mysterious submarine captain who commands the Nautilus under the sea.",
     "category": "fiction_games"
   },
   {
@@ -4092,7 +4092,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-zebra",
     "title": "Zebra",
-    "description": "Zebras are African equines with distinctive black-and-white striped coats.",
+    "description": "A striped African equine with black-and-white coats, herd behavior, and a horse-like body.",
     "category": "animals_nature"
   },
   {
@@ -4110,7 +4110,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-canary",
     "title": "Canary",
-    "description": "The Atlantic canary, known worldwide simply as the wild canary and also called the island canary, common canary, or canary, is a small passerine bird belonging to the genus Serinus in...",
+    "description": "A small yellow songbird often associated with bright color, cheerful singing, and birdcages.",
     "category": "animals_nature"
   },
   {
@@ -4128,25 +4128,25 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-cockatoo",
     "title": "Cockatoo",
-    "description": "A cockatoo is any of the 21 species of parrots belonging to the family Cacatuidae, the only family in the superfamily Cacatuoidea.",
+    "description": "A crested parrot known for expressive head feathers, loud calls, and a curved beak.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-crane",
     "title": "Crane",
-    "description": "The red-crowned crane, also called the Japanese crane and the Manchurian crane, is a large Northeast Asian crane among the rarest cranes in the world.",
+    "description": "A tall long-legged bird with a graceful neck, broad wings, and elaborate courtship dances.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-crow",
     "title": "Crow",
-    "description": "A crow is a bird of the genus Corvus, or more broadly, a synonym for all of Corvus.",
+    "description": "A clever black bird known for cawing, shiny feathers, and solving problems in groups.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-duck",
     "title": "Duck",
-    "description": "Duck is the common name for numerous species of waterfowl in the family Anatidae.",
+    "description": "A water bird with a broad bill, webbed feet, waddling walk, and familiar quacking call.",
     "category": "animals_nature"
   },
   {
@@ -4164,7 +4164,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-falcon",
     "title": "Falcon",
-    "description": "Falcons are birds of prey in the genus Falco, which includes about 40 species.",
+    "description": "A fast bird of prey with pointed wings, sharp talons, and diving hunting flights.",
     "category": "animals_nature"
   },
   {
@@ -4284,7 +4284,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-sparrow",
     "title": "Sparrow",
-    "description": "World Sparrow Day is a day designated to raise awareness of the house sparrow and then other common birds to urban environments, and of threats to their populations, observed on 20 March.",
+    "description": "A small brown or gray songbird often seen hopping near sidewalks, feeders, and bushes.",
     "category": "animals_nature"
   },
   {
@@ -4296,7 +4296,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-swan",
     "title": "Swan",
-    "description": "Swans are birds of the genus Cygnus within the family Anatidae.",
+    "description": "A large graceful water bird with a long curved neck, broad wings, and webbed feet.",
     "category": "animals_nature"
   },
   {
@@ -4392,7 +4392,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-lobster",
     "title": "Lobster",
-    "description": "Lobsters are malacostracan decapod crustaceans of the family Nephropidae or its synonym Homaridae.",
+    "description": "A large clawed crustacean with a hard shell, long antennae, and a curling tail.",
     "category": "animals_nature"
   },
   {
@@ -4410,19 +4410,19 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-oyster",
     "title": "Oyster",
-    "description": "Animals are multicellular, eukaryotic organisms belonging to the biological kingdom Animalia.",
+    "description": "A shellfish with rough hinged shells, often found in reefs and sometimes known for pearls.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-pufferfish",
     "title": "Pufferfish",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A round fish famous for puffing itself up into a spiky balloon shape when threatened.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-salmon",
     "title": "Salmon",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A fish known for swimming upstream, leaping through rivers, and returning to spawn.",
     "category": "animals_nature"
   },
   {
@@ -4434,61 +4434,61 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-seahorse",
     "title": "Seahorse",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A tiny upright-swimming fish with a curled tail, horse-like head, and delicate snout.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-sea-cucumber",
     "title": "Sea cucumber",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A soft tube-shaped ocean animal that crawls along the seafloor and can look like a leathery cucumber.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-sea-turtle",
     "title": "Sea turtle",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A marine reptile with flippers and a hard shell, known for nesting on sandy beaches.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-sea-urchin",
     "title": "Sea urchin",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A round spiny sea creature that clings to rocks and moves with tiny tube feet.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-shrimp",
     "title": "Shrimp",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A small curved crustacean with long antennae, many legs, and a quick backward flicking swim.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-squid",
     "title": "Squid",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A fast-swimming cephalopod with tentacles, fins, a torpedo-shaped body, and ink for escape.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-starfish",
     "title": "Starfish",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A sea star with five or more arms that creeps along the ocean floor on tiny tube feet.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-stingray",
     "title": "Stingray",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A flat ray that glides along the seafloor with wide wings and a long tail.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-swordfish",
     "title": "Swordfish",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A large fast fish with a long sword-like bill and a sleek powerful body.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-trout",
     "title": "Trout",
-    "description": "A water-life clue about something that swims, floats, hides, or lives near water.",
+    "description": "A freshwater fish often found in cold streams and lakes, known for quick darts and spotted sides.",
     "category": "animals_nature"
   },
   {
@@ -4656,7 +4656,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-dragonfly",
     "title": "Dragonfly",
-    "description": "A dragonfly is a flying insect belonging to the infraorder Anisoptera below the order Odonata.",
+    "description": "A long-bodied flying insect with two pairs of clear wings and quick darting flight over water.",
     "category": "animals_nature"
   },
   {
@@ -4794,7 +4794,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-bamboo",
     "title": "Bamboo",
-    "description": "Bamboos are a diverse group of mostly evergreen perennial flowering plants making up the subfamily Bambusoideae of the grass family Poaceae.",
+    "description": "A fast-growing woody grass with tall jointed stalks, often seen in groves or panda habitats.",
     "category": "animals_nature"
   },
   {
@@ -4806,7 +4806,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-cherry-blossom",
     "title": "Cherry blossom",
-    "description": "The cherry blossom, or sakura, is the flower of trees in Prunus subgenus Cerasus.",
+    "description": "A delicate pink or white spring flower from cherry trees, often seen in blooming rows.",
     "category": "animals_nature"
   },
   {
@@ -4926,7 +4926,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-rose",
     "title": "Rose",
-    "description": "A rose is either a woody perennial flowering plant of the genus Rosa, in the family Rosaceae, or the flower it bears.",
+    "description": "A thorny flowering shrub known for layered fragrant blooms in red, pink, white, or yellow.",
     "category": "animals_nature"
   },
   {
@@ -4980,7 +4980,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-bay",
     "title": "Bay",
-    "description": "A bay is a recessed, coastal body of water that directly connects to a larger main body of water, such as an ocean, a lake, or another bay.",
+    "description": "A broad curve of water partly enclosed by land, often calmer than the open sea.",
     "category": "animals_nature"
   },
   {
@@ -4998,7 +4998,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-canyon",
     "title": "Canyon",
-    "description": "A canyon, gorge or chasm, is a deep cleft between escarpments or cliffs resulting from weathering and the erosive activity of a river over geologic time scales.",
+    "description": "A deep valley with steep sides, often carved over time by a river.",
     "category": "animals_nature"
   },
   {
@@ -5040,7 +5040,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-fog",
     "title": "Fog",
-    "description": "Fog is a visible aerosol consisting of tiny water droplets or ice crystals held in the air near the Earth's surface.",
+    "description": "A low cloud near the ground that makes the air look misty and hard to see through.",
     "category": "animals_nature"
   },
   {
@@ -5082,13 +5082,13 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-island",
     "title": "Island",
-    "description": "A piece of land completely surrounded by water.",
+    "description": "A piece of land completely surrounded by water, from tiny tropical islands to large landmasses.",
     "category": "animals_nature"
   },
   {
     "id": "target-fill-animals_nature-lagoon",
     "title": "Lagoon",
-    "description": "A shallow body of water separated from a larger sea by sandbars, reefs, or islands.",
+    "description": "A shallow body of water separated from a larger sea by a reef, sandbar, or barrier island.",
     "category": "animals_nature"
   },
   {
@@ -5172,7 +5172,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-snowflake",
     "title": "Snowflake",
-    "description": "A snowflake is a single ice crystal that is large enough to fall through the Earth's atmosphere as snow.",
+    "description": "A tiny ice crystal with a delicate, often six-sided shape.",
     "category": "animals_nature"
   },
   {
@@ -5196,7 +5196,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-animals_nature-valley",
     "title": "Valley",
-    "description": "A valley is an elongated low area often running between hills or mountains and typically containing a river or stream running from one end to the other.",
+    "description": "A low area between hills or mountains, often with a river running through it.",
     "category": "animals_nature"
   },
   {
@@ -5628,7 +5628,7 @@ export const TARGET_FILL_DECK: StarterDeckCard[] = [
   {
     "id": "target-fill-fiction_games-borat",
     "title": "Borat",
-    "description": "fictional character created and portrayed by Sacha Baron Cohen.",
+    "description": "Sacha Baron Cohen's fictional Kazakh reporter known for awkward interviews and outrageous misunderstandings.",
     "category": "fiction_games"
   },
   {

@@ -124,7 +124,7 @@ Source: curated-description
 Category: animals_nature
 Title: Coyote
 Description: The coyote is a species of canine also known as the American jackal, prairie wolf, and brush wolf.
-Source: https://en.wikipedia.org/wiki/Coyote
+Source: curated-description
 
 ## Deer
 - [x] Keep
@@ -432,14 +432,14 @@ Source: https://en.wikipedia.org/wiki/Warthog
 Category: animals_nature
 Title: Weasel
 Description: Weasels are mammals of the genus Mustela of the family Mustelidae.
-Source: https://en.wikipedia.org/wiki/Weasel
+Source: curated-description
 
 ## Whale
 - [x] Keep
 Category: animals_nature
 Title: Whale
 Description: Whales are a widely distributed and diverse group of fully aquatic placental marine mammals.
-Source: https://en.wikipedia.org/wiki/Whale
+Source: curated-description
 
 ## Wolf
 - [x] Keep
@@ -466,8 +466,8 @@ Source: https://en.wikipedia.org/wiki/Yak
 - [x] Keep
 Category: animals_nature
 Title: Zebra
-Description: Zebras are African equines with distinctive black-and-white striped coats.
-Source: https://en.wikipedia.org/wiki/Zebra
+Description: A striped African equine with black-and-white coats, herd behavior, and a horse-like body.
+Source: curated-description
 
 ## Albatross
 - [x] Keep
@@ -487,8 +487,8 @@ Source: https://en.wikipedia.org/wiki/Blue_jay
 - [x] Keep
 Category: animals_nature
 Title: Canary
-Description: The Atlantic canary, known worldwide simply as the wild canary and also called the island canary, common canary, or canary, is a small passerine bird belonging to the genus Serinus in...
-Source: https://en.wikipedia.org/wiki/Atlantic_canary
+Description: A small yellow songbird often associated with bright color, cheerful singing, and birdcages.
+Source: curated-description
 
 ## Cardinal
 - [x] Keep
@@ -508,29 +508,29 @@ Source: https://en.wikipedia.org/wiki/Chicken
 - [x] Keep
 Category: animals_nature
 Title: Cockatoo
-Description: A cockatoo is any of the 21 species of parrots belonging to the family Cacatuidae, the only family in the superfamily Cacatuoidea.
-Source: https://en.wikipedia.org/wiki/Cockatoo
+Description: A crested parrot known for expressive head feathers, loud calls, and a curved beak.
+Source: curated-description
 
 ## Crane
 - [x] Keep
 Category: animals_nature
 Title: Crane
-Description: The red-crowned crane, also called the Japanese crane and the Manchurian crane, is a large Northeast Asian crane among the rarest cranes in the world.
-Source: https://en.wikipedia.org/wiki/Red-crowned_crane
+Description: A tall long-legged bird with a graceful neck, broad wings, and elaborate courtship dances.
+Source: curated-description
 
 ## Crow
 - [x] Keep
 Category: animals_nature
 Title: Crow
-Description: A crow is a bird of the genus Corvus, or more broadly, a synonym for all of Corvus.
-Source: https://en.wikipedia.org/wiki/Crow
+Description: A clever black bird known for cawing, shiny feathers, and solving problems in groups.
+Source: curated-description
 
 ## Duck
 - [x] Keep
 Category: animals_nature
 Title: Duck
-Description: Duck is the common name for numerous species of waterfowl in the family Anatidae.
-Source: https://en.wikipedia.org/wiki/Duck
+Description: A water bird with a broad bill, webbed feet, waddling walk, and familiar quacking call.
+Source: curated-description
 
 ## Eagle
 - [x] Keep
@@ -550,8 +550,8 @@ Source: https://en.wikipedia.org/wiki/Emu
 - [x] Keep
 Category: animals_nature
 Title: Falcon
-Description: Falcons are birds of prey in the genus Falco, which includes about 40 species.
-Source: https://en.wikipedia.org/wiki/Falcon
+Description: A fast bird of prey with pointed wings, sharp talons, and diving hunting flights.
+Source: curated-description
 
 ## Finch
 - [x] Keep
@@ -690,8 +690,8 @@ Source: curated-description
 - [x] Keep
 Category: animals_nature
 Title: Sparrow
-Description: World Sparrow Day is a day designated to raise awareness of the house sparrow and then other common birds to urban environments, and of threats to their populations, observed on 20 March.
-Source: https://en.wikipedia.org/wiki/World_Sparrow_Day
+Description: A small brown or gray songbird often seen hopping near sidewalks, feeders, and bushes.
+Source: curated-description
 
 ## Stork
 - [x] Keep
@@ -704,8 +704,8 @@ Source: https://en.wikipedia.org/wiki/Stork
 - [x] Keep
 Category: animals_nature
 Title: Swan
-Description: Swans are birds of the genus Cygnus within the family Anatidae.
-Source: https://en.wikipedia.org/wiki/Swan
+Description: A large graceful water bird with a long curved neck, broad wings, and webbed feet.
+Source: curated-description
 
 ## Toucan
 - [x] Keep
@@ -816,8 +816,8 @@ Source: https://en.wikipedia.org/wiki/Koi
 - [x] Keep
 Category: animals_nature
 Title: Lobster
-Description: Lobsters are malacostracan decapod crustaceans of the family Nephropidae or its synonym Homaridae.
-Source: https://en.wikipedia.org/wiki/Lobster
+Description: A large clawed crustacean with a hard shell, long antennae, and a curling tail.
+Source: curated-description
 
 ## Manta ray
 - [x] Keep
@@ -837,22 +837,22 @@ Source: https://en.wikipedia.org/wiki/Octopus
 - [x] Keep
 Category: animals_nature
 Title: Oyster
-Description: Animals are multicellular, eukaryotic organisms belonging to the biological kingdom Animalia.
-Source: https://en.wikipedia.org/wiki/Animal
+Description: A shellfish with rough hinged shells, often found in reefs and sometimes known for pearls.
+Source: curated-description
 
 ## Pufferfish
 - [x] Keep
 Category: animals_nature
 Title: Pufferfish
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A round fish famous for puffing itself up into a spiky balloon shape when threatened.
+Source: curated-description
 
 ## Salmon
 - [x] Keep
 Category: animals_nature
 Title: Salmon
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A fish known for swimming upstream, leaping through rivers, and returning to spawn.
+Source: curated-description
 
 ## Sand dollar
 - [x] Keep
@@ -865,71 +865,71 @@ Source: https://en.wikipedia.org/wiki/Sand_dollar
 - [x] Keep
 Category: animals_nature
 Title: Seahorse
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A tiny upright-swimming fish with a curled tail, horse-like head, and delicate snout.
+Source: curated-description
 
 ## Sea cucumber
 - [x] Keep
 Category: animals_nature
 Title: Sea cucumber
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A soft tube-shaped ocean animal that crawls along the seafloor and can look like a leathery cucumber.
+Source: curated-description
 
 ## Sea turtle
 - [x] Keep
 Category: animals_nature
 Title: Sea turtle
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A marine reptile with flippers and a hard shell, known for nesting on sandy beaches.
+Source: curated-description
 
 ## Sea urchin
 - [x] Keep
 Category: animals_nature
 Title: Sea urchin
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A round spiny sea creature that clings to rocks and moves with tiny tube feet.
+Source: curated-description
 
 ## Shrimp
 - [x] Keep
 Category: animals_nature
 Title: Shrimp
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A small curved crustacean with long antennae, many legs, and a quick backward flicking swim.
+Source: curated-description
 
 ## Squid
 - [x] Keep
 Category: animals_nature
 Title: Squid
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A fast-swimming cephalopod with tentacles, fins, a torpedo-shaped body, and ink for escape.
+Source: curated-description
 
 ## Starfish
 - [x] Keep
 Category: animals_nature
 Title: Starfish
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A sea star with five or more arms that creeps along the ocean floor on tiny tube feet.
+Source: curated-description
 
 ## Stingray
 - [x] Keep
 Category: animals_nature
 Title: Stingray
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A flat ray that glides along the seafloor with wide wings and a long tail.
+Source: curated-description
 
 ## Swordfish
 - [x] Keep
 Category: animals_nature
 Title: Swordfish
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A large fast fish with a long sword-like bill and a sleek powerful body.
+Source: curated-description
 
 ## Trout
 - [x] Keep
 Category: animals_nature
 Title: Trout
-Description: A water-life clue about something that swims, floats, hides, or lives near water.
-Source: generated-animals-nature-list
+Description: A freshwater fish often found in cold streams and lakes, known for quick darts and spotted sides.
+Source: curated-description
 
 ## Boa constrictor
 - [x] Keep
@@ -1124,8 +1124,8 @@ Source: curated-description
 - [x] Keep
 Category: animals_nature
 Title: Dragonfly
-Description: A dragonfly is a flying insect belonging to the infraorder Anisoptera below the order Odonata.
-Source: https://en.wikipedia.org/wiki/Dragonfly
+Description: A long-bodied flying insect with two pairs of clear wings and quick darting flight over water.
+Source: curated-description
 
 ## Firefly
 - [x] Keep
@@ -1285,8 +1285,8 @@ Source: curated-description
 - [x] Keep
 Category: animals_nature
 Title: Bamboo
-Description: Bamboos are a diverse group of mostly evergreen perennial flowering plants making up the subfamily Bambusoideae of the grass family Poaceae.
-Source: https://en.wikipedia.org/wiki/Bamboo
+Description: A fast-growing woody grass with tall jointed stalks, often seen in groves or panda habitats.
+Source: curated-description
 
 ## Carnation
 - [x] Keep
@@ -1299,8 +1299,8 @@ Source: curated-description
 - [x] Keep
 Category: animals_nature
 Title: Cherry blossom
-Description: The cherry blossom, or sakura, is the flower of trees in Prunus subgenus Cerasus.
-Source: https://en.wikipedia.org/wiki/Cherry_blossom
+Description: A delicate pink or white spring flower from cherry trees, often seen in blooming rows.
+Source: curated-description
 
 ## Clover
 - [x] Keep
@@ -1439,8 +1439,8 @@ Source: curated-description
 - [x] Keep
 Category: animals_nature
 Title: Rose
-Description: A rose is either a woody perennial flowering plant of the genus Rosa, in the family Rosaceae, or the flower it bears.
-Source: https://en.wikipedia.org/wiki/Rose
+Description: A thorny flowering shrub known for layered fragrant blooms in red, pink, white, or yellow.
+Source: curated-description
 
 ## Seaweed
 - [x] Keep
@@ -1489,7 +1489,7 @@ Source: curated-description
 Category: animals_nature
 Title: Aurora
 Description: A shimmering natural light display in the sky, most often seen near polar regions.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Avalanche
 - [x] Keep
@@ -1502,64 +1502,64 @@ Source: curated-description
 - [x] Keep
 Category: animals_nature
 Title: Bay
-Description: A bay is a recessed, coastal body of water that directly connects to a larger main body of water, such as an ocean, a lake, or another bay.
-Source: https://en.wikipedia.org/wiki/Bay
+Description: A broad curve of water partly enclosed by land, often calmer than the open sea.
+Source: curated-description
 
 ## Beach
 - [x] Keep
 Category: animals_nature
 Title: Beach
 Description: A sandy or pebbly shore where land meets the ocean, lake, or river.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Blizzard
 - [x] Keep
 Category: animals_nature
 Title: Blizzard
 Description: A severe snowstorm with strong winds, blowing snow, and very low visibility.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Canyon
 - [x] Keep
 Category: animals_nature
 Title: Canyon
-Description: A canyon, gorge or chasm, is a deep cleft between escarpments or cliffs resulting from weathering and the erosive activity of a river over geologic time scales.
-Source: https://en.wikipedia.org/wiki/Canyon
+Description: A deep valley with steep sides, often carved over time by a river.
+Source: curated-description
 
 ## Cave
 - [x] Keep
 Category: animals_nature
 Title: Cave
 Description: A natural underground hollow or chamber, often found in rock or cliffs.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Cloud
 - [x] Keep
 Category: animals_nature
 Title: Cloud
 Description: A visible mass of tiny water droplets or ice crystals floating in the sky.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Coral reef
 - [x] Keep
 Category: animals_nature
 Title: Coral reef
 Description: An underwater ecosystem built by coral, often full of colorful fish and sea life.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Desert
 - [x] Keep
 Category: animals_nature
 Title: Desert
 Description: A dry landscape with little rainfall, sparse plants, and extreme temperatures.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Dew
 - [x] Keep
 Category: animals_nature
 Title: Dew
 Description: Tiny drops of water that form on cool surfaces, especially in the morning.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Earthquake
 - [x] Keep
@@ -1572,36 +1572,36 @@ Source: https://en.wikipedia.org/wiki/Earthquake
 - [x] Keep
 Category: animals_nature
 Title: Fog
-Description: Fog is a visible aerosol consisting of tiny water droplets or ice crystals held in the air near the Earth's surface.
-Source: https://en.wikipedia.org/wiki/Fog
+Description: A low cloud near the ground that makes the air look misty and hard to see through.
+Source: curated-description
 
 ## Forest
 - [x] Keep
 Category: animals_nature
 Title: Forest
 Description: A large area covered with trees, plants, and wildlife.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Geyser
 - [x] Keep
 Category: animals_nature
 Title: Geyser
 Description: A hot spring that periodically erupts, shooting water and steam into the air.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Glacier
 - [x] Keep
 Category: animals_nature
 Title: Glacier
 Description: A massive, slow-moving sheet or river of ice formed from compacted snow.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Hail
 - [x] Keep
 Category: animals_nature
 Title: Hail
 Description: Balls or pellets of ice that fall from storm clouds.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Hot spring
 - [x] Keep
@@ -1615,35 +1615,35 @@ Source: curated-description
 Category: animals_nature
 Title: Iceberg
 Description: A huge floating piece of freshwater ice that has broken off from a glacier.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Island
 - [x] Keep
 Category: animals_nature
 Title: Island
-Description: A piece of land completely surrounded by water.
-Source: generated-animals-nature-list
+Description: A piece of land completely surrounded by water, from tiny tropical islands to large landmasses.
+Source: curated-description
 
 ## Lagoon
 - [x] Keep
 Category: animals_nature
 Title: Lagoon
-Description: A shallow body of water separated from a larger sea by sandbars, reefs, or islands.
-Source: generated-animals-nature-list
+Description: A shallow body of water separated from a larger sea by a reef, sandbar, or barrier island.
+Source: curated-description
 
 ## Lake
 - [x] Keep
 Category: animals_nature
 Title: Lake
 Description: A large inland body of standing water surrounded by land.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Lightning
 - [x] Keep
 Category: animals_nature
 Title: Lightning
 Description: A bright electrical flash in the sky during a storm.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Meteor shower
 - [x] Keep
@@ -1664,7 +1664,7 @@ Source: curated-description
 Category: animals_nature
 Title: Mountain
 Description: A large natural rise of the Earth's surface, usually with steep sides and a summit.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Mudslide
 - [x] Keep
@@ -1678,56 +1678,56 @@ Source: curated-description
 Category: animals_nature
 Title: Oasis
 Description: A fertile spot in a desert where water allows plants to grow.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Pond
 - [x] Keep
 Category: animals_nature
 Title: Pond
 Description: A small body of still freshwater, usually shallower than a lake.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Prairie
 - [x] Keep
 Category: animals_nature
 Title: Prairie
 Description: A wide open grassland with few trees.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Rainstorm
 - [x] Keep
 Category: animals_nature
 Title: Rainstorm
 Description: A storm with heavy rain, often accompanied by wind, thunder, or lightning.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## River
 - [x] Keep
 Category: animals_nature
 Title: River
 Description: A natural flowing stream of water that usually empties into a lake, sea, or ocean.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Sand dune
 - [x] Keep
 Category: animals_nature
 Title: Sand dune
 Description: A hill or ridge of sand shaped by wind.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Savanna
 - [x] Keep
 Category: animals_nature
 Title: Savanna
 Description: A warm grassland ecosystem with scattered trees and seasonal rainfall.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Snowflake
 - [x] Keep
 Category: animals_nature
 Title: Snowflake
-Description: A snowflake is a single ice crystal that is large enough to fall through the Earth's atmosphere as snow.
-Source: https://en.wikipedia.org/wiki/Snowflake
+Description: A tiny ice crystal with a delicate, often six-sided shape.
+Source: curated-description
 
 ## Solar eclipse
 - [x] Keep
@@ -1741,39 +1741,39 @@ Source: curated-description
 Category: animals_nature
 Title: Swamp
 Description: A wetland with standing water and water-loving trees or plants.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Tide pool
 - [x] Keep
 Category: animals_nature
 Title: Tide pool
 Description: A shallow pool of seawater left on rocky shores when the tide goes out.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Valley
 - [x] Keep
 Category: animals_nature
 Title: Valley
-Description: A valley is an elongated low area often running between hills or mountains and typically containing a river or stream running from one end to the other.
-Source: https://en.wikipedia.org/wiki/Valley
+Description: A low area between hills or mountains, often with a river running through it.
+Source: curated-description
 
 ## Waterfall
 - [x] Keep
 Category: animals_nature
 Title: Waterfall
 Description: A place where a river or stream drops from a height over rock.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Whirlpool
 - [x] Keep
 Category: animals_nature
 Title: Whirlpool
 Description: A spinning body of water caused by opposing currents or flowing around obstacles.
-Source: generated-animals-nature-list
+Source: curated-description
 
 ## Windstorm
 - [x] Keep
 Category: animals_nature
 Title: Windstorm
 Description: A storm marked by strong winds that can bend trees and blow debris.
-Source: generated-animals-nature-list
+Source: curated-description

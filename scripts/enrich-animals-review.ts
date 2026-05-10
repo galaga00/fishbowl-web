@@ -84,6 +84,8 @@ const FALLBACK_DESCRIPTIONS: Record<string, string> = {
 
 const OVERRIDE_DESCRIPTIONS: Record<string, string> = {
   Cougar: "A large wild cat also called a mountain lion or puma, known for stealth, speed, and long jumps.",
+  Coyote: "The coyote is a species of canine also known as the American jackal, prairie wolf, and brush wolf.",
+  Zebra: "A striped African equine with black-and-white coats, herd behavior, and a horse-like body.",
   Deer: "A hoofed grazing mammal with slender legs; many males grow antlers each year.",
   Donkey: "A domesticated long-eared member of the horse family, known for carrying loads and braying loudly.",
   Gazelle: "A graceful antelope known for speed, light leaps, and living in open grasslands or deserts.",
@@ -106,11 +108,19 @@ const OVERRIDE_DESCRIPTIONS: Record<string, string> = {
   Skunk: "A black-and-white mammal known for spraying a strong-smelling liquid when threatened.",
   Squirrel: "A nimble rodent with a bushy tail, often seen climbing trees and hiding nuts.",
   Pelican: "A large water bird with a long bill and expandable throat pouch for scooping fish.",
+  Canary: "A small yellow songbird often associated with bright color, cheerful singing, and birdcages.",
+  Cockatoo: "A crested parrot known for expressive head feathers, loud calls, and a curved beak.",
+  Crane: "A tall long-legged bird with a graceful neck, broad wings, and elaborate courtship dances.",
+  Crow: "A clever black bird known for cawing, shiny feathers, and solving problems in groups.",
+  Duck: "A water bird with a broad bill, webbed feet, waddling walk, and familiar quacking call.",
+  Falcon: "A fast bird of prey with pointed wings, sharp talons, and diving hunting flights.",
   Puffin: "A small seabird with a colorful beak, black-and-white body, and awkward waddling walk.",
   Raven: "A large black bird known for intelligence, a deep croaking call, and glossy feathers.",
   Roadrunner: "A fast-running desert bird with a long tail and crest, often seen sprinting along the ground.",
   Rooster: "An adult male chicken known for crowing, bright combs, and strutting around a flock.",
   Seagull: "A coastal bird with long wings, loud calls, and a talent for stealing snacks near beaches.",
+  Sparrow: "A small brown or gray songbird often seen hopping near sidewalks, feeders, and bushes.",
+  Swan: "A large graceful water bird with a long curved neck, broad wings, and webbed feet.",
   Toucan: "A tropical bird with a huge colorful bill and a fruit-heavy diet.",
   Vulture: "A scavenging bird with broad wings that feeds on carrion and often circles overhead.",
   Woodpecker: "A tree-climbing bird that drums on bark with its beak to find insects or make nest holes.",
@@ -130,12 +140,29 @@ const OVERRIDE_DESCRIPTIONS: Record<string, string> = {
   Toad: "A squat amphibian with dry bumpy skin, often seen hopping on land after rain.",
   "Tree frog": "A small climbing frog with sticky toe pads and a loud call from trees or plants.",
   Turtle: "A shelled reptile that can pull its head and limbs partly inside for protection.",
+  Pufferfish: "A round fish famous for puffing itself up into a spiky balloon shape when threatened.",
+  Salmon: "A fish known for swimming upstream, leaping through rivers, and returning to spawn.",
+  Seahorse: "A tiny upright-swimming fish with a curled tail, horse-like head, and delicate snout.",
+  "Sea cucumber": "A soft tube-shaped ocean animal that crawls along the seafloor and can look like a leathery cucumber.",
+  "Sea turtle": "A marine reptile with flippers and a hard shell, known for nesting on sandy beaches.",
+  "Sea urchin": "A round spiny sea creature that clings to rocks and moves with tiny tube feet.",
+  Lobster: "A large clawed crustacean with a hard shell, long antennae, and a curling tail.",
+  Oyster: "A shellfish with rough hinged shells, often found in reefs and sometimes known for pearls.",
+  Shrimp: "A small curved crustacean with long antennae, many legs, and a quick backward flicking swim.",
+  Squid: "A fast-swimming cephalopod with tentacles, fins, a torpedo-shaped body, and ink for escape.",
+  Starfish: "A sea star with five or more arms that creeps along the ocean floor on tiny tube feet.",
+  Stingray: "A flat ray that glides along the seafloor with wide wings and a long tail.",
+  Swordfish: "A large fast fish with a long sword-like bill and a sleek powerful body.",
+  Trout: "A freshwater fish often found in cold streams and lakes, known for quick darts and spotted sides.",
+  Weasel: "Weasels are mammals of the genus Mustela of the family Mustelidae.",
+  Whale: "Whales are a widely distributed and diverse group of fully aquatic placental marine mammals.",
   Aphid: "A tiny sap-sucking insect often found clustered on plant stems and leaves.",
   Beetle: "An insect with hardened front wings that form a protective shell over its body.",
   Caterpillar: "The soft-bodied larval stage of a butterfly or moth, famous for munching leaves.",
   Centipede: "A many-legged predatory arthropod with a flattened body and fast movement.",
   Cicada: "A loud tree-dwelling insect known for buzzing summer calls and shed skins.",
   Cricket: "A jumping insect known for chirping sounds made by rubbing its wings together.",
+  Dragonfly: "A long-bodied flying insect with two pairs of clear wings and quick darting flight over water.",
   Firefly: "A beetle that produces flashes of light from its abdomen, especially on warm evenings.",
   Flea: "A tiny jumping insect that feeds on the blood of mammals and birds.",
   Grasshopper: "A strong-legged insect that jumps through grass and makes rasping sounds.",
@@ -165,7 +192,9 @@ const OVERRIDE_DESCRIPTIONS: Record<string, string> = {
   "Tyrannosaurus rex": "A massive meat-eating dinosaur with huge teeth, powerful jaws, and tiny arms.",
   Acorn: "The nut of an oak tree, usually capped and often gathered by squirrels.",
   "Aloe vera": "A succulent plant with thick gel-filled leaves often used for soothing skin.",
+  Bamboo: "A fast-growing woody grass with tall jointed stalks, often seen in groves or panda habitats.",
   Carnation: "A ruffled flower with clove-like scent, commonly used in bouquets and corsages.",
+  "Cherry blossom": "A delicate pink or white spring flower from cherry trees, often seen in blooming rows.",
   Clover: "A low-growing plant with three-part leaves; lucky four-leaf versions are famous.",
   Daisy: "A simple flower with white petals around a yellow center.",
   Dandelion: "A yellow lawn flower that turns into a fluffy seed head kids often blow into the wind.",
@@ -184,15 +213,19 @@ const OVERRIDE_DESCRIPTIONS: Record<string, string> = {
   "Poison ivy": "A climbing plant with three leaflets that can cause an itchy rash when touched.",
   "Pumpkin vine": "A sprawling plant with broad leaves and curling tendrils that grows pumpkins.",
   "Redwood tree": "A towering evergreen tree famous for its enormous height and reddish bark.",
+  Rose: "A thorny flowering shrub known for layered fragrant blooms in red, pink, white, or yellow.",
   Seaweed: "A marine algae that grows in oceans and can wave like ribbons underwater.",
   Vine: "A climbing or trailing plant that uses tendrils, stems, or roots to grab support.",
   "Water lily": "An aquatic plant with floating round leaves and showy flowers on pond surfaces.",
   "Willow tree": "A tree often recognized by long drooping branches and narrow leaves.",
   Avalanche: "A sudden rush of snow, ice, and rocks down a mountain slope.",
   "Hot spring": "A naturally heated pool of groundwater warmed by geothermal activity.",
+  Island: "A piece of land completely surrounded by water, from tiny tropical islands to large landmasses.",
+  Lagoon: "A shallow body of water separated from a larger sea by a reef, sandbar, or barrier island.",
   "Meteor shower": "A sky event where many meteors streak through the atmosphere from the same direction.",
   "Moon crater": "A bowl-shaped hollow on the Moon made by impacts from rocks in space.",
   Mudslide: "A fast-moving flow of wet earth, mud, and debris down a slope.",
+  Snowflake: "A tiny ice crystal with a delicate, often six-sided shape.",
   "Solar eclipse": "An event where the Moon passes between Earth and the Sun, blocking sunlight."
 };
 
@@ -213,8 +246,14 @@ async function main() {
       card.source = "curated-description";
       continue;
     }
+    const fallback = FALLBACK_DESCRIPTIONS[card.title];
+    if (fallback) {
+      card.description = fallback;
+      card.source = "curated-description";
+      continue;
+    }
     const summary = await fetchSummary(card.title);
-    const description = summary ? descriptionFromSummary(summary) : FALLBACK_DESCRIPTIONS[card.title];
+    const description = summary ? descriptionFromSummary(summary) : undefined;
     if (description) {
       card.description = description;
       card.source = summary?.content_urls?.desktop?.page ?? card.source;

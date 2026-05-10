@@ -7,7 +7,6 @@ export type PassPlayCategoryId =
   | "music"
   | "fiction_games"
   | "places_objects"
-  | "situations"
   | "animals_nature";
 
 export const MIXED_PASS_PLAY_CATEGORY = "mixed";
@@ -19,7 +18,6 @@ export const PASS_PLAY_CATEGORY_OPTIONS: Array<{ id: PassPlayCategoryId; label: 
   { id: "music", label: "Music" },
   { id: "fiction_games", label: "Fiction & Games" },
   { id: "places_objects", label: "Places & Things" },
-  { id: "situations", label: "Situations" },
   { id: "animals_nature", label: "Animals & Nature" }
 ];
 
@@ -94,7 +92,14 @@ function getFilteredStarterDeck(selectedCategories: string[]) {
     ? STARTER_DECK.filter((card) => isFamilyFriendlyCard(card.id))
     : STARTER_DECK;
 
-  return uniqueCardsByVisibleTitle(sourceCards.map((card) => ({ ...card, category: getCardCategory(card) })));
+  const categorizedCards = sourceCards
+    .map((card) => {
+      const category = getCardCategory(card);
+      return category ? { ...card, category } : null;
+    })
+    .filter((card): card is PassPlayDeckCard => Boolean(card));
+
+  return uniqueCardsByVisibleTitle(categorizedCards);
 }
 
 function uniqueCardsByVisibleTitle(cards: PassPlayDeckCard[]) {
@@ -120,12 +125,17 @@ function normalizeVisibleTitle(title: string) {
     .trim();
 }
 
-function getCardCategory(card: StarterDeckCard): PassPlayCategoryId {
+function getCardCategory(card: StarterDeckCard): PassPlayCategoryId | null {
+  if (card.category === "situations") {
+    return null;
+  }
+
   if (card.category && PASS_PLAY_CATEGORY_OPTIONS.some((option) => option.id === card.category)) {
     return card.category as PassPlayCategoryId;
   }
 
   const override = CARD_CATEGORY_OVERRIDES[card.id];
+  if (override === "situations") return null;
   if (override) return override;
 
   const text = `${card.id} ${card.title} ${card.description}`.toLowerCase();
@@ -141,16 +151,15 @@ function getCardCategory(card: StarterDeckCard): PassPlayCategoryId {
   if (hasAny(text, ["airport", "tower", "chair", "truck", "map", "machine", "balloon", "factory", "moon", "paris", "luggage"])) {
     return "places_objects";
   }
-  if (hasAny(text, ["driver", "host", "chef", "agent", "santa", "dj", "support", "singer", "captain"])) return "situations";
   if (hasAny(text, ["president", "actor", "comedian", "artist", "monarch", "scientist", "pilot", "pharaoh", "host", "star"])) return "people";
-  return "situations";
+  return null;
 }
 
 function hasAny(text: string, needles: string[]) {
   return needles.some((needle) => text.includes(needle));
 }
 
-const CARD_CATEGORY_OVERRIDES: Record<string, PassPlayCategoryId> = {
+const CARD_CATEGORY_OVERRIDES: Record<string, PassPlayCategoryId | "situations"> = {
   "amelia-earhart": "people",
   "apollo-11": "places_objects",
   beyonce: "music",

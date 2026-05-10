@@ -10,7 +10,8 @@ import {
   filterStarterDeckByCategories
 } from "../lib/pass-play-deck";
 
-type ReviewCategoryId = PassPlayCategoryId | "family_friendly";
+type FillCategoryId = PassPlayCategoryId;
+type ReviewCategoryId = FillCategoryId | "family_friendly";
 
 type CandidateCard = {
   status: "KEEP";
@@ -51,12 +52,11 @@ const CATEGORY_FILES: Record<ReviewCategoryId, string> = {
   music: "music.md",
   fiction_games: "fiction-games.md",
   places_objects: "places-things.md",
-  situations: "situations.md",
   animals_nature: "animals-nature.md",
   family_friendly: "family-friendly.md"
 };
 
-const CATEGORY_SOURCES: Partial<Record<PassPlayCategoryId, Array<{ source: string; query: string }>>> = {
+const CATEGORY_SOURCES: Partial<Record<FillCategoryId, Array<{ source: string; query: string }>>> = {
   people: [
     {
       source: "wikidata",
@@ -150,7 +150,7 @@ LIMIT 1000`
   ]
 };
 
-const WIKIPEDIA_CATEGORY_FALLBACKS: Partial<Record<PassPlayCategoryId, string[]>> = {
+const WIKIPEDIA_CATEGORY_FALLBACKS: Partial<Record<FillCategoryId, string[]>> = {
   people: [
     "American_film_actors",
     "American_television_actors",
@@ -187,8 +187,8 @@ const WIKIPEDIA_CATEGORY_FALLBACKS: Partial<Record<PassPlayCategoryId, string[]>
 const CATEGORY_LABELS: Record<ReviewCategoryId, string> = {
   ...Object.fromEntries(PASS_PLAY_CATEGORY_OPTIONS.map((category) => [category.id, category.label])),
   family_friendly: "Family Friendly"
-} as Record<ReviewCategoryId, string>;
-const CATEGORY_IDS: PassPlayCategoryId[] = PASS_PLAY_CATEGORY_OPTIONS.map((category) => category.id);
+} as unknown as Record<ReviewCategoryId, string>;
+const CATEGORY_IDS: FillCategoryId[] = PASS_PLAY_CATEGORY_OPTIONS.map((category) => category.id);
 const REVIEW_CATEGORY_IDS: ReviewCategoryId[] = [...CATEGORY_IDS, "family_friendly"];
 const currentDeck = filterStarterDeckByCategories([MIXED_PASS_PLAY_CATEGORY]) as PassPlayDeckCard[];
 const currentFamilyDeck = filterStarterDeckByCategories([MIXED_PASS_PLAY_CATEGORY, FAMILY_FRIENDLY_DECK_FILTER]);
@@ -199,7 +199,10 @@ const generatedIds = new Set(existingIds);
 
 const currentCounts = countBy(currentDeck, (card) => card.category);
 const familyCurrentCount = currentFamilyDeck.length;
-const regularNeeds = Object.fromEntries(CATEGORY_IDS.map((category) => [category, Math.max(0, TARGET_PER_CATEGORY - (currentCounts.get(category) ?? 0))])) as Record<PassPlayCategoryId, number>;
+const regularNeeds = Object.fromEntries(CATEGORY_IDS.map((category) => [
+  category,
+  Math.max(0, TARGET_PER_CATEGORY - (currentCounts.get(category) ?? 0))
+])) as Record<FillCategoryId, number>;
 const familyNeed = Math.max(0, TARGET_FAMILY_FRIENDLY - familyCurrentCount);
 
 const candidatesByCategory = Object.fromEntries(REVIEW_CATEGORY_IDS.map((category) => [category, []])) as unknown as Record<ReviewCategoryId, CandidateCard[]>;
@@ -215,9 +218,7 @@ async function main() {
     const wanted = regularNeeds[category];
     if (wanted === 0) continue;
 
-    const candidates = category === "situations"
-      ? generatedSituationCards(wanted)
-      : category === "animals_nature"
+    const candidates = category === "animals_nature"
         ? generatedAnimalsNatureCards(wanted)
       : await wikidataCardsForCategory(category, wanted);
 
@@ -238,7 +239,7 @@ async function main() {
   console.log(`Wrote ${allCandidates.length} candidates to ${OUTPUT_DIR}`);
 }
 
-async function wikidataCardsForCategory(category: PassPlayCategoryId, wanted: number): Promise<CandidateCard[]> {
+async function wikidataCardsForCategory(category: FillCategoryId, wanted: number): Promise<CandidateCard[]> {
   const sources = CATEGORY_SOURCES[category] ?? [];
   const cards: CandidateCard[] = [];
   for (const source of sources) {
@@ -271,7 +272,7 @@ async function wikidataCardsForCategory(category: PassPlayCategoryId, wanted: nu
   return cards;
 }
 
-async function wikipediaFallbackCardsForCategory(category: PassPlayCategoryId, wanted: number): Promise<CandidateCard[]> {
+async function wikipediaFallbackCardsForCategory(category: FillCategoryId, wanted: number): Promise<CandidateCard[]> {
   const categories = WIKIPEDIA_CATEGORY_FALLBACKS[category] ?? [];
   if (categories.length === 0 || wanted <= 0) return [];
 
@@ -414,26 +415,6 @@ function cleanTitle(value: string): string {
     .trim();
 }
 
-function generatedSituationCards(wanted: number): CandidateCard[] {
-  const roles = ["A chef", "A teacher", "A magician", "A robot", "A detective", "A pirate", "A superhero", "A movie star", "A vampire", "A time traveler", "A game show host", "A wedding planner", "A babysitter", "A taxi driver", "A lifeguard", "A substitute teacher", "A weather reporter", "A mall security guard", "A dentist", "A camp counselor", "A flight attendant", "A librarian", "A yoga instructor", "A dog walker", "A tour guide", "A barista", "A referee", "A news anchor", "A firefighter", "A crossing guard"];
-  const scenarios = ["losing their keys", "trying to order lunch", "stuck in an elevator", "hosting a surprise party", "learning to dance", "shopping on Black Friday", "running a garage sale", "using a broken phone", "trying to park a car", "getting caught in the rain", "assembling furniture", "taking a school photo", "riding a roller coaster", "at airport security", "on a first date", "in a spelling bee", "at karaoke night", "at a silent disco", "at a talent show", "in an escape room", "trying yoga", "camping for the first time", "at a costume contest", "making a cooking video", "teaching a pet trick", "giving a dramatic apology", "waiting at the DMV", "ordering from a drive-thru", "trying to be sneaky", "finding a spider"];
-  const cards: CandidateCard[] = [];
-  for (const role of roles) {
-    for (const scenario of scenarios) {
-      if (cards.length >= wanted) return cards;
-      const title = `${role} ${scenario}`.replace(/^A ([aeiou])/i, "An $1");
-      const card = makeCard({
-        title,
-        category: "situations",
-        description: `A funny situation where ${role.toLowerCase()} is ${scenario}.`,
-        source: "generated-situation-template"
-      });
-      if (card) cards.push(card);
-    }
-  }
-  return cards;
-}
-
 function generatedFamilyFriendlyCards(wanted: number): CandidateCard[] {
   const safeConcepts = [
     ...["Blue backpack", "Red lunchbox", "School bell", "Class pet", "Art class", "Recess", "Library card", "Book fair", "Science project", "Field day", "Bus driver", "Crossing guard", "Lost mitten", "Rain boots", "Snow angel", "Puddle jumping", "Sidewalk chalk", "Bubble bath", "Tooth fairy", "Bedtime story", "Pajama day", "Blanket fort", "Pillow mountain", "Stuffed animal parade", "LEGO tower", "Toy train", "Dollhouse", "Action figure", "Board game night", "Puzzle piece"],
@@ -484,6 +465,20 @@ function generatedFamilyFriendlyCards(wanted: number): CandidateCard[] {
 }
 
 function generatedAnimalsNatureCards(wanted: number): CandidateCard[] {
+  const specificDescriptions: Record<string, string> = {
+    Pufferfish: "A round fish famous for puffing itself up into a spiky balloon shape when threatened.",
+    Salmon: "A fish known for swimming upstream, leaping through rivers, and returning to spawn.",
+    Seahorse: "A tiny upright-swimming fish with a curled tail, horse-like head, and delicate snout.",
+    "Sea cucumber": "A soft tube-shaped ocean animal that crawls along the seafloor and can look like a leathery cucumber.",
+    "Sea turtle": "A marine reptile with flippers and a hard shell, known for nesting on sandy beaches.",
+    "Sea urchin": "A round spiny sea creature that clings to rocks and moves with tiny tube feet.",
+    Shrimp: "A small curved crustacean with long antennae, many legs, and a quick backward flicking swim.",
+    Squid: "A fast-swimming cephalopod with tentacles, fins, a torpedo-shaped body, and ink for escape.",
+    Starfish: "A sea star with five or more arms that creeps along the ocean floor on tiny tube feet.",
+    Stingray: "A flat ray that glides along the seafloor with wide wings and a long tail.",
+    Swordfish: "A large fast fish with a long sword-like bill and a sleek powerful body.",
+    Trout: "A freshwater fish often found in cold streams and lakes, known for quick darts and spotted sides."
+  };
   const groups = [
     {
       description: "A nature clue about this mammal, easy to describe with habitat, movement, or sounds.",
@@ -525,8 +520,8 @@ function generatedAnimalsNatureCards(wanted: number): CandidateCard[] {
       const card = makeCard({
         title,
         category: "animals_nature",
-        description: group.description,
-        source: "generated-animals-nature-list"
+        description: specificDescriptions[title] ?? group.description,
+        source: specificDescriptions[title] ? "curated-description" : "generated-animals-nature-list"
       });
       if (card) cards.push(card);
     }
@@ -559,8 +554,7 @@ function withArticle(value: string): string {
   return `${/^[aeiou]/i.test(value) ? "an" : "a"} ${value.toLowerCase()}`;
 }
 
-function generatedFallbackCards(category: PassPlayCategoryId, wanted: number): CandidateCard[] {
-  if (category === "situations") return generatedSituationCards(wanted);
+function generatedFallbackCards(category: FillCategoryId, wanted: number): CandidateCard[] {
   if (category === "animals_nature") return generatedAnimalsNatureCards(wanted);
   const cards: CandidateCard[] = [];
   const label = CATEGORY_LABELS[category] ?? category;

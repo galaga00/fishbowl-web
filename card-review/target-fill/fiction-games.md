@@ -11,8 +11,8 @@ How to review:
 - [x] Keep
 Category: fiction_games
 Title: chess
-Description: strategy board game.
-Source: http://www.wikidata.org/entity/Q718
+Description: A strategy board game where kings, queens, bishops, knights, rooks, and pawns battle across a checkered board.
+Source: curated-description
 
 ## Santa Claus
 - [x] Keep
@@ -39,8 +39,8 @@ Source: http://www.wikidata.org/entity/Q11411
 - [x] Keep
 Category: fiction_games
 Title: checkers
-Description: board game.
-Source: http://www.wikidata.org/entity/Q1293
+Description: A two-player board game where pieces move diagonally and jump opponents to capture them.
+Source: curated-description
 
 ## Robin Hood
 - [x] Keep
@@ -67,8 +67,8 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Monopoly
-Description: economics-themed board game.
-Source: http://www.wikidata.org/entity/Q17243
+Description: A real-estate board game about buying properties, charging rent, and trying not to go bankrupt.
+Source: curated-description
 
 ## Minnie Mouse
 - [x] Keep
@@ -550,15 +550,15 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Conan the Barbarian
-Description: fictional character created by Robert E. Howard.
-Source: http://www.wikidata.org/entity/Q189169
+Description: A sword-swinging fantasy warrior known for brute strength, survival, and pulp adventure.
+Source: curated-description
 
 ## Hannibal Lecter
 - [x] Keep
 Category: fiction_games
 Title: Hannibal Lecter
-Description: fictional character created by Thomas Harris.
-Source: http://www.wikidata.org/entity/Q211013
+Description: A brilliant and terrifying fictional cannibal psychiatrist with polished manners and a chilling stare.
+Source: curated-description
 
 ## Red Dead Redemption
 - [x] Keep
@@ -578,8 +578,8 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: C-3PO
-Description: A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.
-Source: http://www.wikidata.org/entity/Q51787
+Description: A fussy golden Star Wars protocol droid known for etiquette, translation, worrying, and arguing with R2-D2.
+Source: curated-description
 
 ## Lara Croft
 - [x] Keep
@@ -907,8 +907,8 @@ Source: http://www.wikidata.org/entity/Q3183235
 - [x] Keep
 Category: fiction_games
 Title: Borat
-Description: fictional character created and portrayed by Sacha Baron Cohen.
-Source: http://www.wikidata.org/entity/Q5651141
+Description: Sacha Baron Cohen's fictional Kazakh reporter known for awkward interviews and outrageous misunderstandings.
+Source: curated-description
 
 ## Felix the Cat
 - [x] Keep
@@ -984,8 +984,8 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: The Settlers of Catan
-Description: board game.
-Source: http://www.wikidata.org/entity/Q17271
+Description: A resource-trading board game about building roads, settlements, and cities on a hex-tile island.
+Source: curated-description
 
 ## Darth Maul
 - [x] Keep
@@ -998,8 +998,8 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Two-Face
-Description: A DC Comics character tied to capes, villains, secret identities, and comic-book drama.
-Source: http://www.wikidata.org/entity/Q295599
+Description: A scarred Batman villain who flips a coin to decide his split-personality crimes.
+Source: curated-description
 
 ## Ronald McDonald
 - [x] Keep
@@ -1019,8 +1019,8 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Batgirl
-Description: A DC Comics character tied to capes, villains, secret identities, and comic-book drama.
-Source: http://www.wikidata.org/entity/Q753713
+Description: A Gotham superhero with a bat-themed suit, detective skills, gadgets, and ties to Batman.
+Source: curated-description
 
 ## Crysis
 - [x] Keep
@@ -1082,15 +1082,15 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Kermit the Frog
-Description: Muppet character.
-Source: http://www.wikidata.org/entity/Q1107971
+Description: The green Muppet frog with a banjo, gentle leadership, and the song Rainbow Connection.
+Source: curated-description
 
 ## Hawkeye
 - [x] Keep
 Category: fiction_games
 Title: Hawkeye
-Description: A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.
-Source: http://www.wikidata.org/entity/Q19095
+Description: A Marvel archer known for a bow, trick arrows, sharp aim, and Avengers-level action.
+Source: curated-description
 
 ## Gregory House
 - [x] Keep
@@ -1138,8 +1138,8 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: snakes and ladders
-Description: board game.
-Source: http://www.wikidata.org/entity/Q697302
+Description: A classic board game where players climb ladders, slide down snakes, and race to the final square.
+Source: curated-description
 
 ## Gordon Freeman
 - [x] Keep
@@ -1152,15 +1152,15 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Count Dooku
-Description: A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.
-Source: http://www.wikidata.org/entity/Q51727
+Description: A refined Star Wars Sith lord and former Jedi, known for a curved lightsaber and aristocratic menace.
+Source: curated-description
 
 ## Doctor Doom
 - [x] Keep
 Category: fiction_games
 Title: Doctor Doom
-Description: A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.
-Source: http://www.wikidata.org/entity/Q430178
+Description: The armored ruler of Latveria, a Marvel villain with a metal mask, genius inventions, and sorcery.
+Source: curated-description
 
 ## Bella Swan
 - [x] Keep
@@ -1194,8 +1194,8 @@ Source: http://www.wikidata.org/entity/Q21515016
 - [x] Keep
 Category: fiction_games
 Title: Robin
-Description: A DC Comics character tied to capes, villains, secret identities, and comic-book drama.
-Source: http://www.wikidata.org/entity/Q59996
+Description: Batman's acrobatic sidekick, known for a bright costume, detective work, and youthful crimefighting.
+Source: curated-description
 
 ## Patrick Star
 - [x] Keep
@@ -1278,8 +1278,8 @@ Source: http://www.wikidata.org/entity/Q16276
 - [x] Keep
 Category: fiction_games
 Title: Riddler
-Description: A DC Comics character tied to capes, villains, secret identities, and comic-book drama.
-Source: http://www.wikidata.org/entity/Q836789
+Description: A Batman villain obsessed with puzzles, question marks, elaborate traps, and proving his cleverness.
+Source: curated-description
 
 ## Gaara
 - [x] Keep
@@ -1299,8 +1299,8 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Itachi Uchiha
-Description: A Naruto character tied to ninja villages, jutsu, rivalries, and anime battles.
-Source: http://www.wikidata.org/entity/Q1043344
+Description: A calm Naruto shinobi with Sharingan eyes, black cloak, crows, and a tragic bond with Sasuke.
+Source: curated-description
 
 ## Phoebe Buffay
 - [x] Keep
@@ -1320,8 +1320,8 @@ Source: http://www.wikidata.org/entity/Q716636
 - [x] Keep
 Category: fiction_games
 Title: Slender Man
-Description: A recognizable fictional character with a distinctive look, personality, or story role.
-Source: http://www.wikidata.org/entity/Q7540067
+Description: A tall faceless internet horror figure in a black suit, often linked to forests and eerie photos.
+Source: curated-description
 
 ## Porky Pig
 - [x] Keep
@@ -1432,8 +1432,8 @@ Source: http://www.wikidata.org/entity/Q15984270
 - [x] Keep
 Category: fiction_games
 Title: Battleship
-Description: guessing game.
-Source: http://www.wikidata.org/entity/Q953491
+Description: A guessing board game where players call grid coordinates to find and sink hidden ships.
+Source: curated-description
 
 ## correspondence chess
 - [x] Keep
@@ -1446,8 +1446,8 @@ Source: http://www.wikidata.org/entity/Q1128406
 - [x] Keep
 Category: fiction_games
 Title: Boba Fett
-Description: A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.
-Source: http://www.wikidata.org/entity/Q51790
+Description: A helmeted Star Wars bounty hunter with Mandalorian armor, a jetpack, and a famously quiet menace.
+Source: curated-description
 
 ## James T. Kirk
 - [x] Keep
@@ -1467,8 +1467,8 @@ Source: http://www.wikidata.org/entity/Q1616457
 - [x] Keep
 Category: fiction_games
 Title: Abraham Van Helsing
-Description: fictional character created by Bram Stoker.
-Source: http://www.wikidata.org/entity/Q1622359
+Description: The vampire-hunting professor from Dracula, known for garlic, stakes, and occult expertise.
+Source: curated-description
 
 ## Rachel Green
 - [x] Keep
@@ -1509,22 +1509,22 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Ahsoka Tano
-Description: A Star Wars character tied to Jedi, Sith, spaceships, lightsabers, and the galaxy far, far away.
-Source: http://www.wikidata.org/entity/Q51755
+Description: An orange-and-white former Jedi with twin lightsabers, montrals, and a close history with Anakin.
+Source: curated-description
 
 ## Woody Woodpecker
 - [x] Keep
 Category: fiction_games
 Title: Woody Woodpecker
-Description: fictional bird.
-Source: http://www.wikidata.org/entity/Q741321
+Description: A red-headed cartoon bird known for a wild laugh, mischief, and rapid-fire pecking.
+Source: curated-description
 
 ## Magneto
 - [x] Keep
 Category: fiction_games
 Title: Magneto
-Description: A Marvel Comics character tied to superheroes, costumes, powers, and comic-book action.
-Source: http://www.wikidata.org/entity/Q840291
+Description: An X-Men mutant master of magnetism, often shown with a helmet, cape, and militant mutant cause.
+Source: curated-description
 
 ## Prince of Persia: The Sands of Time
 - [x] Keep
@@ -1642,15 +1642,15 @@ Source: curated-description
 - [x] Keep
 Category: fiction_games
 Title: Risk
-Description: board game.
-Source: http://www.wikidata.org/entity/Q12541
+Description: A world-conquest board game about armies, territories, dice battles, and fragile alliances.
+Source: curated-description
 
 ## Senet
 - [x] Keep
 Category: fiction_games
 Title: Senet
-Description: ancient Egyptian board game.
-Source: http://www.wikidata.org/entity/Q582169
+Description: An ancient Egyptian board game played on a grid of squares with racing pieces and symbolic rules.
+Source: curated-description
 
 ## Dr. Eggman
 - [x] Keep
@@ -1684,8 +1684,8 @@ Source: http://www.wikidata.org/entity/Q842104
 - [x] Keep
 Category: fiction_games
 Title: Captain Nemo
-Description: fictional character created by Jules Verne.
-Source: http://www.wikidata.org/entity/Q1046049
+Description: Jules Verne's mysterious submarine captain who commands the Nautilus under the sea.
+Source: curated-description
 
 ## Tweety
 - [x] Keep
