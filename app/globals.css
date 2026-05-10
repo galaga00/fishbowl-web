@@ -332,6 +332,10 @@ a {
   object-position: center;
 }
 
+.how-to-illustration-frame:not(.bleed) .how-to-art {
+  transform: translateY(clamp(-78px, -8svh, -46px));
+}
+
 .how-to-illustration-frame.bleed .how-to-art {
   object-fit: cover;
   object-position: center top;
