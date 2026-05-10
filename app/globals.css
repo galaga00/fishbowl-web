@@ -971,12 +971,6 @@ a {
 }
 
 .ready-toast {
-  position: fixed;
-  left: max(14px, env(safe-area-inset-left));
-  right: max(14px, env(safe-area-inset-right));
-  bottom: max(18px, env(safe-area-inset-bottom));
-  z-index: 1000;
-  pointer-events: none;
   border: 1px solid rgba(20, 83, 45, 0.26);
   border-radius: 8px;
   background: #14532d;

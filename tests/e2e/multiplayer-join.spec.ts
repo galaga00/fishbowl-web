@@ -119,4 +119,39 @@ test.describe("Multiplayer joining", () => {
       await playerContext.close();
     }
   });
+
+  test("host ready message does not cover the start game button", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Create Game" }).click();
+
+    await expect(page.getByRole("heading", { name: "Mode" })).toBeVisible();
+    const gameId = page.url().match(/\/game\/([^/?#]+)/)?.[1];
+    expect(gameId).toBeTruthy();
+    createdGameIds.push(gameId!);
+
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Prompts" })).toBeVisible();
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Teams" })).toBeVisible();
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
+    await clickIfStillOnPage(page, "Create lobby", "Lobby");
+
+    await page.getByLabel("Prompts").fill(["Moon landing", "Pizza oven", "Tap dance"].join("\n"));
+    await page.getByRole("button", { name: "Submit 3 prompts" }).click();
+    await expect(page.locator(".ready-toast")).toBeVisible();
+
+    const readyBox = await page.locator(".ready-toast").boundingBox();
+    const startBox = await page.getByRole("button", { name: "Start game" }).boundingBox();
+    expect(readyBox).toBeTruthy();
+    expect(startBox).toBeTruthy();
+
+    const overlapsStartButton =
+      readyBox!.x < startBox!.x + startBox!.width &&
+      readyBox!.x + readyBox!.width > startBox!.x &&
+      readyBox!.y < startBox!.y + startBox!.height &&
+      readyBox!.y + readyBox!.height > startBox!.y;
+
+    expect(overlapsStartButton).toBe(false);
+  });
 });
