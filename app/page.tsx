@@ -143,7 +143,7 @@ export default function Home() {
               alt=""
               fill
               priority
-              sizes="(max-width: 520px) min(76vw, calc(100svh - 250px)), 320px"
+              sizes="(max-width: 520px) min(100vw, 430px), 430px"
             />
           </div>
         ) : (
