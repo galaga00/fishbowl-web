@@ -1245,6 +1245,7 @@ function Lobby({
   onStart: () => void;
 }) {
   const [draftReadyToastVisible, setDraftReadyToastVisible] = useState(false);
+  const [promptReadyToastVisible, setPromptReadyToastVisible] = useState(false);
   const [selectedDraftOrder, setSelectedDraftOrder] = useState<string[]>([]);
   const myPromptCount = getPromptCountForPlayer(me.id, snapshot.prompts);
   const myDraftCards = useMemo(() => snapshot.draftCards.filter((card) => card.player_id === me.id), [me.id, snapshot.draftCards]);
@@ -1278,6 +1279,7 @@ function Lobby({
   const showTeamStep = !isHost && !passAndPlay && (needsTeam || !teamStepAcknowledged);
   const requiredDraftCount = snapshot.game.cards_kept_per_player;
   const draftIsReady = isDeckDraft && myDraftSelectedCount >= requiredDraftCount;
+  const promptIsReady = !isDeckDraft && !passAndPlay && submittedPromptCount >= requiredPromptCount;
   const allPlayersHaveTeams = snapshot.players.every((player) => Boolean(player.team_id));
   const canStart = promptProgress.isComplete && allPlayersHaveTeams;
   const progressLabel = passAndPlayDeck ? "Card deck" : isDeckDraft ? "Draft progress" : "Prompt progress";
@@ -1308,6 +1310,15 @@ function Lobby({
 
     setDraftReadyToastVisible(true);
   }, [draftIsReady, needsTeam]);
+
+  useEffect(() => {
+    if (!promptIsReady || needsTeam) {
+      setPromptReadyToastVisible(false);
+      return;
+    }
+
+    setPromptReadyToastVisible(true);
+  }, [promptIsReady, needsTeam]);
 
   function handleStartClick() {
     if (startBlockMessage) {
@@ -1364,10 +1375,12 @@ function Lobby({
   ) : (
     <form className="card stack" onSubmit={onPromptSubmit}>
       <h2>Submit prompts</h2>
-      <p className="task-callout">
+      <p className={promptIsReady ? "task-callout success" : "task-callout"}>
         {needsTeam
           ? "Choose a team first."
-          : passAndPlay
+          : promptIsReady
+            ? "You're ready. Waiting for the host to start."
+            : passAndPlay
             ? `Add prompts for the group. Shared prompts: ${snapshot.prompts.length} / ${sharedPromptTarget}.`
             : `Add your prompts. You have ${myPromptsLeft} left.`}
       </p>
@@ -1408,6 +1421,11 @@ function Lobby({
           ? `Submit ${Math.min(myPromptsLeft, pendingPromptCount) || ""} prompt${Math.min(myPromptsLeft, pendingPromptCount) === 1 ? "" : "s"}`
           : "All prompts submitted"}
       </button>
+      {promptReadyToastVisible ? (
+        <div className="ready-toast" role="status" aria-live="polite">
+          You&apos;re ready. Waiting for the host.
+        </div>
+      ) : null}
     </form>
   );
 

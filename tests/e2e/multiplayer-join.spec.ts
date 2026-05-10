@@ -56,6 +56,11 @@ test.describe("Multiplayer joining", () => {
       await playerPage.getByRole("button", { name: "Continue" }).click();
       await expect(playerPage.getByRole("heading", { name: "Lobby" })).toBeVisible();
       await expect(page.getByText("Mira")).toBeVisible();
+
+      await playerPage.getByLabel("Prompts").fill(["Moon landing", "Pizza oven", "Tap dance"].join("\n"));
+      await playerPage.getByRole("button", { name: "Submit 3 prompts" }).click();
+      await expect(playerPage.getByText("You're ready. Waiting for the host to start.")).toBeVisible();
+      await expect(playerPage.locator(".ready-toast")).toBeVisible();
     } finally {
       await playerContext.close();
     }
