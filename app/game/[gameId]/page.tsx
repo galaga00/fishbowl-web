@@ -71,6 +71,7 @@ export default function GamePage() {
   const gameId = params.gameId;
   const [snapshot, setSnapshot] = useState<GameSnapshot | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
+  const [acknowledgedLobbyTeamId, setAcknowledgedLobbyTeamId] = useState<string | null>(null);
   const [joinName, setJoinName] = useState("");
   const [promptText, setPromptText] = useState("");
   const [categoryPromptValues, setCategoryPromptValues] = useState<string[]>([]);
@@ -184,6 +185,7 @@ export default function GamePage() {
       const { player } = await joinGame(snapshot.game.code, joinName);
       localStorage.setItem(getPlayerStorageKey(snapshot.game.id), player.id);
       setPlayerId(player.id);
+      setAcknowledgedLobbyTeamId(null);
       trackSnapshotEvent("player_joined", snapshot, {
         joinedPlayerId: player.id,
         source: "game_join"
@@ -195,6 +197,7 @@ export default function GamePage() {
     if (!snapshot) return;
     localStorage.setItem(getPlayerStorageKey(snapshot.game.id), nextPlayerId);
     setPlayerId(nextPlayerId);
+    setAcknowledgedLobbyTeamId(null);
   }
 
   async function handleNameSave(event: FormEvent<HTMLFormElement>) {
@@ -330,6 +333,7 @@ export default function GamePage() {
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(joinUrl)}`;
   const shareText = `Join my Fish Bowl game: ${joinUrl}`;
   const prioritizePlay = snapshot.game.phase === "ready" || snapshot.game.phase === "playing" || snapshot.game.phase === "paused";
+  const prioritizePrimaryTask = prioritizePlay || (!isHost && (!me || snapshot.game.phase === "lobby"));
 
   async function handleShareJoinLink() {
     if (navigator.share) {
@@ -345,7 +349,7 @@ export default function GamePage() {
   }
 
   return (
-    <main className={prioritizePlay ? "shell play-priority-shell" : "shell"}>
+    <main className={prioritizePrimaryTask ? "shell play-priority-shell" : "shell"}>
       <header className="topbar">
         <div className="brand">
           <strong>Fish Bowl</strong>
@@ -458,6 +462,8 @@ export default function GamePage() {
             onChooseTeam={handleChooseTeam}
             onAssignPlayerToTeam={handleAssignPlayerToTeam}
             onDraftCardToggle={handleDraftCardToggle}
+            teamStepAcknowledged={Boolean(me.team_id && acknowledgedLobbyTeamId === me.team_id)}
+            onTeamStepContinue={() => setAcknowledgedLobbyTeamId(me.team_id)}
             onStart={() =>
               runAction(async () => {
                 await startGame(snapshot);
@@ -1213,6 +1219,8 @@ function Lobby({
   onChooseTeam,
   onAssignPlayerToTeam,
   onDraftCardToggle,
+  teamStepAcknowledged,
+  onTeamStepContinue,
   onStart
 }: {
   snapshot: GameSnapshot;
@@ -1232,6 +1240,8 @@ function Lobby({
   onChooseTeam: (teamId: string) => void;
   onAssignPlayerToTeam: (playerId: string, teamId: string) => void;
   onDraftCardToggle: (draftCardId: string, selected: boolean) => void;
+  teamStepAcknowledged: boolean;
+  onTeamStepContinue: () => void;
   onStart: () => void;
 }) {
   const myPromptCount = getPromptCountForPlayer(me.id, snapshot.prompts);
@@ -1260,6 +1270,8 @@ function Lobby({
   const canSubmitPrompts = !isDeckDraft && myPromptsLeft > 0 && pendingPromptCount > 0;
   const canSelfSwitchTeams = snapshot.game.team_assignment_mode === "choose" && !passAndPlay;
   const needsTeam = canSelfSwitchTeams && !me.team_id;
+  const assignedTeam = snapshot.teams.find((team) => team.id === me.team_id) ?? null;
+  const showTeamStep = !isHost && !passAndPlay && (needsTeam || !teamStepAcknowledged);
   const allPlayersHaveTeams = snapshot.players.every((player) => Boolean(player.team_id));
   const canStart = promptProgress.isComplete && allPlayersHaveTeams;
   const progressLabel = passAndPlayDeck ? "Card deck" : isDeckDraft ? "Draft progress" : "Prompt progress";
@@ -1282,8 +1294,120 @@ function Lobby({
     onStart();
   }
 
+  const playerTask = passAndPlayDeck ? (
+    <section className="card stack">
+      <h2>Card deck ready</h2>
+      <p className="muted">
+        {snapshot.prompts.length} cards are loaded for this one-phone game. Start when teams look right.
+      </p>
+    </section>
+  ) : isDeckDraft ? (
+    <section className="card stack">
+      <h2>Pick your cards</h2>
+      <p className="task-callout">
+        {needsTeam
+          ? "Choose a team first."
+          : `Pick ${snapshot.game.cards_kept_per_player} cards for the shared deck. Selected ${myDraftSelectedCount} of ${snapshot.game.cards_kept_per_player}.`}
+      </p>
+      <div className="draft-grid">
+        {myDraftCards.map((card) => (
+          <button
+            className={card.selected ? "draft-card selected" : "draft-card"}
+            disabled={busy || needsTeam || (!card.selected && myDraftSelectedCount >= snapshot.game.cards_kept_per_player)}
+            key={card.id}
+            onClick={() => onDraftCardToggle(card.id, !card.selected)}
+            type="button"
+          >
+            <span className={card.selected ? "pill" : "pill pending"}>{card.selected ? "Picked" : "Available"}</span>
+            <strong>{card.title}</strong>
+            <span>{card.description}</span>
+          </button>
+        ))}
+      </div>
+    </section>
+  ) : (
+    <form className="card stack" onSubmit={onPromptSubmit}>
+      <h2>Submit prompts</h2>
+      <p className="task-callout">
+        {needsTeam
+          ? "Choose a team first."
+          : passAndPlay
+            ? `Add prompts for the group. Shared prompts: ${snapshot.prompts.length} / ${sharedPromptTarget}.`
+            : `Add your prompts. You have ${myPromptsLeft} left.`}
+      </p>
+      {snapshot.game.prompt_mode === "category" ? (
+        <div className="stack">
+          {remainingCategories.map((category, index) => (
+            <div className="field category-field" key={`${category}-${index}`}>
+              <label htmlFor={`category-prompt-${index}`}>Write a prompt for</label>
+              <strong>{category}</strong>
+              <input
+                className="input"
+                id={`category-prompt-${index}`}
+                value={categoryPromptValues[index] ?? ""}
+                onChange={(event) => {
+                  const nextValues = [...categoryPromptValues];
+                  nextValues[index] = event.target.value;
+                  setCategoryPromptValues(nextValues);
+                }}
+                placeholder={category.includes(" ") ? "Your funny answer" : category}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="field">
+          <label htmlFor="prompts">Prompts</label>
+          <textarea
+            className="textarea"
+            id="prompts"
+            value={promptText}
+            onChange={(event) => setPromptText(event.target.value)}
+            placeholder="Write anything you want, just make sure people can actually guess it!"
+          />
+        </div>
+      )}
+      <button className="button accent" disabled={busy || needsTeam || !canSubmitPrompts}>
+        {myPromptsLeft > 0
+          ? `Submit ${Math.min(myPromptsLeft, pendingPromptCount) || ""} prompt${Math.min(myPromptsLeft, pendingPromptCount) === 1 ? "" : "s"}`
+          : "All prompts submitted"}
+      </button>
+    </form>
+  );
+
+  if (showTeamStep) {
+    return (
+      <div className="stack">
+        <section className="card stack primary-step-card">
+          <h2>{needsTeam ? "Pick a team" : "Team selected"}</h2>
+          <p className="task-callout">
+            {needsTeam
+              ? `Choose your team before ${isDeckDraft ? "picking cards" : "submitting prompts"}.`
+              : `You're on ${assignedTeam?.name ?? "your team"}. Head to ${isDeckDraft ? "card picking" : "prompt submission"} when you're ready.`}
+          </p>
+          {needsTeam ? (
+            <div className="team-choice-grid">
+              {snapshot.teams.map((team) => (
+                <button className="team-choice" key={team.id} onClick={() => onChooseTeam(team.id)} disabled={busy}>
+                  <strong>{team.name}</strong>
+                  <span>{getTeamRoster(team.id, snapshot.players).length} players</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <button className="button accent" type="button" onClick={onTeamStepContinue} disabled={busy}>
+              Continue
+            </button>
+          )}
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="stack">
+      {!isHost ? playerTask : null}
+
       <section className="card stack">
         <h2>Lobby</h2>
         <p className="muted">
@@ -1333,86 +1457,7 @@ function Lobby({
         </form>
       ) : null}
 
-      {passAndPlayDeck ? (
-        <section className="card stack">
-          <h2>Card deck ready</h2>
-          <p className="muted">
-            {snapshot.prompts.length} cards are loaded for this one-phone game. Start when teams look right.
-          </p>
-        </section>
-      ) : isDeckDraft ? (
-        <section className="card stack">
-          <h2>Pick your cards</h2>
-          <p className="muted">
-            {needsTeam
-              ? "Choose a team first."
-              : `Chosen ${myDraftSelectedCount} of ${snapshot.game.cards_kept_per_player}. These become the shared deck.`}
-          </p>
-          <div className="draft-grid">
-            {myDraftCards.map((card) => (
-              <button
-                className={card.selected ? "draft-card selected" : "draft-card"}
-                disabled={busy || needsTeam || (!card.selected && myDraftSelectedCount >= snapshot.game.cards_kept_per_player)}
-                key={card.id}
-                onClick={() => onDraftCardToggle(card.id, !card.selected)}
-                type="button"
-              >
-                <span className={card.selected ? "pill" : "pill pending"}>{card.selected ? "Picked" : "Available"}</span>
-                <strong>{card.title}</strong>
-                <span>{card.description}</span>
-              </button>
-            ))}
-          </div>
-        </section>
-      ) : (
-        <form className="card stack" onSubmit={onPromptSubmit}>
-          <h2>Submit prompts</h2>
-          <p className="muted">
-            {needsTeam
-              ? "Choose a team first."
-              : passAndPlay
-                ? `Shared prompts: ${snapshot.prompts.length} / ${sharedPromptTarget}`
-                : `Your prompts: ${myPromptCount} / ${snapshot.game.prompts_per_player}`}
-          </p>
-          {snapshot.game.prompt_mode === "category" ? (
-            <div className="stack">
-              {remainingCategories.map((category, index) => (
-                <div className="field category-field" key={`${category}-${index}`}>
-                  <label htmlFor={`category-prompt-${index}`}>Write a prompt for</label>
-                  <strong>{category}</strong>
-                  <input
-                    className="input"
-                    id={`category-prompt-${index}`}
-                    value={categoryPromptValues[index] ?? ""}
-                    onChange={(event) => {
-                      const nextValues = [...categoryPromptValues];
-                      nextValues[index] = event.target.value;
-                      setCategoryPromptValues(nextValues);
-                    }}
-                    placeholder={category.includes(" ") ? "Your funny answer" : category}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="field">
-              <label htmlFor="prompts">Prompts</label>
-              <textarea
-                className="textarea"
-                id="prompts"
-                value={promptText}
-                onChange={(event) => setPromptText(event.target.value)}
-                placeholder="Write anything you want, just make sure people can actually guess it!"
-              />
-            </div>
-          )}
-          <button className="button accent" disabled={busy || needsTeam || !canSubmitPrompts}>
-            {myPromptsLeft > 0
-              ? `Submit ${Math.min(myPromptsLeft, pendingPromptCount) || ""} prompt${Math.min(myPromptsLeft, pendingPromptCount) === 1 ? "" : "s"}`
-              : "All prompts submitted"}
-          </button>
-        </form>
-      )}
+      {isHost ? playerTask : null}
 
       {isHost ? (
         <section className="card stack">
