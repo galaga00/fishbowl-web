@@ -63,5 +63,10 @@ test.describe("Pass & Play game loop", () => {
     await page.getByRole("button", { name: "Skip" }).click();
     await expect(prompt).not.toHaveText(promptBeforeSkip ?? "");
     await expect(page.getByRole("button", { name: "End turn" })).toBeEnabled();
+    await page.getByRole("button", { name: "End turn" }).click();
+    await expect(page.getByText("End this turn?")).toBeVisible();
+    await expect(page.getByRole("button", { name: "End now" })).toBeVisible();
+    await page.getByRole("button", { name: "Cancel" }).click();
+    await expect(page.getByRole("button", { name: "End turn" })).toBeVisible();
   });
 });
