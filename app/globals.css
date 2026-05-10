@@ -1199,9 +1199,9 @@ a {
 .ghost-danger {
   width: 100%;
   min-height: 46px;
-  border: 1px solid #f2b8b5;
-  background: #fff4f2;
-  color: #7f1d1d;
+  border: 1px solid #9f1d17;
+  background: #b42318;
+  color: white;
 }
 
 .end-turn-confirm {
