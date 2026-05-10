@@ -60,4 +60,46 @@ test.describe("Multiplayer joining", () => {
       await playerContext.close();
     }
   });
+
+  test("a joining player chooses a team before picking cards", async ({ browser, page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: "Create Game" }).click();
+
+    await expect(page.getByRole("heading", { name: "Mode" })).toBeVisible();
+    const gameId = page.url().match(/\/game\/([^/?#]+)/)?.[1];
+    expect(gameId).toBeTruthy();
+    createdGameIds.push(gameId!);
+
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Prompts" })).toBeVisible();
+    await page.getByRole("button", { name: "Deck draft" }).click();
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Teams" })).toBeVisible();
+    await page.getByRole("button", { name: "Players choose" }).click();
+    await page.getByRole("button", { name: "Next", exact: true }).click();
+    await expect(page.getByRole("heading", { name: "Review" })).toBeVisible();
+    await clickIfStillOnPage(page, "Create lobby", "Lobby");
+
+    const joinCode = (await page.locator(".code").textContent())?.trim();
+    expect(joinCode).toBeTruthy();
+
+    const playerContext = await browser.newContext();
+    const playerPage = await playerContext.newPage();
+    try {
+      await playerPage.goto("/");
+      await playerPage.getByRole("button", { name: "Join Game" }).click();
+      await playerPage.getByLabel("Your name").fill("Noor");
+      await playerPage.getByLabel("Join code").fill(joinCode!);
+      await playerPage.getByRole("button", { name: "Join Game" }).click();
+
+      await expect(playerPage.getByRole("heading", { name: "Pick a team" })).toBeVisible();
+      await playerPage.getByRole("button", { name: "Team 2" }).click();
+      await expect(playerPage.getByRole("heading", { name: "Team selected" })).toBeVisible();
+      await expect(playerPage.getByText("You're on Team 2.")).toBeVisible();
+      await playerPage.getByRole("button", { name: "Continue" }).click();
+      await expect(playerPage.getByRole("heading", { name: "Pick your cards" })).toBeVisible();
+    } finally {
+      await playerContext.close();
+    }
+  });
 });
