@@ -490,24 +490,6 @@ a {
   font-size: 1.2rem;
 }
 
-.primary-step-card h2 {
-  font-size: clamp(1.7rem, 8vw, 2.35rem);
-  line-height: 1.05;
-}
-
-.task-callout {
-  border: 1px solid rgba(15, 118, 110, 0.28);
-  border-left: 6px solid var(--accent);
-  border-radius: 8px;
-  background: #e8f5f2;
-  color: var(--accent-strong);
-  margin: 0;
-  padding: 12px 13px;
-  font-size: 1.05rem;
-  font-weight: 900;
-  line-height: 1.32;
-}
-
 .field {
   display: grid;
   gap: 7px;
