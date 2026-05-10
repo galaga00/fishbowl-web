@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -1246,7 +1247,9 @@ function Lobby({
 }) {
   const [draftReadyToastVisible, setDraftReadyToastVisible] = useState(false);
   const [promptReadyToastVisible, setPromptReadyToastVisible] = useState(false);
+  const [readyToastBottomOffset, setReadyToastBottomOffset] = useState(18);
   const [selectedDraftOrder, setSelectedDraftOrder] = useState<string[]>([]);
+  const startGameButtonRef = useRef<HTMLButtonElement | null>(null);
   const myPromptCount = getPromptCountForPlayer(me.id, snapshot.prompts);
   const myDraftCards = useMemo(() => snapshot.draftCards.filter((card) => card.player_id === me.id), [me.id, snapshot.draftCards]);
   const selectedDraftIds = useMemo(() => myDraftCards.filter((card) => card.selected).map((card) => card.id), [myDraftCards]);
@@ -1282,6 +1285,9 @@ function Lobby({
   const promptIsReady = !isDeckDraft && !passAndPlay && submittedPromptCount >= requiredPromptCount;
   const allPlayersHaveTeams = snapshot.players.every((player) => Boolean(player.team_id));
   const canStart = promptProgress.isComplete && allPlayersHaveTeams;
+  const readyToastVisible = draftReadyToastVisible || promptReadyToastVisible;
+  const readyToastStyle =
+    isHost && readyToastVisible ? ({ "--ready-toast-bottom": `${readyToastBottomOffset}px` } as CSSProperties) : undefined;
   const progressLabel = passAndPlayDeck ? "Card deck" : isDeckDraft ? "Draft progress" : "Prompt progress";
   const teamBalanceWarning = getTeamBalanceWarning(snapshot);
   const startBlockMessage = getLobbyStartBlockMessage(snapshot, promptProgress);
@@ -1319,6 +1325,34 @@ function Lobby({
 
     setPromptReadyToastVisible(true);
   }, [promptIsReady, needsTeam]);
+
+  useEffect(() => {
+    if (!isHost || !readyToastVisible) {
+      setReadyToastBottomOffset(18);
+      return;
+    }
+
+    function updateReadyToastOffset() {
+      const buttonRect = startGameButtonRef.current?.getBoundingClientRect();
+      if (!buttonRect || buttonRect.top >= window.innerHeight || buttonRect.bottom <= 0) {
+        setReadyToastBottomOffset(18);
+        return;
+      }
+
+      const offsetAboveStartButton = Math.ceil(window.innerHeight - buttonRect.top + 18);
+      const maxOffset = Math.max(18, window.innerHeight - 120);
+      setReadyToastBottomOffset(Math.min(Math.max(18, offsetAboveStartButton), maxOffset));
+    }
+
+    updateReadyToastOffset();
+    window.addEventListener("resize", updateReadyToastOffset);
+    window.addEventListener("scroll", updateReadyToastOffset, { passive: true });
+
+    return () => {
+      window.removeEventListener("resize", updateReadyToastOffset);
+      window.removeEventListener("scroll", updateReadyToastOffset);
+    };
+  }, [isHost, readyToastVisible, promptProgress.submittedTotal, promptProgress.requiredTotal, snapshot.players.length]);
 
   function handleStartClick() {
     if (startBlockMessage) {
@@ -1367,7 +1401,7 @@ function Lobby({
         })}
       </div>
       {draftReadyToastVisible ? (
-        <div className="ready-toast" role="status" aria-live="polite">
+        <div className="ready-toast" role="status" aria-live="polite" style={readyToastStyle}>
           You&apos;re ready. Waiting for the host.
         </div>
       ) : null}
@@ -1422,7 +1456,7 @@ function Lobby({
           : "All prompts submitted"}
       </button>
       {promptReadyToastVisible ? (
-        <div className="ready-toast" role="status" aria-live="polite">
+        <div className="ready-toast" role="status" aria-live="polite" style={readyToastStyle}>
           You&apos;re ready. Waiting for the host.
         </div>
       ) : null}
@@ -1527,7 +1561,7 @@ function Lobby({
               : `${snapshot.game.prompts_per_player} / ${snapshot.game.prompts_per_player} prompts`}.
             {!allPlayersHaveTeams ? " Everyone also needs a team." : ""}
           </p>
-          <button className="button blue" disabled={busy || (!isDeckDraft && promptCount < 1)} onClick={handleStartClick}>
+          <button className="button blue" disabled={busy || (!isDeckDraft && promptCount < 1)} onClick={handleStartClick} ref={startGameButtonRef}>
             Start game
           </button>
           {!canStart || expectedPlayerWarning ? (
