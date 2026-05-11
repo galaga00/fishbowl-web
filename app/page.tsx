@@ -134,11 +134,13 @@ export default function Home() {
         {mode === "howTo" ? (
           <div
             className={howToIndex === 0 ? "home-illustration-frame how-to-illustration-frame bleed" : "home-illustration-frame how-to-illustration-frame"}
+            key="how-to-illustration"
             role="img"
             aria-label="How to play artwork."
           >
             <Image
               className="how-to-art"
+              key={`how-to-step-${howToIndex}`}
               src={ASSETS.art.howTo.steps[howToIndex]}
               alt=""
               fill
@@ -147,7 +149,7 @@ export default function Home() {
             />
           </div>
         ) : (
-          <div className="home-illustration-frame" role="img" aria-label="A fish singing into a microphone inside a fish bowl.">
+          <div className="home-illustration-frame" key="home-illustration" role="img" aria-label="A fish singing into a microphone inside a fish bowl.">
             <Image
               className="home-art-layer home-art-bottom"
               src={ASSETS.art.home.fishBowlLayers.bottom}

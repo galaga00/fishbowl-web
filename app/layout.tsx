@@ -10,6 +10,14 @@ const titanOne = Titan_One({
   display: "swap"
 });
 
+const howToPreloadImages = [
+  "/assets/art/how-to/step-1.png",
+  "/assets/art/how-to/step-2.png",
+  "/assets/art/how-to/step-3.png",
+  "/assets/art/how-to/step-4.png",
+  "/assets/art/how-to/step-5.png"
+];
+
 export const metadata: Metadata = {
   title: "Fish Bowl",
   description: "A mobile-first party guessing game",
@@ -47,6 +55,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
+      <head>
+        {howToPreloadImages.map((imagePath) => (
+          <link as="image" href={imagePath} key={imagePath} rel="preload" />
+        ))}
+      </head>
       <body className={titanOne.variable}>
         <AnalyticsPageView />
         {children}
