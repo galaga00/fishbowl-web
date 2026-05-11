@@ -145,6 +145,7 @@ export default function Home() {
               alt=""
               fill
               priority
+              unoptimized
               sizes="(max-width: 520px) min(100vw, 430px), 430px"
             />
           </div>

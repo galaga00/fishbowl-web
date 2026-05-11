@@ -19,8 +19,10 @@ test.describe("Home how-to artwork", () => {
     const naturalWidth = await page.locator(".how-to-art").evaluate((image) => (image as HTMLImageElement).naturalWidth);
     expect(naturalWidth).toBeGreaterThan(0);
     await expect(page.locator(".how-to-art")).toHaveAttribute("src", /step-1\.png/);
+    await expect(page.locator(".how-to-art")).not.toHaveAttribute("src", /_next\/image/);
 
     await page.getByRole("button", { name: "Next", exact: true }).click();
     await expect(page.locator(".how-to-art")).toHaveAttribute("src", /step-2\.png/);
+    await expect(page.locator(".how-to-art")).not.toHaveAttribute("src", /_next\/image/);
   });
 });
