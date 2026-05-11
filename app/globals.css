@@ -341,6 +341,17 @@ a {
   object-position: center top;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .how-to-illustration-frame.bleed {
+    width: min(calc(100% + 24px), 560px);
+    overflow: visible;
+  }
+
+  .how-to-illustration-frame.bleed .how-to-art {
+    object-fit: contain;
+  }
+}
+
 .how-to-nav {
   position: relative;
   z-index: 2;

@@ -25,4 +25,14 @@ test.describe("Home how-to artwork", () => {
     await expect(page.locator(".how-to-art")).toHaveAttribute("src", /step-2\.png/);
     await expect(page.locator(".how-to-art")).not.toHaveAttribute("src", /_next\/image/);
   });
+
+  test("contains the first how-to image in tall desktop browsers", async ({ page }) => {
+    await page.setViewportSize({ width: 544, height: 1274 });
+    await page.goto("/");
+
+    await page.getByRole("button", { name: "How to Play" }).click();
+    await expect(page.locator(".how-to-art")).toBeVisible();
+
+    await expect(page.locator(".how-to-illustration-frame.bleed .how-to-art")).toHaveCSS("object-fit", "contain");
+  });
 });
