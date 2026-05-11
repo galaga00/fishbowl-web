@@ -12,7 +12,29 @@ const titanOne = Titan_One({
 
 export const metadata: Metadata = {
   title: "Fish Bowl",
-  description: "A mobile-first party guessing game"
+  description: "A mobile-first party guessing game",
+  metadataBase: new URL("https://fish-bowl-game.vercel.app"),
+  openGraph: {
+    title: "Fish Bowl",
+    description: "A mobile-first party guessing game",
+    url: "https://fish-bowl-game.vercel.app",
+    siteName: "Fish Bowl",
+    images: [
+      {
+        url: "/assets/art/social/fish%20bowl%20social%20banner.png",
+        width: 1200,
+        height: 630,
+        alt: "Fish Bowl party guessing game"
+      }
+    ],
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Fish Bowl",
+    description: "A mobile-first party guessing game",
+    images: ["/assets/art/social/fish%20bowl%20social%20banner.png"]
+  }
 };
 
 export const viewport: Viewport = {
