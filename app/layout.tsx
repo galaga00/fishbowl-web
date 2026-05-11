@@ -11,6 +11,7 @@ const titanOne = Titan_One({
 });
 
 const howToPreloadImages = [
+  "/assets/art/how-to/step-0.png",
   "/assets/art/how-to/step-1.png",
   "/assets/art/how-to/step-2.png",
   "/assets/art/how-to/step-3.png",

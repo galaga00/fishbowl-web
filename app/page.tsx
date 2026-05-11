@@ -11,6 +11,7 @@ import { getPlayerStorageKey, normalizeCode } from "@/lib/game-utils";
 
 const titleLetters = Array.from("Fish Bowl");
 const howToPages = [
+  { title: "Choose teams or let Fish Bowl pick!", body: "" },
   { title: "Pick the cards you want to use or create your own!", body: "" },
   { title: "Round 1", body: "Say anything to describe the card." },
   { title: "Round 2", body: "Use only one word." },
@@ -133,7 +134,11 @@ export default function Home() {
 
         {mode === "howTo" ? (
           <div
-            className={howToIndex === 0 ? "home-illustration-frame how-to-illustration-frame bleed" : "home-illustration-frame how-to-illustration-frame"}
+            className={
+              ASSETS.art.howTo.steps[howToIndex].endsWith("step-1.png")
+                ? "home-illustration-frame how-to-illustration-frame bleed"
+                : "home-illustration-frame how-to-illustration-frame"
+            }
             key="how-to-illustration"
             role="img"
             aria-label="How to play artwork."
