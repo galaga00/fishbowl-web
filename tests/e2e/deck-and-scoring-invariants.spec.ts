@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
-import { createGame, joinGame, markCorrect, saveGameSetup } from "../../lib/game-api";
+import { createGame, joinGame, markCorrect, saveGameSetup, skipPrompt } from "../../lib/game-api";
 import { FAMILY_FRIENDLY_DECK_FILTER, filterStarterDeckByCategories, MIXED_PASS_PLAY_CATEGORY } from "../../lib/pass-play-deck";
-import { seedReadyPassAndPlayGame, loadSeededSnapshot } from "./helpers/seed-game";
+import { seedPlayingPassAndPlayGame, loadSeededSnapshot } from "./helpers/seed-game";
 import { createE2ESupabaseClient, deleteTestGames, loadLocalEnv } from "./helpers/supabase-cleanup";
 
 test.describe("Deck and scoring invariants", () => {
@@ -62,7 +62,7 @@ test.describe("Deck and scoring invariants", () => {
 
   test("a stale duplicate Correct action cannot score the same prompt twice", async () => {
     const supabase = createE2ESupabaseClient();
-    const { gameId } = await seedReadyPassAndPlayGame({ promptCount: 2 });
+    const { gameId } = await seedPlayingPassAndPlayGame({ promptCount: 2 });
     createdGameIds.push(gameId);
 
     const snapshot = await loadSeededSnapshot(gameId);
@@ -76,6 +76,33 @@ test.describe("Deck and scoring invariants", () => {
 
     const totalScore = (teams ?? []).reduce((sum, team) => sum + (team.score as number), 0);
     expect(totalScore).toBe(1);
+  });
+
+  test("a stale Skip action cannot revive a prompt after it was scored", async () => {
+    const supabase = createE2ESupabaseClient();
+    const { gameId } = await seedPlayingPassAndPlayGame({ promptCount: 2 });
+    createdGameIds.push(gameId);
+
+    const snapshot = await loadSeededSnapshot(gameId);
+    await markCorrect(snapshot);
+    await skipPrompt(snapshot);
+
+    const { data: game, error: gameError } = await supabase
+      .from("games")
+      .select("current_prompt_id")
+      .eq("id", gameId)
+      .single<{ current_prompt_id: string | null }>();
+    if (gameError) throw gameError;
+
+    const { data: prompts, error: promptError } = await supabase
+      .from("prompts")
+      .select("id, status")
+      .eq("game_id", gameId);
+    if (promptError) throw promptError;
+
+    const scoredPrompt = prompts?.find((prompt) => prompt.id === snapshot.game.current_prompt_id);
+    expect(scoredPrompt?.status).toBe("correct");
+    expect(game?.current_prompt_id).not.toBe(snapshot.game.current_prompt_id);
   });
 });
 

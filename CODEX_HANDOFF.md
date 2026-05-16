@@ -13,11 +13,13 @@ Start new task threads with:
 - Notion project page and task log: `https://www.notion.so/3541b2ce282781669d76f43df062d2de`
 - Live app: `https://fish-bowl-game.vercel.app`
 - Hosting: Vercel project `fish-bowl`
-- Supabase project: `monikers-web`
+- Vercel Codex connector team id: `galaga00` (personal account; CLI/project file may show `galaga00s-projects` or `team_hFZ3gCQdUOng9qLj5zSbjZVQ`)
+- Supabase project: `fish-bowl`
 - Supabase ref: `gmchqcpllgleyfjnxuit`
 - Supabase dashboard: `https://supabase.com/dashboard/project/gmchqcpllgleyfjnxuit`
 
 Keep Fish Bowl infrastructure separate from Deceit Street. Do not use Deceit Street Supabase for this app: `deceit-street / pmtkuxdktwzmeyinyola`.
+Before running Supabase schema/admin commands from this repo, run `npm run supabase:verify` and confirm the target ref is `gmchqcpllgleyfjnxuit`.
 
 ## Config And Secrets
 
@@ -47,6 +49,7 @@ Secrets belong in local ignored env files, Vercel/Supabase dashboards, or a pass
 npm install
 npm run dev -- --hostname 0.0.0.0
 npm run lint
+npm run supabase:verify
 npm run test:e2e
 npm run build
 vercel --prod --yes

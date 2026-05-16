@@ -10,6 +10,7 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
+    "supabase:verify": "node scripts/verify-fish-bowl-supabase.mjs",
     "debug:seed": "tsx scripts/seed-debug-game.ts",
     "cards:review": "node scripts/generate-category-review.mjs",
     "cards:apply-reviewed": "node scripts/apply-reviewed-category-cards.mjs",

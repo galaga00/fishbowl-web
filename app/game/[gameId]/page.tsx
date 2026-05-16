@@ -67,6 +67,8 @@ type PassAndPlaySetupPlayer = {
   teamIndex: number;
 };
 
+type ActionResult = boolean | void | Promise<boolean | void>;
+
 export default function GamePage() {
   const params = useParams<{ gameId: string }>();
   const gameId = params.gameId;
@@ -95,11 +97,29 @@ export default function GamePage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const actionInFlightRef = useRef(false);
+  const refreshRequestIdRef = useRef(0);
+  const refreshTimerRef = useRef<number | null>(null);
 
   const refresh = useCallback(async () => {
+    const requestId = refreshRequestIdRef.current + 1;
+    refreshRequestIdRef.current = requestId;
     const nextSnapshot = await loadSnapshot(gameId);
-    setSnapshot(nextSnapshot);
+    if (requestId === refreshRequestIdRef.current) {
+      setSnapshot(nextSnapshot);
+    }
+    return nextSnapshot;
   }, [gameId]);
+
+  const scheduleRefresh = useCallback(() => {
+    if (refreshTimerRef.current !== null) {
+      window.clearTimeout(refreshTimerRef.current);
+    }
+
+    refreshTimerRef.current = window.setTimeout(() => {
+      refreshTimerRef.current = null;
+      refresh().catch((loadError) => setError(loadError instanceof Error ? loadError.message : "Could not load game."));
+    }, 120);
+  }, [refresh]);
 
   useEffect(() => {
     const savedPlayerId = localStorage.getItem(getPlayerStorageKey(gameId)) ?? localStorage.getItem(getPreviousPlayerStorageKey(gameId));
@@ -113,19 +133,23 @@ export default function GamePage() {
   useEffect(() => {
     const channel = supabase
       .channel(`game:${gameId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "games", filter: `id=eq.${gameId}` }, refresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "players", filter: `game_id=eq.${gameId}` }, refresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "teams", filter: `game_id=eq.${gameId}` }, refresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "prompts", filter: `game_id=eq.${gameId}` }, refresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "draft_cards", filter: `game_id=eq.${gameId}` }, refresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "turns", filter: `game_id=eq.${gameId}` }, refresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "game_events", filter: `game_id=eq.${gameId}` }, refresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "games", filter: `id=eq.${gameId}` }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "players", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "teams", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "prompts", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "draft_cards", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "turns", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "game_events", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
       .subscribe();
 
     return () => {
+      if (refreshTimerRef.current !== null) {
+        window.clearTimeout(refreshTimerRef.current);
+        refreshTimerRef.current = null;
+      }
       supabase.removeChannel(channel);
     };
-  }, [gameId, refresh]);
+  }, [gameId, scheduleRefresh]);
 
   const me = useMemo(() => {
     if (!snapshot || !playerId) return null;
@@ -143,15 +167,17 @@ export default function GamePage() {
   }, [snapshot]);
 
   async function runAction(action: () => Promise<void>) {
-    if (actionInFlightRef.current) return;
+    if (actionInFlightRef.current) return false;
     actionInFlightRef.current = true;
     setBusy(true);
     setError("");
     try {
       await action();
       await refresh();
+      return true;
     } catch (actionError) {
       setError(actionError instanceof Error ? actionError.message : "Something went wrong.");
+      return false;
     } finally {
       actionInFlightRef.current = false;
       setBusy(false);
@@ -1771,13 +1797,13 @@ function Play({
   currentPrompt: Prompt | null;
   busy: boolean;
   isHost: boolean;
-  onCorrect: () => void;
-  onSkip: () => void;
-  onEndTurn: () => void;
-  onStartTurn: () => void;
-  onPause: () => void;
-  onResume: () => void;
-  onUndo: () => void;
+  onCorrect: () => ActionResult;
+  onSkip: () => ActionResult;
+  onEndTurn: () => ActionResult;
+  onStartTurn: () => ActionResult;
+  onPause: () => ActionResult;
+  onResume: () => ActionResult;
+  onUndo: () => ActionResult;
   onFinishGame: () => void;
   onResetToLobby: () => void;
 }) {
@@ -1787,6 +1813,7 @@ function Play({
   const [now, setNow] = useState(Date.now());
   const [autoEndedTurnId, setAutoEndedTurnId] = useState<string | null>(null);
   const [confirmingEndTurn, setConfirmingEndTurn] = useState(false);
+  const autoEndAttemptingTurnIdRef = useRef<string | null>(null);
   const secondsLeft = getTurnSecondsLeft(snapshot.activeTurn?.started_at, snapshot.game.turn_duration_seconds, now);
   const isTurnRunning = snapshot.game.phase === "playing";
   const isPaused = snapshot.game.phase === "paused";
@@ -1798,10 +1825,38 @@ function Play({
   }, [isTurnRunning, snapshot.activeTurn?.id]);
 
   useEffect(() => {
-    if (!isTurnRunning || !isController || !snapshot.activeTurn || secondsLeft > 0 || autoEndedTurnId === snapshot.activeTurn.id) return;
-    setAutoEndedTurnId(snapshot.activeTurn.id);
-    onEndTurn();
-  }, [autoEndedTurnId, isController, isTurnRunning, onEndTurn, secondsLeft, snapshot.activeTurn]);
+    if (
+      !isTurnRunning ||
+      !isController ||
+      !snapshot.activeTurn ||
+      busy ||
+      secondsLeft > 0 ||
+      autoEndedTurnId === snapshot.activeTurn.id ||
+      autoEndAttemptingTurnIdRef.current === snapshot.activeTurn.id
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+    const activeTurnId = snapshot.activeTurn.id;
+    autoEndAttemptingTurnIdRef.current = activeTurnId;
+
+    void Promise.resolve(onEndTurn())
+      .then((result) => {
+        if (!cancelled && result !== false) {
+          setAutoEndedTurnId(activeTurnId);
+        }
+      })
+      .finally(() => {
+        if (autoEndAttemptingTurnIdRef.current === activeTurnId) {
+          autoEndAttemptingTurnIdRef.current = null;
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [autoEndedTurnId, busy, isController, isTurnRunning, onEndTurn, secondsLeft, snapshot.activeTurn]);
 
   useEffect(() => {
     if (!isTurnRunning) setConfirmingEndTurn(false);

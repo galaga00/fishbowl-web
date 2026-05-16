@@ -8,6 +8,12 @@ export type SeededTurnGame = {
   playerIdsByName: Record<string, string>;
 };
 
+type SeedReadyPassAndPlayOptions = {
+  promptCount?: number;
+  teamPlayers?: string[][];
+  turnDurationSeconds?: 30 | 60;
+};
+
 export function createJoinCode() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   return Array.from({ length: 5 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
@@ -25,11 +31,9 @@ export async function seedReadyPassAndPlayGame({
   teamPlayers = [
     ["Austin", "Briar"],
     ["Casey", "Drew"]
-  ]
-}: {
-  promptCount?: number;
-  teamPlayers?: string[][];
-} = {}): Promise<SeededTurnGame> {
+  ],
+  turnDurationSeconds = 60
+}: SeedReadyPassAndPlayOptions = {}): Promise<SeededTurnGame> {
   const supabase = createE2ESupabaseClient();
   const flatPlayers = teamPlayers.flat();
   const hostName = flatPlayers[0] ?? "Austin";
@@ -40,7 +44,7 @@ export async function seedReadyPassAndPlayGame({
         code: createJoinCode(),
         phase: "setup",
         prompts_per_player: 1,
-        turn_duration_seconds: 60,
+        turn_duration_seconds: turnDurationSeconds,
         cards_dealt_per_player: 1,
         cards_kept_per_player: 1,
         pass_play_card_count: Math.max(10, promptCount),
@@ -127,6 +131,33 @@ export async function seedReadyPassAndPlayGame({
     hostPlayerId: host.id,
     playerIdsByName: Object.fromEntries(players.map((player) => [player.name, player.id]))
   };
+}
+
+export async function seedPlayingPassAndPlayGame(options: SeedReadyPassAndPlayOptions = {}): Promise<SeededTurnGame> {
+  const seededGame = await seedReadyPassAndPlayGame(options);
+  const supabase = createE2ESupabaseClient();
+  const snapshot = await loadSeededSnapshot(seededGame.gameId);
+
+  if (!snapshot.game.current_team_id || !snapshot.game.active_player_id) {
+    throw new Error("E2E seed did not create a playable turn assignment.");
+  }
+
+  await insertSingle<{ id: string }>(
+    supabase
+      .from("turns")
+      .insert({
+        game_id: seededGame.gameId,
+        team_id: snapshot.game.current_team_id,
+        player_id: snapshot.game.active_player_id
+      })
+      .select("id")
+      .single()
+  );
+
+  const { error } = await supabase.from("games").update({ phase: "playing" }).eq("id", seededGame.gameId);
+  if (error) throw error;
+
+  return seededGame;
 }
 
 export async function getActivePlayerName(gameId: string) {

@@ -42,6 +42,14 @@ The MVP intentionally has no login. For local testing, `supabase/schema.sql` dis
 
 Before sharing the app publicly, add proper Row Level Security policies or move sensitive game mutations behind server routes. The current setup is meant for fast party-game prototyping.
 
+The current Fish Bowl Supabase project is `fish-bowl` with project ref `gmchqcpllgleyfjnxuit`. The app should continue to use that same project ref and URL.
+
+Before running Supabase schema/admin commands from this repo, verify that local env and CLI metadata point at the Fish Bowl project:
+
+```bash
+npm run supabase:verify
+```
+
 ## LAN Testing
 
 Run Next.js so other devices on the same Wi-Fi can reach your Mac:
