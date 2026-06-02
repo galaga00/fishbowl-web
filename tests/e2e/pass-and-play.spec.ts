@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { deleteTestGames } from "./helpers/supabase-cleanup";
+import { deleteTestGames } from "./helpers/convex-cleanup";
 
 test.describe("Pass & Play game loop", () => {
   const createdGameIds: string[] = [];

@@ -119,8 +119,9 @@ export const setActiveTurnStartedAt = mutation({
 async function seedReady(ctx: MutationCtx, promptCount: number, teamPlayers: string[][], turnDurationSeconds: 30 | 60) {
   const flatPlayers = teamPlayers.flat();
   const hostName = flatPlayers[0] ?? "Austin";
+  const code = createJoinCode();
   const id = await ctx.db.insert("games", {
-    code: createJoinCode(),
+    code,
     phase: "setup",
     host_player_id: null,
     current_team_id: null,
@@ -207,7 +208,7 @@ async function seedReady(ctx: MutationCtx, promptCount: number, teamPlayers: str
     round_number: 1
   });
 
-  return { gameId: id, hostPlayerId, playerIdsByName };
+  return { code, gameId: id, hostPlayerId, playerIdsByName };
 }
 
 async function loadSnapshot(ctx: QueryCtx | MutationCtx, id: Id<"games">): Promise<GameSnapshot> {

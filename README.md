@@ -51,14 +51,6 @@ Fish Bowl's active backend is Convex. Game state, live updates, owner analytics,
 
 The active Convex project is `austin-hill:fish-bowl`. Production uses deployment `quaint-mink-705` at `https://quaint-mink-705.convex.cloud`; local development uses dev deployment `ardent-lemming-605` at `https://ardent-lemming-605.convex.cloud`.
 
-Supabase remains as a legacy rollback fallback during the migration window. The Fish Bowl Supabase project is `fish-bowl` with project ref `gmchqcpllgleyfjnxuit`.
-
-Before running any Supabase schema/admin commands from this repo, verify that local env and CLI metadata point at the Fish Bowl project:
-
-```bash
-npm run supabase:verify
-```
-
 ## LAN Testing
 
 Run Next.js so other devices on the same Wi-Fi can reach your Mac:
@@ -125,10 +117,6 @@ NEXT_PUBLIC_CONVEX_URL=...
 CONVEX_DEPLOYMENT=...
 OWNER_ANALYTICS_KEY=...
 ANALYTICS_IP_SALT=...
-
-# Optional legacy fallback during the Supabase shutdown window
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ```
 
 6. Deploy.
@@ -171,14 +159,13 @@ ANALYTICS_NOTIFY_EVENTS=game_started
 
 `ANALYTICS_NOTIFY_EVENTS` is a comma-separated list. Good options are `game_created` and `game_started`.
 
-If you use the debug seed script locally, keep `SUPABASE_SERVICE_ROLE_KEY` out of browser-facing code. It is optional and should only be added to trusted local or server environments.
-
 ## Debug Seed
 
-For fake players and prompts, add this to `.env.local`:
+For fake players and prompts, make sure `.env.local` has:
 
 ```bash
-SUPABASE_SERVICE_ROLE_KEY=...
+NEXT_PUBLIC_CONVEX_URL=...
+E2E_TEST_SECRET=...
 ```
 
 Then run:

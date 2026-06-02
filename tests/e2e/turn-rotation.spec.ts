@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { advanceTurnWithAssignmentHelper, getActivePlayerName, seedReadyPassAndPlayGame } from "./helpers/seed-game";
-import { deleteTestGames } from "./helpers/supabase-cleanup";
+import { deleteTestGames } from "./helpers/convex-cleanup";
 
 test.describe("Turn rotation", () => {
   const createdGameIds: string[] = [];

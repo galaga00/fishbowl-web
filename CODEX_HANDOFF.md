@@ -21,24 +21,16 @@ Start new task threads with:
 - Convex dev URL: `https://ardent-lemming-605.convex.cloud`
 - Convex prod dashboard: `https://dashboard.convex.dev/t/austin-hill/fish-bowl/quaint-mink-705`
 - Convex dev dashboard: `https://dashboard.convex.dev/t/austin-hill/fish-bowl/ardent-lemming-605`
-- Legacy Supabase project: `fish-bowl`
-- Legacy Supabase ref: `gmchqcpllgleyfjnxuit`
-- Supabase dashboard: `https://supabase.com/dashboard/project/gmchqcpllgleyfjnxuit`
-
-Keep Fish Bowl infrastructure separate from Deceit Street. Do not use Deceit Street Supabase for this app: `deceit-street / pmtkuxdktwzmeyinyola`.
-Supabase is legacy rollback fallback during the Convex migration window. Before running Supabase schema/admin commands from this repo, run `npm run supabase:verify` and confirm the target ref is `gmchqcpllgleyfjnxuit`.
+Keep Fish Bowl infrastructure separate from Deceit Street and ElectricSkill. Do not reuse another app's Convex deployment.
 
 ## Config And Secrets
 
 Safe-to-document env var names:
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `CONVEX_DEPLOYMENT`
 - `NEXT_PUBLIC_CONVEX_URL`
 - `NEXT_PUBLIC_CONVEX_SITE_URL`
 - `OWNER_ANALYTICS_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
 - `E2E_TEST_SECRET`
 - `ANALYTICS_IP_SALT`
 - `RESEND_API_KEY`
@@ -52,7 +44,7 @@ Local ignored secret/config files:
 - `.env.*.local`
 - `.vercel/`
 
-Secrets belong in local ignored env files, Vercel/Convex/Supabase dashboards, or a password manager. Never put real secret values in GitHub, Notion, README files, or this handoff file.
+Secrets belong in local ignored env files, Vercel/Convex dashboards, or a password manager. Never put real secret values in GitHub, Notion, README files, or this handoff file.
 
 ## Useful Commands
 
@@ -61,7 +53,6 @@ npm install
 npm run dev -- --hostname 0.0.0.0
 npx convex dev --once --typecheck enable
 npm run lint
-npm run supabase:verify
 npm run test:e2e
 npm run build
 vercel --prod --yes
@@ -95,4 +86,4 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 
 - Update GitHub for code, schema, docs, scripts, and handoff changes.
 - Update the main Fish Bowl Notion page for task summaries, infrastructure changes, URL changes, and current project status.
-- Update this file and Notion if local folder paths, live URLs, hosting project, backend project/deployment, Supabase fallback project/ref, or secret-file locations change.
+- Update this file and Notion if local folder paths, live URLs, hosting project, backend project/deployment, or secret-file locations change.

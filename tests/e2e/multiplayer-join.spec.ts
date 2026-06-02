@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { deleteTestGames } from "./helpers/supabase-cleanup";
+import { deleteTestGames } from "./helpers/convex-cleanup";
 
 async function clickIfStillOnPage(page: Page, buttonName: string, nextHeading: string) {
   const nextStep = page.getByRole("heading", { name: nextHeading });

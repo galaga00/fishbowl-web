@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { createGame, joinGame, loadSnapshot, markCorrect, saveGameSetup, skipPrompt } from "../../lib/game-api";
 import { FAMILY_FRIENDLY_DECK_FILTER, filterStarterDeckByCategories, MIXED_PASS_PLAY_CATEGORY } from "../../lib/pass-play-deck";
 import { seedPlayingPassAndPlayGame, loadSeededSnapshot } from "./helpers/seed-game";
-import { deleteTestGames, loadLocalEnv } from "./helpers/supabase-cleanup";
+import { deleteTestGames, loadLocalEnv } from "./helpers/convex-cleanup";
 
 test.describe("Deck and scoring invariants", () => {
   const createdGameIds: string[] = [];

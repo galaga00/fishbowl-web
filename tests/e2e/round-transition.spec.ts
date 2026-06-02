@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { seedReadyPassAndPlayGame } from "./helpers/seed-game";
-import { deleteTestGames } from "./helpers/supabase-cleanup";
+import { deleteTestGames } from "./helpers/convex-cleanup";
 
 test.describe("Round transition", () => {
   const createdGameIds: string[] = [];

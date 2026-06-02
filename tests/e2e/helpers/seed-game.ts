@@ -1,9 +1,10 @@
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import type { GameSnapshot } from "../../../lib/types";
-import { createE2EConvexClient, getE2ESecret } from "./supabase-cleanup";
+import { createE2EConvexClient, getE2ESecret } from "./convex-cleanup";
 
 export type SeededTurnGame = {
+  code: string;
   gameId: string;
   hostPlayerId: string;
   playerIdsByName: Record<string, string>;
