@@ -2,9 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
+import { useQuery } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { CONFETTI_PIECES } from "@/lib/confetti";
 import {
@@ -26,7 +29,6 @@ import {
   undoLastAction,
   updatePlayerName
 } from "@/lib/game-api";
-import { supabase } from "@/lib/supabase";
 import {
   FAMILY_FRIENDLY_DECK_FILTER,
   getDefaultPassPlayCardCount,
@@ -98,7 +100,7 @@ export default function GamePage() {
   const [error, setError] = useState("");
   const actionInFlightRef = useRef(false);
   const refreshRequestIdRef = useRef(0);
-  const refreshTimerRef = useRef<number | null>(null);
+  const liveSnapshot = useQuery(api.game.loadSnapshot, gameId ? { gameId: gameId as Id<"games"> } : "skip") as GameSnapshot | undefined;
 
   const refresh = useCallback(async () => {
     const requestId = refreshRequestIdRef.current + 1;
@@ -110,17 +112,6 @@ export default function GamePage() {
     return nextSnapshot;
   }, [gameId]);
 
-  const scheduleRefresh = useCallback(() => {
-    if (refreshTimerRef.current !== null) {
-      window.clearTimeout(refreshTimerRef.current);
-    }
-
-    refreshTimerRef.current = window.setTimeout(() => {
-      refreshTimerRef.current = null;
-      refresh().catch((loadError) => setError(loadError instanceof Error ? loadError.message : "Could not load game."));
-    }, 120);
-  }, [refresh]);
-
   useEffect(() => {
     const savedPlayerId = localStorage.getItem(getPlayerStorageKey(gameId)) ?? localStorage.getItem(getPreviousPlayerStorageKey(gameId));
     if (savedPlayerId) {
@@ -131,25 +122,8 @@ export default function GamePage() {
   }, [gameId, refresh]);
 
   useEffect(() => {
-    const channel = supabase
-      .channel(`game:${gameId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "games", filter: `id=eq.${gameId}` }, scheduleRefresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "players", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "teams", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "prompts", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "draft_cards", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "turns", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
-      .on("postgres_changes", { event: "*", schema: "public", table: "game_events", filter: `game_id=eq.${gameId}` }, scheduleRefresh)
-      .subscribe();
-
-    return () => {
-      if (refreshTimerRef.current !== null) {
-        window.clearTimeout(refreshTimerRef.current);
-        refreshTimerRef.current = null;
-      }
-      supabase.removeChannel(channel);
-    };
-  }, [gameId, scheduleRefresh]);
+    if (liveSnapshot) setSnapshot(liveSnapshot);
+  }, [liveSnapshot]);
 
   const me = useMemo(() => {
     if (!snapshot || !playerId) return null;

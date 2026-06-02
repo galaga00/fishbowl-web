@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "node:crypto";
-import { createServerSupabaseClient, hasServerSupabaseConfig } from "@/lib/supabase-server";
+import { api } from "@/convex/_generated/api";
+import { createServerConvexClient, hasServerConvexConfig } from "@/lib/convex-server";
 
 const MAX_TEXT_LENGTH = 500;
 const MAX_METADATA_KEYS = 32;
@@ -21,7 +22,7 @@ type AnalyticsRequestBody = {
 };
 
 export async function POST(request: NextRequest) {
-  if (!hasServerSupabaseConfig) {
+  if (!hasServerConvexConfig) {
     return NextResponse.json({ ok: true, skipped: "missing-config" });
   }
 
@@ -42,40 +43,39 @@ export async function POST(request: NextRequest) {
   const country = cleanGeoHeader(request.headers.get("x-vercel-ip-country"), 2);
   const region = cleanGeoHeader(request.headers.get("x-vercel-ip-country-region"), 16);
   const city = cleanGeoHeader(request.headers.get("x-vercel-ip-city"), 120);
-  const supabase = createServerSupabaseClient();
-  const { error } = await supabase.from("analytics_events").insert({
-    event_name: eventName,
-    game_id: cleanUuid(body.gameId),
-    player_id: cleanUuid(body.playerId),
-    path: cleanText(body.path, MAX_TEXT_LENGTH),
-    referrer: cleanText(body.referrer, MAX_TEXT_LENGTH),
-    user_agent: cleanText(userAgent, 700),
-    device_type: getDeviceType(userAgent),
-    ip_hash: hashIpAddress(ipAddress),
-    country,
-    region,
-    city,
-    play_mode: cleanText(body.playMode, 80),
-    prompt_mode: cleanText(body.promptMode, 80),
-    phase: cleanText(body.phase, 80),
-    player_count: cleanNumber(body.playerCount),
-    team_count: cleanNumber(body.teamCount),
-    prompt_count: cleanNumber(body.promptCount),
-    metadata: cleanMetadata(body.metadata)
-  });
-
-  if (error) {
-    console.error("Analytics insert failed", error.message);
-  } else {
+  try {
+    const convex = createServerConvexClient();
+    await convex.mutation(api.analytics.record, {
+      event_name: eventName,
+      game_id: cleanId(body.gameId),
+      player_id: cleanId(body.playerId),
+      path: cleanText(body.path, MAX_TEXT_LENGTH),
+      referrer: cleanText(body.referrer, MAX_TEXT_LENGTH),
+      user_agent: cleanText(userAgent, 700),
+      device_type: getDeviceType(userAgent),
+      ip_hash: hashIpAddress(ipAddress),
+      country,
+      region,
+      city,
+      play_mode: cleanText(body.playMode, 80),
+      prompt_mode: cleanText(body.promptMode, 80),
+      phase: cleanText(body.phase, 80),
+      player_count: cleanNumber(body.playerCount),
+      team_count: cleanNumber(body.teamCount),
+      prompt_count: cleanNumber(body.promptCount),
+      metadata: cleanMetadata(body.metadata)
+    });
     await sendOwnerNotification({
       eventName,
-      gameId: cleanUuid(body.gameId),
+      gameId: cleanId(body.gameId),
       path: cleanText(body.path, MAX_TEXT_LENGTH),
       playMode: cleanText(body.playMode, 80),
       promptMode: cleanText(body.promptMode, 80),
       playerCount: cleanNumber(body.playerCount),
       location: formatLocation({ country, region, city })
     });
+  } catch (error) {
+    console.error("Analytics insert failed", error);
   }
 
   return NextResponse.json({ ok: true });
@@ -93,10 +93,10 @@ function cleanText(value: unknown, maxLength: number) {
   return trimmed.slice(0, maxLength);
 }
 
-function cleanUuid(value: unknown) {
-  const text = cleanText(value, 80);
+function cleanId(value: unknown) {
+  const text = cleanText(value, 120);
   if (!text) return null;
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(text) ? text : null;
+  return /^[A-Za-z0-9:_-]+$/.test(text) ? text : null;
 }
 
 function cleanNumber(value: unknown) {

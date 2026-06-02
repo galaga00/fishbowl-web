@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Titan_One } from "next/font/google";
 import { AnalyticsPageView } from "./analytics-page-view";
+import { FishBowlConvexProvider } from "./convex-provider";
 import "./globals.css";
 
 const titanOne = Titan_One({
@@ -62,8 +63,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         ))}
       </head>
       <body className={titanOne.variable}>
-        <AnalyticsPageView />
-        {children}
+        <FishBowlConvexProvider>
+          <AnalyticsPageView />
+          {children}
+        </FishBowlConvexProvider>
       </body>
     </html>
   );

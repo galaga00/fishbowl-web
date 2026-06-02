@@ -14,12 +14,16 @@ Start new task threads with:
 - Live app: `https://fish-bowl-game.vercel.app`
 - Hosting: Vercel project `fish-bowl`
 - Vercel Codex connector team id: `galaga00` (personal account; CLI/project file may show `galaga00s-projects` or `team_hFZ3gCQdUOng9qLj5zSbjZVQ`)
-- Supabase project: `fish-bowl`
-- Supabase ref: `gmchqcpllgleyfjnxuit`
+- Active backend: Convex project `austin-hill:fish-bowl`
+- Convex dev deployment: `ardent-lemming-605`
+- Convex dev URL: `https://ardent-lemming-605.convex.cloud`
+- Convex dashboard: `https://dashboard.convex.dev/t/austin-hill/fish-bowl/ardent-lemming-605`
+- Legacy Supabase project: `fish-bowl`
+- Legacy Supabase ref: `gmchqcpllgleyfjnxuit`
 - Supabase dashboard: `https://supabase.com/dashboard/project/gmchqcpllgleyfjnxuit`
 
 Keep Fish Bowl infrastructure separate from Deceit Street. Do not use Deceit Street Supabase for this app: `deceit-street / pmtkuxdktwzmeyinyola`.
-Before running Supabase schema/admin commands from this repo, run `npm run supabase:verify` and confirm the target ref is `gmchqcpllgleyfjnxuit`.
+Supabase is legacy fallback during the Convex migration window. Before running Supabase schema/admin commands from this repo, run `npm run supabase:verify` and confirm the target ref is `gmchqcpllgleyfjnxuit`.
 
 ## Config And Secrets
 
@@ -27,8 +31,12 @@ Safe-to-document env var names:
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `CONVEX_DEPLOYMENT`
+- `NEXT_PUBLIC_CONVEX_URL`
+- `NEXT_PUBLIC_CONVEX_SITE_URL`
 - `OWNER_ANALYTICS_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `E2E_TEST_SECRET`
 - `ANALYTICS_IP_SALT`
 - `RESEND_API_KEY`
 - `OWNER_NOTIFY_EMAIL`
@@ -41,13 +49,14 @@ Local ignored secret/config files:
 - `.env.*.local`
 - `.vercel/`
 
-Secrets belong in local ignored env files, Vercel/Supabase dashboards, or a password manager. Never put real secret values in GitHub, Notion, README files, or this handoff file.
+Secrets belong in local ignored env files, Vercel/Convex/Supabase dashboards, or a password manager. Never put real secret values in GitHub, Notion, README files, or this handoff file.
 
 ## Useful Commands
 
 ```bash
 npm install
 npm run dev -- --hostname 0.0.0.0
+npx convex dev --once --typecheck enable
 npm run lint
 npm run supabase:verify
 npm run test:e2e
@@ -56,7 +65,7 @@ vercel --prod --yes
 vercel alias set <deployment-url> fish-bowl-game.vercel.app
 ```
 
-End-to-end testing uses Playwright with one headless Chromium worker by default. Run `npx playwright install chromium` once on a new machine, then `npm run test:e2e`. Use `npm run test:e2e:headed` or `npm run test:e2e:ui` only when you want to watch/debug the browser. Coverage includes host-only Pass & Play setup/gameplay, second-browser joining/realtime, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams. Test-created Supabase games are cleaned up when `.env.local` has Supabase env vars.
+End-to-end testing uses Playwright with one headless Chromium worker by default. Run `npx playwright install chromium` once on a new machine, then `npm run test:e2e`. Use `npm run test:e2e:headed` or `npm run test:e2e:ui` only when you want to watch/debug the browser. Coverage includes host-only Pass & Play setup/gameplay, second-browser joining/realtime, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams. Test-created Convex games are cleaned up through guarded E2E helper functions when `.env.local` has `NEXT_PUBLIC_CONVEX_URL` and `E2E_TEST_SECRET`.
 
 Card deck target-fill review artifacts live in `card-review/target-fill/`. After review Markdown is updated, run `npm run cards:apply-target-fill` to regenerate `lib/target-fill-deck.ts` from cards still marked Keep in `candidates.json`; the generated deck is wired into `STARTER_DECK`, and family-friendly additions are included in the family-friendly filter.
 
@@ -74,6 +83,7 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 - Check `git status --short --branch` before editing.
 - Keep changes scoped to the requested task.
 - Run `npm run lint` and `npm run build` before committing/deploying when code changes.
+- Run `npx convex dev --once --typecheck enable` when Convex functions/schema change.
 - Run `npm run test:e2e` when game flow, setup/lobby behavior, or user-facing controls change.
 - Commit useful completed work to `main`, push to GitHub, deploy to Vercel when the user wants the live app updated.
 - After deployment, keep `https://fish-bowl-game.vercel.app` pointed at the newest production deployment.
@@ -82,4 +92,4 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 
 - Update GitHub for code, schema, docs, scripts, and handoff changes.
 - Update the main Fish Bowl Notion page for task summaries, infrastructure changes, URL changes, and current project status.
-- Update this file and Notion if local folder paths, live URLs, hosting project, Supabase project/ref, or secret-file locations change.
+- Update this file and Notion if local folder paths, live URLs, hosting project, backend project/deployment, Supabase fallback project/ref, or secret-file locations change.

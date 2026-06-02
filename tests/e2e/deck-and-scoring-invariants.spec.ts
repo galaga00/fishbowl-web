@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { createGame, joinGame, markCorrect, saveGameSetup, skipPrompt } from "../../lib/game-api";
+import { createGame, joinGame, loadSnapshot, markCorrect, saveGameSetup, skipPrompt } from "../../lib/game-api";
 import { FAMILY_FRIENDLY_DECK_FILTER, filterStarterDeckByCategories, MIXED_PASS_PLAY_CATEGORY } from "../../lib/pass-play-deck";
 import { seedPlayingPassAndPlayGame, loadSeededSnapshot } from "./helpers/seed-game";
-import { createE2ESupabaseClient, deleteTestGames, loadLocalEnv } from "./helpers/supabase-cleanup";
+import { deleteTestGames, loadLocalEnv } from "./helpers/supabase-cleanup";
 
 test.describe("Deck and scoring invariants", () => {
   const createdGameIds: string[] = [];
@@ -25,7 +25,6 @@ test.describe("Deck and scoring invariants", () => {
   });
 
   test("parallel deck-draft joins receive unique visible card titles", async () => {
-    const supabase = createE2ESupabaseClient();
     const { game } = await createGame("Austin");
     createdGameIds.push(game.id);
 
@@ -48,38 +47,25 @@ test.describe("Deck and scoring invariants", () => {
 
     await Promise.all([joinGame(game.code, "Briar"), joinGame(game.code, "Casey")]);
 
-    const { data, error } = await supabase
-      .from("draft_cards")
-      .select("title")
-      .eq("game_id", game.id);
-
-    if (error) throw error;
-
-    const titles = (data ?? []).map((card) => normalizeVisibleTitle(card.title as string));
+    const snapshot = await loadSnapshot(game.id);
+    const titles = snapshot.draftCards.map((card) => normalizeVisibleTitle(card.title));
     expect(titles).toHaveLength(30);
     expect(new Set(titles).size).toBe(30);
   });
 
   test("a stale duplicate Correct action cannot score the same prompt twice", async () => {
-    const supabase = createE2ESupabaseClient();
     const { gameId } = await seedPlayingPassAndPlayGame({ promptCount: 2 });
     createdGameIds.push(gameId);
 
     const snapshot = await loadSeededSnapshot(gameId);
     await Promise.all([markCorrect(snapshot), markCorrect(snapshot)]);
 
-    const { data: teams, error: teamError } = await supabase
-      .from("teams")
-      .select("score")
-      .eq("game_id", gameId);
-    if (teamError) throw teamError;
-
-    const totalScore = (teams ?? []).reduce((sum, team) => sum + (team.score as number), 0);
+    const result = await loadSeededSnapshot(gameId);
+    const totalScore = result.teams.reduce((sum, team) => sum + team.score, 0);
     expect(totalScore).toBe(1);
   });
 
   test("a stale Skip action cannot revive a prompt after it was scored", async () => {
-    const supabase = createE2ESupabaseClient();
     const { gameId } = await seedPlayingPassAndPlayGame({ promptCount: 2 });
     createdGameIds.push(gameId);
 
@@ -87,22 +73,10 @@ test.describe("Deck and scoring invariants", () => {
     await markCorrect(snapshot);
     await skipPrompt(snapshot);
 
-    const { data: game, error: gameError } = await supabase
-      .from("games")
-      .select("current_prompt_id")
-      .eq("id", gameId)
-      .single<{ current_prompt_id: string | null }>();
-    if (gameError) throw gameError;
-
-    const { data: prompts, error: promptError } = await supabase
-      .from("prompts")
-      .select("id, status")
-      .eq("game_id", gameId);
-    if (promptError) throw promptError;
-
-    const scoredPrompt = prompts?.find((prompt) => prompt.id === snapshot.game.current_prompt_id);
+    const result = await loadSeededSnapshot(gameId);
+    const scoredPrompt = result.prompts.find((prompt) => prompt.id === snapshot.game.current_prompt_id);
     expect(scoredPrompt?.status).toBe("correct");
-    expect(game?.current_prompt_id).not.toBe(snapshot.game.current_prompt_id);
+    expect(result.game.current_prompt_id).not.toBe(snapshot.game.current_prompt_id);
   });
 });
 

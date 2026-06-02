@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import { createClient } from "@supabase/supabase-js";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 export function loadLocalEnv() {
   for (const fileName of [".env.local", ".env"]) {
@@ -26,35 +27,40 @@ export function loadLocalEnv() {
   }
 }
 
-export function createE2ESupabaseClient(): SupabaseClient {
+export function getE2ESecret() {
   loadLocalEnv();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const secret = process.env.E2E_TEST_SECRET;
+  if (!secret) throw new Error("Missing E2E_TEST_SECRET for Convex E2E setup.");
+  return secret;
+}
 
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Missing Supabase env vars for E2E setup.");
+export function createE2EConvexClient() {
+  loadLocalEnv();
+  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+
+  if (!convexUrl) {
+    throw new Error("Missing NEXT_PUBLIC_CONVEX_URL for Convex E2E setup.");
   }
 
-  return createClient(supabaseUrl, supabaseKey, {
-    auth: {
-      persistSession: false
-    }
-  });
+  return new ConvexHttpClient(convexUrl);
 }
 
 export async function deleteTestGames(gameIds: string[]) {
   const uniqueGameIds = Array.from(new Set(gameIds)).filter(Boolean);
   if (uniqueGameIds.length === 0) return;
 
-  let supabase: SupabaseClient;
+  let convex: ConvexHttpClient;
+  let secret: string;
   try {
-    supabase = createE2ESupabaseClient();
+    convex = createE2EConvexClient();
+    secret = getE2ESecret();
   } catch {
-    console.warn("Skipping E2E Supabase cleanup because Supabase env vars are missing.");
+    console.warn("Skipping E2E Convex cleanup because Convex E2E env vars are missing.");
     return;
   }
 
-  await supabase.from("analytics_events").delete().in("game_id", uniqueGameIds);
-  const { error } = await supabase.from("games").delete().in("id", uniqueGameIds);
-  if (error) throw error;
+  await convex.mutation(api.e2e.deleteTestGames, {
+    secret,
+    gameIds: uniqueGameIds as Array<Id<"games">>
+  });
 }
