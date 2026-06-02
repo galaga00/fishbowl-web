@@ -49,9 +49,9 @@ Open `http://localhost:3000`.
 
 Fish Bowl's active backend is Convex. Game state, live updates, owner analytics, and E2E seeding/cleanup run through the Convex functions in `convex/`.
 
-The active development Convex project is `austin-hill:fish-bowl` with dev deployment `ardent-lemming-605` and URL `https://ardent-lemming-605.convex.cloud`.
+The active Convex project is `austin-hill:fish-bowl`. Production uses deployment `quaint-mink-705` at `https://quaint-mink-705.convex.cloud`; local development uses dev deployment `ardent-lemming-605` at `https://ardent-lemming-605.convex.cloud`.
 
-Supabase remains as a legacy fallback during the migration window. The Fish Bowl Supabase project is `fish-bowl` with project ref `gmchqcpllgleyfjnxuit`.
+Supabase remains as a legacy rollback fallback during the migration window. The Fish Bowl Supabase project is `fish-bowl` with project ref `gmchqcpllgleyfjnxuit`.
 
 Before running any Supabase schema/admin commands from this repo, verify that local env and CLI metadata point at the Fish Bowl project:
 

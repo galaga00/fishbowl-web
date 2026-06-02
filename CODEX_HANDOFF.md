@@ -15,15 +15,18 @@ Start new task threads with:
 - Hosting: Vercel project `fish-bowl`
 - Vercel Codex connector team id: `galaga00` (personal account; CLI/project file may show `galaga00s-projects` or `team_hFZ3gCQdUOng9qLj5zSbjZVQ`)
 - Active backend: Convex project `austin-hill:fish-bowl`
+- Convex production deployment: `quaint-mink-705`
+- Convex production URL: `https://quaint-mink-705.convex.cloud`
 - Convex dev deployment: `ardent-lemming-605`
 - Convex dev URL: `https://ardent-lemming-605.convex.cloud`
-- Convex dashboard: `https://dashboard.convex.dev/t/austin-hill/fish-bowl/ardent-lemming-605`
+- Convex prod dashboard: `https://dashboard.convex.dev/t/austin-hill/fish-bowl/quaint-mink-705`
+- Convex dev dashboard: `https://dashboard.convex.dev/t/austin-hill/fish-bowl/ardent-lemming-605`
 - Legacy Supabase project: `fish-bowl`
 - Legacy Supabase ref: `gmchqcpllgleyfjnxuit`
 - Supabase dashboard: `https://supabase.com/dashboard/project/gmchqcpllgleyfjnxuit`
 
 Keep Fish Bowl infrastructure separate from Deceit Street. Do not use Deceit Street Supabase for this app: `deceit-street / pmtkuxdktwzmeyinyola`.
-Supabase is legacy fallback during the Convex migration window. Before running Supabase schema/admin commands from this repo, run `npm run supabase:verify` and confirm the target ref is `gmchqcpllgleyfjnxuit`.
+Supabase is legacy rollback fallback during the Convex migration window. Before running Supabase schema/admin commands from this repo, run `npm run supabase:verify` and confirm the target ref is `gmchqcpllgleyfjnxuit`.
 
 ## Config And Secrets
 
