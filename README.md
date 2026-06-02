@@ -10,25 +10,34 @@ A mobile-first Next.js + TypeScript party guessing game. Players join a hosted r
 npm install
 ```
 
-2. Create a Supabase project at https://supabase.com.
-3. In Supabase, open **SQL Editor**, create a new query, paste the full contents of `supabase/schema.sql`, and run it.
-4. In Supabase, open **Project Settings > API** and copy the project URL and anon public key.
-5. Copy `.env.example` to `.env.local`:
+2. Sign in to Convex:
+
+```bash
+npx convex login
+```
+
+3. Create or connect a Convex deployment:
+
+```bash
+npx convex dev --once
+```
+
+4. Copy `.env.example` to `.env.local`:
 
 ```bash
 cp .env.example .env.local
 ```
 
-6. Fill in `.env.local`:
+5. Fill in `.env.local`:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+CONVEX_DEPLOYMENT=dev:your-deployment-name
+NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
 OWNER_ANALYTICS_KEY=make-a-private-random-key
 ANALYTICS_IP_SALT=make-another-private-random-key
 ```
 
-7. Start the app:
+6. Start the app:
 
 ```bash
 npm run dev
@@ -36,15 +45,15 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-## Supabase Notes
+## Backend Notes
 
-The MVP intentionally has no login. For local testing, `supabase/schema.sql` disables row level security so browsers can read and write game state with the anon key.
+Fish Bowl's active backend is Convex. Game state, live updates, owner analytics, and E2E seeding/cleanup run through the Convex functions in `convex/`.
 
-Before sharing the app publicly, add proper Row Level Security policies or move sensitive game mutations behind server routes. The current setup is meant for fast party-game prototyping.
+The active development Convex project is `austin-hill:fish-bowl` with dev deployment `ardent-lemming-605` and URL `https://ardent-lemming-605.convex.cloud`.
 
-The current Fish Bowl Supabase project is `fish-bowl` with project ref `gmchqcpllgleyfjnxuit`. The app should continue to use that same project ref and URL.
+Supabase remains as a legacy fallback during the migration window. The Fish Bowl Supabase project is `fish-bowl` with project ref `gmchqcpllgleyfjnxuit`.
 
-Before running Supabase schema/admin commands from this repo, verify that local env and CLI metadata point at the Fish Bowl project:
+Before running any Supabase schema/admin commands from this repo, verify that local env and CLI metadata point at the Fish Bowl project:
 
 ```bash
 npm run supabase:verify
@@ -94,7 +103,7 @@ npm run test:e2e:headed
 npm run test:e2e:ui
 ```
 
-Use headed or UI mode only when you want to watch or debug the browser. Test-created games are deleted from Supabase after each test when `.env.local` has the normal Supabase env vars.
+Use headed or UI mode only when you want to watch or debug the browser. Test-created games are deleted from Convex after each test when `.env.local` has `NEXT_PUBLIC_CONVEX_URL` and the local `E2E_TEST_SECRET`.
 
 ## Vercel Deployment
 
@@ -112,10 +121,14 @@ Install Command: npm install
 5. Add these Vercel environment variables:
 
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+NEXT_PUBLIC_CONVEX_URL=...
+CONVEX_DEPLOYMENT=...
 OWNER_ANALYTICS_KEY=...
 ANALYTICS_IP_SALT=...
+
+# Optional legacy fallback during the Supabase shutdown window
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ```
 
 6. Deploy.
@@ -205,12 +218,12 @@ Included:
 
 - Host creates a game with a short join code.
 - Players join by code or QR link.
-- Lobby, player list, and submission status update through Supabase Realtime.
+- Lobby, player list, and submission status update through Convex realtime queries.
 - Players can edit names and submit prompts.
 - Host can start once prompts exist.
 - Prompts are shuffled into a shared deck.
 - Active player sees one prompt and can mark Correct, Skip, or End turn.
-- Score, turn state, and prompt state persist in Supabase.
+- Score, turn state, and prompt state persist in Convex.
 - Phone refresh keeps player identity through local storage.
 
 Not included yet:

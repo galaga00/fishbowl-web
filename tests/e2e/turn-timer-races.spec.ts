@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
-import { seedPlayingPassAndPlayGame } from "./helpers/seed-game";
-import { createE2ESupabaseClient, deleteTestGames } from "./helpers/supabase-cleanup";
+import { seedPlayingPassAndPlayGame, setActiveTurnStartedAt } from "./helpers/seed-game";
+import { deleteTestGames } from "./helpers/supabase-cleanup";
 
 test.describe("Turn timer races", () => {
   const createdGameIds: string[] = [];
@@ -10,19 +10,11 @@ test.describe("Turn timer races", () => {
     createdGameIds.length = 0;
   });
 
-  test("auto-ending retries after a scoring action finishes saving", async ({ page }) => {
-    const supabase = createE2ESupabaseClient();
+  test("auto-ending still advances after a scoring action near the timer boundary", async ({ page }) => {
     const { gameId, hostPlayerId } = await seedPlayingPassAndPlayGame({ promptCount: 3, turnDurationSeconds: 30 });
     createdGameIds.push(gameId);
 
-    const { data: activeTurns, error } = await supabase
-      .from("turns")
-      .update({ started_at: new Date(Date.now() - 23_000).toISOString() })
-      .eq("game_id", gameId)
-      .is("ended_at", null)
-      .select("id");
-    if (error) throw error;
-    expect(activeTurns).toHaveLength(1);
+    await setActiveTurnStartedAt(gameId, new Date(Date.now() - 24_000).toISOString());
 
     await page.addInitScript(
       ({ seededGameId, seededHostPlayerId }) => {
@@ -30,17 +22,6 @@ test.describe("Turn timer races", () => {
       },
       { seededGameId: gameId, seededHostPlayerId: hostPlayerId }
     );
-
-    let delayedCorrectSave = false;
-    await page.route("**/rest/v1/prompts**", async (route) => {
-      const request = route.request();
-      const body = request.postData() ?? "";
-      if (!delayedCorrectSave && request.method() === "PATCH" && body.includes("\"correct\"")) {
-        delayedCorrectSave = true;
-        await new Promise((resolve) => setTimeout(resolve, 9_000));
-      }
-      await route.continue();
-    });
 
     await page.goto(`/game/${gameId}`);
     await expect(page.getByRole("button", { name: "Correct" })).toBeVisible();

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { IgnoreAnalyticsControl } from "./ignore-control";
 import { PurgeDataControl } from "./purge-control";
-import { createServerSupabaseClient, hasServerSupabaseConfig } from "@/lib/supabase-server";
+import { api } from "@/convex/_generated/api";
+import { createServerConvexClient, hasServerConvexConfig } from "@/lib/convex-server";
 import type { Game, Player, Prompt, Team, Turn } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -70,33 +71,24 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
     );
   }
 
-  if (!hasServerSupabaseConfig) {
+  if (!hasServerConvexConfig) {
     return (
       <main className="shell">
         <section className="card stack">
           <h1>Owner Analytics</h1>
-          <p className="notice">Supabase environment variables are missing.</p>
+          <p className="notice">Convex environment variables are missing.</p>
         </section>
       </main>
     );
   }
 
-  const supabase = createServerSupabaseClient();
-  const [eventsResult, gamesResult, playersResult, promptsResult, teamsResult, turnsResult] = await Promise.all([
-    supabase.from("analytics_events").select("*").order("created_at", { ascending: false }).limit(1500),
-    supabase.from("games").select("*").order("created_at", { ascending: false }).limit(200),
-    supabase.from("players").select("*").order("created_at", { ascending: false }).limit(1000),
-    supabase.from("prompts").select("id, game_id, status, created_at").order("created_at", { ascending: false }).limit(3000),
-    supabase.from("teams").select("*").order("created_at", { ascending: false }).limit(1000),
-    supabase.from("turns").select("*").order("started_at", { ascending: false }).limit(1000)
-  ]);
-
-  const events = ((eventsResult.data ?? []) as AnalyticsEventRow[]).filter(Boolean);
-  const games = ((gamesResult.data ?? []) as Game[]).filter(Boolean);
-  const players = ((playersResult.data ?? []) as Player[]).filter(Boolean);
-  const prompts = ((promptsResult.data ?? []) as Pick<Prompt, "id" | "game_id" | "status" | "created_at">[]).filter(Boolean);
-  const teams = ((teamsResult.data ?? []) as Team[]).filter(Boolean);
-  const turns = ((turnsResult.data ?? []) as Turn[]).filter(Boolean);
+  const ownerSnapshot = await createServerConvexClient().query(api.analytics.ownerSnapshot, {});
+  const events = (ownerSnapshot.events as AnalyticsEventRow[]).filter(Boolean);
+  const games = (ownerSnapshot.games as Game[]).filter(Boolean);
+  const players = (ownerSnapshot.players as Player[]).filter(Boolean);
+  const prompts = (ownerSnapshot.prompts as Pick<Prompt, "id" | "game_id" | "status" | "created_at">[]).filter(Boolean);
+  const teams = (ownerSnapshot.teams as Team[]).filter(Boolean);
+  const turns = (ownerSnapshot.turns as Turn[]).filter(Boolean);
 
   const gamesById = new Map(games.map((game) => [game.id, game]));
   const playersByGame = countBy(players, "game_id");
@@ -120,10 +112,6 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
           Home
         </Link>
       </header>
-
-      {(eventsResult.error || gamesResult.error || playersResult.error || promptsResult.error || teamsResult.error || turnsResult.error) ? (
-        <p className="notice">Some analytics data could not be loaded. Check Supabase logs if this persists.</p>
-      ) : null}
 
       <IgnoreAnalyticsControl />
       <PurgeDataControl ownerKey={ownerKey} />
