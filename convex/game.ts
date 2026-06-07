@@ -13,7 +13,7 @@ import {
   DEFAULT_TEAM_ASSIGNMENT_MODE,
   TURN_DURATION_OPTIONS,
   TURN_DURATION_SECONDS,
-  getFirstTurnAssignment,
+  getRandomFirstTurnAssignment,
   getNextTurnAssignment,
   hasPlayerDrafted,
   hasPlayerSubmitted,
@@ -376,7 +376,7 @@ export const startGame = mutation({
 
     const promptPool = snapshot.game.prompt_mode === "deck" ? await ensureDeckDraftPrompts(ctx, snapshot) : snapshot.prompts;
     const shuffledPrompts = shuffle(promptPool);
-    const firstAssignment = getFirstTurnAssignment(snapshot);
+    const firstAssignment = getRandomFirstTurnAssignment(snapshot);
     const firstPrompt = shuffledPrompts[0];
     if (!firstAssignment || !firstPrompt) throw new Error("Need at least one player and one prompt to start.");
 

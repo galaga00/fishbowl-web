@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 import { createGame, joinGame, loadSnapshot, markCorrect, saveGameSetup, skipPrompt } from "../../lib/game-api";
+import { getFirstTurnAssignment, getNextTurnAssignment } from "../../lib/game-utils";
 import { FAMILY_FRIENDLY_DECK_FILTER, filterStarterDeckByCategories, MIXED_PASS_PLAY_CATEGORY } from "../../lib/pass-play-deck";
 import { seedPlayingPassAndPlayGame, loadSeededSnapshot } from "./helpers/seed-game";
 import { deleteTestGames, loadLocalEnv } from "./helpers/convex-cleanup";
+import type { GameSnapshot } from "../../lib/types";
 
 test.describe("Deck and scoring invariants", () => {
   const createdGameIds: string[] = [];
@@ -22,6 +24,26 @@ test.describe("Deck and scoring invariants", () => {
       const titles = cards.map((card) => normalizeVisibleTitle(card.title));
       expect(new Set(titles).size).toBe(titles.length);
     }
+  });
+
+  test("first turn assignment can start on a non-host team without breaking rotation", () => {
+    const snapshot = buildRotationSnapshot();
+    const firstAssignment = getFirstTurnAssignment(snapshot, 1);
+
+    expect(firstAssignment?.team.name).toBe("Team 2");
+    expect(firstAssignment?.player.name).toBe("Casey");
+
+    const afterFirstTurn = withTurnAssignment(snapshot, firstAssignment!, 1);
+    const secondAssignment = getNextTurnAssignment(afterFirstTurn);
+
+    expect(secondAssignment?.team.name).toBe("Team 1");
+    expect(secondAssignment?.player.name).toBe("Austin");
+
+    const afterSecondTurn = withTurnAssignment(afterFirstTurn, secondAssignment!, 2);
+    const thirdAssignment = getNextTurnAssignment(afterSecondTurn);
+
+    expect(thirdAssignment?.team.name).toBe("Team 2");
+    expect(thirdAssignment?.player.name).toBe("Drew");
   });
 
   test("parallel deck-draft joins receive unique visible card titles", async () => {
@@ -87,4 +109,75 @@ function normalizeVisibleTitle(title: string) {
     .replace(/&/g, "and")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
+}
+
+function withTurnAssignment(
+  snapshot: GameSnapshot,
+  assignment: NonNullable<ReturnType<typeof getFirstTurnAssignment>>,
+  turnNumber: number
+): GameSnapshot {
+  return {
+    ...snapshot,
+    game: {
+      ...snapshot.game,
+      active_player_id: assignment.player.id,
+      current_team_id: assignment.team.id,
+      turn_number: turnNumber
+    }
+  };
+}
+
+function buildRotationSnapshot(): GameSnapshot {
+  const gameId = "game-1";
+  return {
+    game: {
+      id: gameId,
+      code: "ABCDE",
+      host_player_id: "player-1",
+      phase: "ready",
+      current_team_id: null,
+      active_player_id: null,
+      current_prompt_id: null,
+      turn_number: 0,
+      round_number: 1,
+      turn_duration_seconds: 60,
+      prompts_per_player: 3,
+      cards_dealt_per_player: 10,
+      cards_kept_per_player: 5,
+      pass_play_card_count: 10,
+      expected_players: 4,
+      team_assignment_mode: "auto",
+      prompt_mode: "deck",
+      prompt_categories: ["mixed"],
+      play_mode: "pass_and_play",
+      paused_at: null,
+      created_at: "2026-01-01T00:00:00.000Z"
+    },
+    players: [
+      buildPlayer("player-1", gameId, "Austin", true, "team-1", 0),
+      buildPlayer("player-2", gameId, "Briar", false, "team-1", 1),
+      buildPlayer("player-3", gameId, "Casey", false, "team-2", 2),
+      buildPlayer("player-4", gameId, "Drew", false, "team-2", 3)
+    ],
+    teams: [
+      { id: "team-1", game_id: gameId, name: "Team 1", score: 0, sort_order: 0 },
+      { id: "team-2", game_id: gameId, name: "Team 2", score: 0, sort_order: 1 }
+    ],
+    prompts: [],
+    draftCards: [],
+    activeTurn: null,
+    latestUndoableEvent: null
+  };
+}
+
+function buildPlayer(id: string, gameId: string, name: string, isHost: boolean, teamId: string, order: number) {
+  return {
+    id,
+    game_id: gameId,
+    name,
+    is_host: isHost,
+    team_id: teamId,
+    has_submitted: true,
+    created_at: new Date(Date.UTC(2026, 0, 1, 0, 0, order)).toISOString()
+  };
 }

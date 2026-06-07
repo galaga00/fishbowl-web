@@ -115,13 +115,21 @@ export function getNextTeamForPlayer(player: Player | null, teams: Team[]) {
   return teams.find((team) => team.id === player.team_id) ?? teams[0] ?? null;
 }
 
-export function getFirstTurnAssignment(snapshot: GameSnapshot) {
+export function getFirstTurnAssignment(snapshot: GameSnapshot, teamOffset = 0) {
   const teamsWithPlayers = getTeamsWithPlayers(snapshot);
-  const firstTeam = teamsWithPlayers[0];
+  const teamIndex = teamsWithPlayers.length === 0 ? -1 : ((Math.floor(teamOffset) % teamsWithPlayers.length) + teamsWithPlayers.length) % teamsWithPlayers.length;
+  const firstTeam = teamsWithPlayers[teamIndex] ?? null;
   const firstPlayer = firstTeam?.players[0];
 
   if (!firstTeam || !firstPlayer) return null;
   return { player: firstPlayer, team: firstTeam.team };
+}
+
+export function getRandomFirstTurnAssignment(snapshot: GameSnapshot) {
+  const teamsWithPlayers = getTeamsWithPlayers(snapshot);
+  if (teamsWithPlayers.length === 0) return null;
+
+  return getFirstTurnAssignment(snapshot, Math.floor(Math.random() * teamsWithPlayers.length));
 }
 
 export function getNextTurnAssignment(snapshot: GameSnapshot) {
