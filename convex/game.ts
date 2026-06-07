@@ -21,7 +21,7 @@ import {
   isFinalRound,
   shuffle
 } from "../lib/game-utils";
-import type { GameSnapshot, PlayMode, PromptMode, Team } from "../lib/types";
+import type { GameEvent, GameSnapshot, PlayMode, PromptMode, Team } from "../lib/types";
 
 const gameId = v.id("games");
 const playerId = v.id("players");
@@ -498,6 +498,44 @@ export const adjustTeamScore = mutation({
   }
 });
 
+export const redoLastFivePrompts = mutation({
+  args: { gameId },
+  handler: async (ctx, args) => {
+    const snapshot = await loadSnapshotForGame(ctx, args.gameId);
+    if (snapshot.game.phase !== "paused" && snapshot.game.phase !== "ready") return;
+
+    const undoableEvents = (await ctx.db.query("game_events").withIndex("by_game", (q) => q.eq("game_id", args.gameId)).collect())
+      .filter((event) => event.undone_at === null)
+      .sort((a, b) => b.created_at.localeCompare(a.created_at));
+    const latestEvent = undoableEvents[0] ?? null;
+    const targetTurnId =
+      snapshot.activeTurn?.id ??
+      (latestEvent?.action === "end_turn" && latestEvent.payload.activeTurn ? latestEvent.payload.activeTurn.id : null);
+    const targetRoundNumber =
+      latestEvent?.action === "end_turn" && latestEvent.payload.activeTurn ? latestEvent.payload.game.round_number : snapshot.game.round_number;
+    if (!targetTurnId) return;
+
+    const sameTurnEvents = undoableEvents.filter(
+      (event) => event.payload.activeTurn?.id === targetTurnId && event.payload.game.round_number === targetRoundNumber
+    );
+    const closingTurnEvent = sameTurnEvents.find((event) => event.action === "end_turn") ?? null;
+    const promptEvents = sameTurnEvents.filter((event) => event.action === "correct" || event.action === "skip").slice(0, 5);
+    const eventsToUndo = closingTurnEvent ? [closingTurnEvent, ...promptEvents] : promptEvents;
+    const restoreEvent = eventsToUndo[eventsToUndo.length - 1] ?? closingTurnEvent;
+
+    if (!restoreEvent?.payload.activeTurn) {
+      await restorePausedTurnTime(ctx, args.gameId, targetTurnId as Id<"turns">, snapshot.game.turn_duration_seconds);
+      return;
+    }
+
+    await restoreGameEventState(ctx, args.gameId, restoreEvent as Doc<"game_events">);
+    for (const event of eventsToUndo) {
+      await ctx.db.patch(event._id, { undone_at: nowIso() });
+    }
+    await restorePausedTurnTime(ctx, args.gameId, targetTurnId as Id<"turns">, snapshot.game.turn_duration_seconds);
+  }
+});
+
 export const undoLastAction = mutation({
   args: { gameId },
   handler: async (ctx, args) => {
@@ -505,29 +543,7 @@ export const undoLastAction = mutation({
     const event = snapshot.latestUndoableEvent;
     if (!event) throw new Error("Nothing to undo yet.");
 
-    for (const team of event.payload.teams as Array<{ id: Id<"teams">; score: number }>) {
-      await ctx.db.patch(team.id, { score: team.score });
-    }
-    for (const prompt of event.payload.prompts as Array<{ id: Id<"prompts">; status: "available" | "active" | "correct"; deck_order: number | null }>) {
-      await ctx.db.patch(prompt.id, { status: prompt.status, deck_order: prompt.deck_order });
-    }
-    if (event.payload.activeTurn) {
-      const activeTurn = event.payload.activeTurn as { id: Id<"turns">; ended_at: string | null; correct_count: number; skip_count: number };
-      await ctx.db.patch(activeTurn.id, {
-        ended_at: activeTurn.ended_at,
-        correct_count: activeTurn.correct_count,
-        skip_count: activeTurn.skip_count
-      });
-    }
-    await ctx.db.patch(args.gameId, {
-      phase: event.payload.game.phase,
-      current_team_id: event.payload.game.current_team_id as Id<"teams"> | null,
-      active_player_id: event.payload.game.active_player_id as Id<"players"> | null,
-      current_prompt_id: event.payload.game.current_prompt_id as Id<"prompts"> | null,
-      turn_number: event.payload.game.turn_number,
-      round_number: event.payload.game.round_number,
-      paused_at: event.payload.game.paused_at
-    });
+    await restoreGameEventState(ctx, args.gameId, event);
     await ctx.db.patch(event.id as Id<"game_events">, { undone_at: nowIso() });
   }
 });
@@ -752,6 +768,40 @@ async function recordUndoPoint(ctx: MutationCtx, snapshot: GameSnapshot, action:
     undone_at: null,
     created_at: nowIso()
   });
+}
+
+async function restoreGameEventState(ctx: MutationCtx, gameId: Id<"games">, event: Pick<GameEvent, "payload">) {
+  for (const team of event.payload.teams as Array<{ id: Id<"teams">; score: number }>) {
+    await ctx.db.patch(team.id, { score: team.score });
+  }
+  for (const prompt of event.payload.prompts as Array<{ id: Id<"prompts">; status: "available" | "active" | "correct"; deck_order: number | null }>) {
+    await ctx.db.patch(prompt.id, { status: prompt.status, deck_order: prompt.deck_order });
+  }
+  if (event.payload.activeTurn) {
+    const activeTurn = event.payload.activeTurn as { id: Id<"turns">; ended_at: string | null; correct_count: number; skip_count: number };
+    await ctx.db.patch(activeTurn.id, {
+      ended_at: activeTurn.ended_at,
+      correct_count: activeTurn.correct_count,
+      skip_count: activeTurn.skip_count
+    });
+  }
+  await ctx.db.patch(gameId, {
+    phase: event.payload.game.phase,
+    current_team_id: event.payload.game.current_team_id as Id<"teams"> | null,
+    active_player_id: event.payload.game.active_player_id as Id<"players"> | null,
+    current_prompt_id: event.payload.game.current_prompt_id as Id<"prompts"> | null,
+    turn_number: event.payload.game.turn_number,
+    round_number: event.payload.game.round_number,
+    paused_at: event.payload.game.paused_at
+  });
+}
+
+async function restorePausedTurnTime(ctx: MutationCtx, gameId: Id<"games">, turnId: Id<"turns">, turnDurationSeconds: number) {
+  const now = Date.now();
+  const secondsToRestore = Math.min(15, turnDurationSeconds);
+  const startedAt = new Date(now - Math.max(0, turnDurationSeconds - secondsToRestore) * 1_000).toISOString();
+  await ctx.db.patch(turnId, { ended_at: null, started_at: startedAt });
+  await ctx.db.patch(gameId, { phase: "paused", paused_at: new Date(now).toISOString() });
 }
 
 function snapshotMatchesActionState(

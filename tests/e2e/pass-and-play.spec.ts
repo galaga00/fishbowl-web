@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { deleteTestGames } from "./helpers/convex-cleanup";
+import { seedReadyPassAndPlayGame } from "./helpers/seed-game";
 
 test.describe("Pass & Play game loop", () => {
   const createdGameIds: string[] = [];
@@ -102,5 +103,44 @@ test.describe("Pass & Play game loop", () => {
     await page.getByRole("button", { name: "Remove point from Team 1" }).click();
     await expect(teamOneScore.locator("strong")).toHaveText("0");
     await expect(page.getByRole("button", { name: "Remove point from Team 1" })).toBeDisabled();
+  });
+
+  test("host can redo the current turn's last prompts after pausing", async ({ page }) => {
+    const { gameId, hostPlayerId } = await seedReadyPassAndPlayGame();
+    createdGameIds.push(gameId);
+
+    await page.addInitScript(
+      ({ seededGameId, seededHostPlayerId }) => {
+        window.localStorage.setItem(`fish-bowl:${seededGameId}:player`, seededHostPlayerId);
+      },
+      { seededGameId: gameId, seededHostPlayerId: hostPlayerId }
+    );
+
+    await page.goto(`/game/${gameId}`);
+    await expect(page.getByText("Austin is up")).toBeVisible();
+    await page.getByRole("button", { name: "Ready!" }).click();
+
+    await expect(page.locator(".prompt")).toHaveText("Prompt 1");
+    await page.getByRole("button", { name: "Correct" }).click();
+    await expect(page.locator(".score", { hasText: "Team 1" }).locator("strong")).toHaveText("1");
+    await expect(page.locator(".prompt")).toHaveText("Prompt 2");
+
+    await page.getByRole("button", { name: "Correct" }).click();
+    await expect(page.locator(".score", { hasText: "Team 1" }).locator("strong")).toHaveText("2");
+    await expect(page.locator(".prompt")).toHaveText("Prompt 3");
+
+    await page.getByRole("button", { name: "Pause" }).click();
+    await expect(page.getByText("Game paused")).toBeVisible();
+
+    page.once("dialog", async (dialog) => {
+      expect(dialog.message()).toContain("Redo this player's last few prompts");
+      await dialog.accept();
+    });
+    await page.getByRole("button", { name: "Redo last 5" }).click();
+    await expect(page.locator(".score", { hasText: "Team 1" }).locator("strong")).toHaveText("0");
+
+    await page.getByRole("button", { name: "Resume" }).click();
+    await expect(page.locator(".prompt")).toHaveText("Prompt 1");
+    await expect(page.locator(".timer")).toHaveText(/1[3-5]s/);
   });
 });

@@ -20,6 +20,7 @@ import {
   markCorrect,
   pauseGame,
   resetToLobby,
+  redoLastFivePrompts,
   resumeGame,
   saveGameSetup,
   setDraftCardSelected,
@@ -550,6 +551,16 @@ export default function GamePage() {
                 });
               })
             }
+            onRedoLastFive={() => {
+              if (window.confirm("Redo this player's last few prompts and give them 15 seconds?")) {
+                runAction(async () => {
+                  await redoLastFivePrompts(snapshot);
+                  trackSnapshotEvent("redo_last_five", snapshot, {
+                    activePlayerId: snapshot.game.active_player_id
+                  });
+                });
+              }
+            }}
             onFinishGame={() => {
               if (window.confirm("End the game now?")) {
                 runAction(async () => {
@@ -1773,6 +1784,7 @@ function Play({
   onResume,
   onUndo,
   onScoreChange,
+  onRedoLastFive,
   onFinishGame,
   onResetToLobby
 }: {
@@ -1790,6 +1802,7 @@ function Play({
   onResume: () => ActionResult;
   onUndo: () => ActionResult;
   onScoreChange: (teamId: string, delta: number) => ActionResult;
+  onRedoLastFive: () => ActionResult;
   onFinishGame: () => void;
   onResetToLobby: () => void;
 }) {
@@ -1803,6 +1816,7 @@ function Play({
   const secondsLeft = getTurnSecondsLeft(snapshot.activeTurn?.started_at, snapshot.game.turn_duration_seconds, now);
   const isTurnRunning = snapshot.game.phase === "playing";
   const isPaused = snapshot.game.phase === "paused";
+  const canRedoLastFive = isPaused || (snapshot.game.phase === "ready" && snapshot.latestUndoableEvent?.action === "end_turn");
   const promptLabel = snapshot.game.prompt_mode === "deck" ? "card" : "prompt";
   const isLastActivePrompt = isTurnRunning && Boolean(currentPrompt) && !snapshot.prompts.some((prompt) => prompt.status === "available");
 
@@ -2003,11 +2017,13 @@ function Play({
       {isHost ? (
         <HostPlayControls
           busy={busy}
+          canRedoLastFive={canRedoLastFive}
           canUndo={Boolean(snapshot.latestUndoableEvent)}
           isPaused={isPaused}
           isTurnRunning={isTurnRunning}
           onFinishGame={onFinishGame}
           onPause={onPause}
+          onRedoLastFive={onRedoLastFive}
           onResetToLobby={onResetToLobby}
           onResume={onResume}
           onScoreChange={onScoreChange}
@@ -2021,11 +2037,13 @@ function Play({
 
 function HostPlayControls({
   busy,
+  canRedoLastFive,
   canUndo,
   isPaused,
   isTurnRunning,
   onFinishGame,
   onPause,
+  onRedoLastFive,
   onResetToLobby,
   onResume,
   onScoreChange,
@@ -2033,11 +2051,13 @@ function HostPlayControls({
   onUndo
 }: {
   busy: boolean;
+  canRedoLastFive: boolean;
   canUndo: boolean;
   isPaused: boolean;
   isTurnRunning: boolean;
   onFinishGame: () => void;
   onPause: () => void;
+  onRedoLastFive: () => void;
   onResetToLobby: () => void;
   onResume: () => void;
   onScoreChange: (teamId: string, delta: number) => void;
@@ -2061,6 +2081,9 @@ function HostPlayControls({
           Undo last
         </button>
       </div>
+      <button className="button secondary redo-button" disabled={busy || !canRedoLastFive} onClick={onRedoLastFive}>
+        Redo last 5
+      </button>
       <div className="host-score-editor" aria-label="Adjust scores">
         {teams.map((team) => (
           <div className="host-score-row" key={team.id}>

@@ -119,6 +119,10 @@ export async function adjustTeamScore(snapshot: GameSnapshot, teamId: string, de
   });
 }
 
+export async function redoLastFivePrompts(snapshot: GameSnapshot) {
+  await getConvexClient().mutation(api.game.redoLastFivePrompts, { gameId: snapshot.game.id as Id<"games"> });
+}
+
 export async function undoLastAction(snapshot: GameSnapshot) {
   await getConvexClient().mutation(api.game.undoLastAction, { gameId: snapshot.game.id as Id<"games"> });
 }
