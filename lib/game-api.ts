@@ -111,6 +111,14 @@ export async function resetToLobby(snapshot: GameSnapshot) {
   await getConvexClient().mutation(api.game.resetToLobby, { gameId: snapshot.game.id as Id<"games"> });
 }
 
+export async function adjustTeamScore(snapshot: GameSnapshot, teamId: string, delta: number) {
+  await getConvexClient().mutation(api.game.adjustTeamScore, {
+    gameId: snapshot.game.id as Id<"games">,
+    teamId: teamId as Id<"teams">,
+    delta
+  });
+}
+
 export async function undoLastAction(snapshot: GameSnapshot) {
   await getConvexClient().mutation(api.game.undoLastAction, { gameId: snapshot.game.id as Id<"games"> });
 }

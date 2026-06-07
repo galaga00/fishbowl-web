@@ -11,6 +11,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { CONFETTI_PIECES } from "@/lib/confetti";
 import {
+  adjustTeamScore,
   assignPlayerToTeam,
   endTurn,
   finishGame,
@@ -36,7 +37,7 @@ import {
   MIXED_PASS_PLAY_CATEGORY,
   PASS_PLAY_CATEGORY_OPTIONS
 } from "@/lib/pass-play-deck";
-import type { GameSnapshot, Player, Prompt } from "@/lib/types";
+import type { GameSnapshot, Player, Prompt, Team } from "@/lib/types";
 import {
   DEFAULT_PROMPTS_PER_PLAYER,
   DEFAULT_CARDS_DEALT_PER_PLAYER,
@@ -537,6 +538,15 @@ export default function GamePage() {
                 await undoLastAction(snapshot);
                 trackSnapshotEvent("action_undone", snapshot, {
                   action: snapshot.latestUndoableEvent?.action ?? null
+                });
+              })
+            }
+            onScoreChange={(teamId, delta) =>
+              runAction(async () => {
+                await adjustTeamScore(snapshot, teamId, delta);
+                trackSnapshotEvent("score_adjusted", snapshot, {
+                  teamId,
+                  delta
                 });
               })
             }
@@ -1762,6 +1772,7 @@ function Play({
   onPause,
   onResume,
   onUndo,
+  onScoreChange,
   onFinishGame,
   onResetToLobby
 }: {
@@ -1778,6 +1789,7 @@ function Play({
   onPause: () => ActionResult;
   onResume: () => ActionResult;
   onUndo: () => ActionResult;
+  onScoreChange: (teamId: string, delta: number) => ActionResult;
   onFinishGame: () => void;
   onResetToLobby: () => void;
 }) {
@@ -1998,7 +2010,9 @@ function Play({
           onPause={onPause}
           onResetToLobby={onResetToLobby}
           onResume={onResume}
+          onScoreChange={onScoreChange}
           onUndo={onUndo}
+          teams={snapshot.teams}
         />
       ) : null}
     </div>
@@ -2014,6 +2028,8 @@ function HostPlayControls({
   onPause,
   onResetToLobby,
   onResume,
+  onScoreChange,
+  teams,
   onUndo
 }: {
   busy: boolean;
@@ -2024,6 +2040,8 @@ function HostPlayControls({
   onPause: () => void;
   onResetToLobby: () => void;
   onResume: () => void;
+  onScoreChange: (teamId: string, delta: number) => void;
+  teams: Team[];
   onUndo: () => void;
 }) {
   return (
@@ -2042,6 +2060,32 @@ function HostPlayControls({
         <button className="button secondary" disabled={busy || !canUndo} onClick={onUndo}>
           Undo last
         </button>
+      </div>
+      <div className="host-score-editor" aria-label="Adjust scores">
+        {teams.map((team) => (
+          <div className="host-score-row" key={team.id}>
+            <span>{team.name}</span>
+            <div className="score-stepper">
+              <button
+                className="score-step-button"
+                disabled={busy || team.score <= 0}
+                aria-label={`Remove point from ${team.name}`}
+                onClick={() => onScoreChange(team.id, -1)}
+              >
+                -
+              </button>
+              <strong aria-label={`${team.name} score`}>{team.score}</strong>
+              <button
+                className="score-step-button"
+                disabled={busy}
+                aria-label={`Add point to ${team.name}`}
+                onClick={() => onScoreChange(team.id, 1)}
+              >
+                +
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
       <div className="button-row">
         <button className="button warn" disabled={busy} onClick={onResetToLobby}>

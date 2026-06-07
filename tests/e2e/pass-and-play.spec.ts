@@ -87,4 +87,20 @@ test.describe("Pass & Play game loop", () => {
     await expect(page.getByRole("button", { name: "Skip" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "End turn" })).toBeEnabled();
   });
+
+  test("host can adjust team scores from play controls", async ({ page }) => {
+    await startPassAndPlayTurn(page);
+
+    const teamOneScore = page.locator(".score", { hasText: "Team 1" });
+    await expect(teamOneScore.locator("strong")).toHaveText("0");
+    await expect(page.getByRole("button", { name: "Remove point from Team 1" })).toBeDisabled();
+
+    await page.getByRole("button", { name: "Add point to Team 1" }).click();
+    await expect(teamOneScore.locator("strong")).toHaveText("1");
+    await expect(page.getByRole("button", { name: "Remove point from Team 1" })).toBeEnabled();
+
+    await page.getByRole("button", { name: "Remove point from Team 1" }).click();
+    await expect(teamOneScore.locator("strong")).toHaveText("0");
+    await expect(page.getByRole("button", { name: "Remove point from Team 1" })).toBeDisabled();
+  });
 });

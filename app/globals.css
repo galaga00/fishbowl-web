@@ -1186,6 +1186,54 @@ a {
   padding: 14px;
 }
 
+.host-score-editor {
+  display: grid;
+  gap: 8px;
+}
+
+.host-score-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffdf8;
+  padding: 8px 10px;
+}
+
+.host-score-row > span {
+  overflow-wrap: anywhere;
+  font-weight: 800;
+}
+
+.score-stepper {
+  display: grid;
+  grid-template-columns: 42px 44px 42px;
+  align-items: center;
+  gap: 6px;
+}
+
+.score-stepper strong {
+  text-align: center;
+  font-size: 1.18rem;
+}
+
+.score-step-button {
+  min-height: 40px;
+  border-radius: 8px;
+  background: #ece7dc;
+  color: var(--ink);
+  font-size: 1.35rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.score-step-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .turn-actions {
   display: grid;
   gap: 10px;

@@ -487,6 +487,17 @@ export const resetToLobby = mutation({
   }
 });
 
+export const adjustTeamScore = mutation({
+  args: { gameId, teamId, delta: v.number() },
+  handler: async (ctx, args) => {
+    const team = await ctx.db.get(args.teamId);
+    if (!team || team.game_id !== args.gameId) return;
+
+    const nextScore = Math.max(0, team.score + Math.round(args.delta));
+    await ctx.db.patch(args.teamId, { score: nextScore });
+  }
+});
+
 export const undoLastAction = mutation({
   args: { gameId },
   handler: async (ctx, args) => {
