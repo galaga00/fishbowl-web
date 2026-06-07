@@ -555,6 +555,8 @@ export const skipPrompt = mutation({
     if (!promptId) return;
     const prompt = await ctx.db.get(promptId);
     if (!prompt || prompt.status !== "active" || prompt.game_id !== args.gameId) return;
+    const hasNextPrompt = snapshot.prompts.some((candidate) => candidate.status === "available");
+    if (!hasNextPrompt) return;
 
     await recordUndoPoint(ctx, snapshot, "skip");
     const maxDeckOrder = Math.max(0, ...snapshot.prompts.map((candidate) => candidate.deck_order ?? 0));

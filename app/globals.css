@@ -1201,6 +1201,23 @@ a {
   background: #d97706;
 }
 
+.skip-action:disabled {
+  background: #85827a;
+  opacity: 1;
+}
+
+.last-prompt-note {
+  margin: -2px 0 2px;
+  border: 1px solid #d5d0c4;
+  border-radius: 8px;
+  background: #f2f0ea;
+  color: #37332c;
+  padding: 10px 12px;
+  text-align: center;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
 .end-turn-panel {
   margin-top: 8px;
   border-top: 1px solid var(--line);

@@ -1791,6 +1791,8 @@ function Play({
   const secondsLeft = getTurnSecondsLeft(snapshot.activeTurn?.started_at, snapshot.game.turn_duration_seconds, now);
   const isTurnRunning = snapshot.game.phase === "playing";
   const isPaused = snapshot.game.phase === "paused";
+  const promptLabel = snapshot.game.prompt_mode === "deck" ? "card" : "prompt";
+  const isLastActivePrompt = isTurnRunning && Boolean(currentPrompt) && !snapshot.prompts.some((prompt) => prompt.status === "available");
 
   useEffect(() => {
     if (!isTurnRunning) return;
@@ -1936,7 +1938,8 @@ function Play({
             </button>
             <button
               className="button skip-action"
-              disabled={busy || secondsLeft <= 0}
+              aria-describedby={isLastActivePrompt ? "last-prompt-note" : undefined}
+              disabled={busy || secondsLeft <= 0 || isLastActivePrompt}
               onClick={() => {
                 setConfirmingEndTurn(false);
                 onSkip();
@@ -1944,6 +1947,11 @@ function Play({
             >
               Skip
             </button>
+            {isLastActivePrompt ? (
+              <p className="last-prompt-note" id="last-prompt-note" role="status">
+                This is the last {promptLabel}. Mark it correct or end the turn.
+              </p>
+            ) : null}
             <div className="end-turn-panel">
               {confirmingEndTurn ? (
                 <div className="end-turn-confirm">
