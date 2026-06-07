@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { createGame, joinGame, loadSnapshot, markCorrect, saveGameSetup, skipPrompt } from "../../lib/game-api";
-import { getFirstTurnAssignment, getNextTurnAssignment } from "../../lib/game-utils";
+import { getFirstTurnAssignment, getNextTurnAssignment, getPromptForPlayerTurn } from "../../lib/game-utils";
 import { FAMILY_FRIENDLY_DECK_FILTER, filterStarterDeckByCategories, MIXED_PASS_PLAY_CATEGORY } from "../../lib/pass-play-deck";
 import { seedPlayingPassAndPlayGame, loadSeededSnapshot } from "./helpers/seed-game";
 import { deleteTestGames, loadLocalEnv } from "./helpers/convex-cleanup";
@@ -44,6 +44,18 @@ test.describe("Deck and scoring invariants", () => {
 
     expect(thirdAssignment?.team.name).toBe("Team 2");
     expect(thirdAssignment?.player.name).toBe("Drew");
+  });
+
+  test("prompt selection avoids the active player's own prompt when possible", () => {
+    const prompts = [
+      buildPrompt("prompt-1", "player-1"),
+      buildPrompt("prompt-2", "player-2"),
+      buildPrompt("prompt-3", "player-1")
+    ];
+
+    expect(getPromptForPlayerTurn(prompts, "player-1")?.id).toBe("prompt-2");
+    expect(getPromptForPlayerTurn(prompts, "player-1", "prompt-2")?.id).toBe("prompt-1");
+    expect(getPromptForPlayerTurn([buildPrompt("prompt-4", "player-1")], "player-1")?.id).toBe("prompt-4");
   });
 
   test("parallel deck-draft joins receive unique visible card titles", async () => {
@@ -179,5 +191,19 @@ function buildPlayer(id: string, gameId: string, name: string, isHost: boolean, 
     team_id: teamId,
     has_submitted: true,
     created_at: new Date(Date.UTC(2026, 0, 1, 0, 0, order)).toISOString()
+  };
+}
+
+function buildPrompt(id: string, playerId: string) {
+  return {
+    id,
+    game_id: "game-1",
+    player_id: playerId,
+    text: id,
+    category: null,
+    description: null,
+    status: "available" as const,
+    deck_order: null,
+    created_at: "2026-01-01T00:00:00.000Z"
   };
 }

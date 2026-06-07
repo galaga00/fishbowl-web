@@ -13,6 +13,7 @@ import {
   DEFAULT_TEAM_ASSIGNMENT_MODE,
   TURN_DURATION_OPTIONS,
   TURN_DURATION_SECONDS,
+  getPromptForPlayerTurn,
   getRandomFirstTurnAssignment,
   getNextTurnAssignment,
   hasPlayerDrafted,
@@ -377,13 +378,13 @@ export const startGame = mutation({
     const promptPool = snapshot.game.prompt_mode === "deck" ? await ensureDeckDraftPrompts(ctx, snapshot) : snapshot.prompts;
     const shuffledPrompts = shuffle(promptPool);
     const firstAssignment = getRandomFirstTurnAssignment(snapshot);
-    const firstPrompt = shuffledPrompts[0];
+    const firstPrompt = firstAssignment ? getPromptForPlayerTurn(shuffledPrompts, firstAssignment.player.id) : null;
     if (!firstAssignment || !firstPrompt) throw new Error("Need at least one player and one prompt to start.");
 
     for (const [deckOrder, prompt] of shuffledPrompts.entries()) {
       await ctx.db.patch(prompt.id as Id<"prompts">, {
         deck_order: deckOrder,
-        status: deckOrder === 0 ? "active" : "available"
+        status: prompt.id === firstPrompt.id ? "active" : "available"
       });
     }
 
@@ -539,7 +540,7 @@ export const markCorrect = mutation({
       await ctx.db.patch(snapshot.activeTurn.id as Id<"turns">, { correct_count: snapshot.activeTurn.correct_count + 1 });
     }
 
-    const nextPrompt = await activateNextPrompt(ctx, args.gameId);
+    const nextPrompt = await activateNextPrompt(ctx, args.gameId, null, snapshot.game.active_player_id);
     if (!nextPrompt) {
       await prepareNextRound(ctx, snapshot);
     }
@@ -564,7 +565,7 @@ export const skipPrompt = mutation({
     if (snapshot.activeTurn) {
       await ctx.db.patch(snapshot.activeTurn.id as Id<"turns">, { skip_count: snapshot.activeTurn.skip_count + 1 });
     }
-    await activateNextPrompt(ctx, args.gameId, promptId);
+    await activateNextPrompt(ctx, args.gameId, promptId, snapshot.game.active_player_id);
   }
 });
 
@@ -586,7 +587,7 @@ export const endTurn = mutation({
     const reusablePrompts = snapshot.prompts
       .filter((prompt) => prompt.status === "available" || prompt.id === activePromptId)
       .sort((a, b) => (a.deck_order ?? 9999) - (b.deck_order ?? 9999));
-    const nextPrompt = reusablePrompts.find((prompt) => prompt.id !== activePromptId) ?? reusablePrompts[0] ?? null;
+    const nextPrompt = getPromptForPlayerTurn(reusablePrompts, nextAssignment?.player.id, activePromptId);
 
     if (!nextAssignment || !nextPrompt) {
       await ctx.db.patch(args.gameId, {
@@ -760,14 +761,14 @@ function snapshotMatchesActionState(
   );
 }
 
-async function activateNextPrompt(ctx: MutationCtx, game_id: Id<"games">, excludePromptId?: Id<"prompts">) {
+async function activateNextPrompt(ctx: MutationCtx, game_id: Id<"games">, excludePromptId?: Id<"prompts"> | null, avoidPlayerId?: string | null) {
   const promptList = (await promptsByGame(ctx, game_id))
     .filter((prompt) => prompt.status === "available")
     .sort((a, b) => (a.deck_order ?? 9999) - (b.deck_order ?? 9999));
-  const nextPrompt = promptList.find((prompt) => prompt._id !== excludePromptId) ?? promptList[0] ?? null;
+  const nextPrompt = getPromptForPlayerTurn(promptList.map(toPrompt), avoidPlayerId, excludePromptId);
   if (!nextPrompt) return null;
-  await ctx.db.patch(nextPrompt._id, { status: "active" });
-  await ctx.db.patch(game_id, { current_prompt_id: nextPrompt._id });
+  await ctx.db.patch(nextPrompt.id as Id<"prompts">, { status: "active" });
+  await ctx.db.patch(game_id, { current_prompt_id: nextPrompt.id as Id<"prompts"> });
   return nextPrompt;
 }
 
@@ -789,8 +790,8 @@ async function prepareNextRound(ctx: MutationCtx, snapshot: GameSnapshot) {
 
   const nextRoundNumber = snapshot.game.round_number + 1;
   const shuffledPrompts = shuffle(snapshot.prompts);
-  const firstPrompt = shuffledPrompts[0];
   const nextAssignment = getNextTurnAssignment(snapshot);
+  const firstPrompt = nextAssignment ? getPromptForPlayerTurn(shuffledPrompts, nextAssignment.player.id) : null;
   if (!firstPrompt || !nextAssignment) {
     await ctx.db.patch(id, {
       phase: "finished",
@@ -805,7 +806,7 @@ async function prepareNextRound(ctx: MutationCtx, snapshot: GameSnapshot) {
   for (const [deckOrder, prompt] of shuffledPrompts.entries()) {
     await ctx.db.patch(prompt.id as Id<"prompts">, {
       deck_order: deckOrder,
-      status: deckOrder === 0 ? "active" : "available"
+      status: prompt.id === firstPrompt.id ? "active" : "available"
     });
   }
 

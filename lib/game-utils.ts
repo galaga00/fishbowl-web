@@ -115,6 +115,12 @@ export function getNextTeamForPlayer(player: Player | null, teams: Team[]) {
   return teams.find((team) => team.id === player.team_id) ?? teams[0] ?? null;
 }
 
+export function getPromptForPlayerTurn(prompts: Prompt[], playerId: string | null | undefined, excludePromptId?: string | null) {
+  const playablePrompts = prompts.filter((prompt) => prompt.id !== excludePromptId);
+  const nonOwnerPrompt = playerId ? playablePrompts.find((prompt) => prompt.player_id !== playerId) : null;
+  return nonOwnerPrompt ?? playablePrompts[0] ?? prompts[0] ?? null;
+}
+
 export function getFirstTurnAssignment(snapshot: GameSnapshot, teamOffset = 0) {
   const teamsWithPlayers = getTeamsWithPlayers(snapshot);
   const teamIndex = teamsWithPlayers.length === 0 ? -1 : ((Math.floor(teamOffset) % teamsWithPlayers.length) + teamsWithPlayers.length) % teamsWithPlayers.length;
