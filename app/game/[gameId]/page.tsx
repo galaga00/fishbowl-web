@@ -61,6 +61,7 @@ import {
   getPlayerStorageKey,
   getPromptCountForPlayer,
   getPromptProgress,
+  getSuggestedPromptsPerPlayer,
   getRoundSummary,
   getTeamRoster,
   getTeamBalanceWarning,
@@ -96,6 +97,8 @@ export default function GamePage() {
   const [promptText, setPromptText] = useState("");
   const [categoryPromptValues, setCategoryPromptValues] = useState<string[]>([]);
   const [promptsPerPlayer, setPromptsPerPlayer] = useState(DEFAULT_PROMPTS_PER_PLAYER);
+  const promptCountEditedRef = useRef(false);
+  const suggestedPromptCountRef = useRef(DEFAULT_PROMPTS_PER_PLAYER);
   const [turnDurationSeconds, setTurnDurationSeconds] = useState(TURN_DURATION_SECONDS);
   const [cardsDealtPerPlayer, setCardsDealtPerPlayer] = useState(DEFAULT_CARDS_DEALT_PER_PLAYER);
   const [cardsKeptPerPlayer, setCardsKeptPerPlayer] = useState(DEFAULT_CARDS_KEPT_PER_PLAYER);
@@ -249,6 +252,7 @@ export default function GamePage() {
     if (!snapshot) return;
     const game = snapshot.game;
     setPromptsPerPlayer(game.prompts_per_player);
+    promptCountEditedRef.current = true;
     setTurnDurationSeconds(game.turn_duration_seconds);
     setCardsDealtPerPlayer(game.cards_dealt_per_player);
     setCardsKeptPerPlayer(game.cards_kept_per_player);
@@ -363,12 +367,35 @@ export default function GamePage() {
     await runAction(() => assignPlayerToTeam(gameId, playerId, teamId));
   }
 
+  function suggestPromptCount(playerCount: number | null) {
+    suggestedPromptCountRef.current = getSuggestedPromptsPerPlayer(playerCount);
+    if (snapshot?.game.phase !== "setup" || resolveGameVersion(snapshot.game.game_version) !== "v2" || promptCountEditedRef.current) return;
+    setPromptsPerPlayer(suggestedPromptCountRef.current);
+  }
+
+  function handlePromptCountChange(count: number) {
+    promptCountEditedRef.current = true;
+    setPromptsPerPlayer(count);
+  }
+
+  function handleExpectedPlayersChange(value: string) {
+    const cleanValue = value ? String(Math.min(200, Math.max(1, Number(value)))) : "";
+    setExpectedPlayers(cleanValue);
+    suggestPromptCount(Number(cleanValue) || null);
+  }
+
+  function handlePlayModeChange(mode: PlayMode) {
+    setPlayMode(mode);
+    suggestPromptCount(mode === "pass_and_play" ? passAndPlayPlayers.length : Number(expectedPlayers) || null);
+  }
+
   function handlePassAndPlayPlayerCountChange(nextCount: number) {
     const safeCount = Math.min(40, Math.max(2, nextCount));
     setPassAndPlayPlayers((currentPlayers) =>
       Array.from({ length: safeCount }, (_, index) => currentPlayers[index] ?? { name: `Player ${index + 1}`, teamIndex: index % teamCount })
     );
     setPassAndPlayCardCount(getDefaultPassPlayCardCount(safeCount));
+    suggestPromptCount(safeCount);
   }
 
   function handleTeamCountChange(nextCount: number) {
@@ -488,7 +515,13 @@ export default function GamePage() {
           />
         ) : snapshot.game.phase === "setup" || editingSetup ? (
           <div className="stack">
-          {isHost && snapshot.game.phase === "setup" ? <VersionSelector version={gameVersion} busy={busy} onChange={(version) => runAction(() => setGameVersion(gameId, version))} /> : null}
+          {isHost && snapshot.game.phase === "setup" ? <VersionSelector version={gameVersion} busy={busy} onChange={async (version) => {
+            const saved = await runAction(() => setGameVersion(gameId, version));
+            if (saved && version === "v2" && !promptCountEditedRef.current) {
+              setPromptsPerPlayer(suggestedPromptCountRef.current);
+            }
+            return saved;
+          }} /> : null}
           {editingSetup ? <section className="notice stack"><p>Saving setup clears submitted prompts and drafted cards. Everyone will prepare the bowl again. Changing play mode may require players to rejoin.</p><button className="button secondary" disabled={busy} onClick={() => setEditingSetup(false)}>Cancel editing</button></section> : null}
           {isHost && gameVersion === "v2" && !editingSetup ? <SetupChoice selected={setupPath} busy={busy} onSelect={setSetupPath} /> : null}
           {isHost ? <div id="quick-setup" hidden={editingSetup || gameVersion !== "v2" || setupPath !== "quick"}>
@@ -498,8 +531,9 @@ export default function GamePage() {
           <Setup
             busy={busy}
             isHost={isHost}
+            showPromptEstimate={gameVersion === "v2"}
             promptsPerPlayer={promptsPerPlayer}
-            setPromptsPerPlayer={setPromptsPerPlayer}
+            setPromptsPerPlayer={handlePromptCountChange}
             turnDurationSeconds={turnDurationSeconds}
             setTurnDurationSeconds={setTurnDurationSeconds}
             cardsDealtPerPlayer={cardsDealtPerPlayer}
@@ -511,7 +545,7 @@ export default function GamePage() {
             teamNames={teamNames}
             setTeamNames={setTeamNames}
             expectedPlayers={expectedPlayers}
-            setExpectedPlayers={setExpectedPlayers}
+            setExpectedPlayers={handleExpectedPlayersChange}
             teamAssignmentMode={teamAssignmentMode}
             setTeamAssignmentMode={setTeamAssignmentMode}
             promptMode={promptMode}
@@ -519,7 +553,7 @@ export default function GamePage() {
             promptCategories={promptCategories}
             setPromptCategories={setPromptCategories}
             playMode={playMode}
-            setPlayMode={setPlayMode}
+            setPlayMode={handlePlayModeChange}
             passAndPlayCardCount={passAndPlayCardCount}
             setPassAndPlayCardCount={setPassAndPlayCardCount}
             passAndPlayCategories={passAndPlayCategories}
@@ -657,6 +691,7 @@ export default function GamePage() {
 function Setup({
   busy,
   isHost,
+  showPromptEstimate,
   promptsPerPlayer,
   setPromptsPerPlayer,
   turnDurationSeconds,
@@ -690,6 +725,7 @@ function Setup({
 }: {
   busy: boolean;
   isHost: boolean;
+  showPromptEstimate: boolean;
   promptsPerPlayer: number;
   setPromptsPerPlayer: (count: number) => void;
   turnDurationSeconds: number;
@@ -729,6 +765,7 @@ function Setup({
   const stepLabels = ["Mode", "Prompts", "Teams", "Review"];
   const isFirstStep = setupStep === 0;
   const isLastStep = setupStep === stepLabels.length - 1;
+  const writtenPlayerCount = playMode === "pass_and_play" ? passAndPlayPlayers.length : Number(expectedPlayers) || null;
 
   if (!isHost) {
     return (
@@ -810,6 +847,7 @@ function Setup({
             players={passAndPlayPlayers}
             promptMode={promptMode}
             promptsPerPlayer={promptsPerPlayer}
+            showPromptEstimate={showPromptEstimate}
             setCardCount={setPassAndPlayCardCount}
             setCategories={setPassAndPlayCategories}
             setPlayerCount={setPassAndPlayPlayerCount}
@@ -841,7 +879,8 @@ function Setup({
             </div>
             <div className="field">
               <label htmlFor="promptCount">Prompts per player</label>
-              <MobileNumberInput disabled={promptMode === "deck"} id="promptCount" min={1} max={20} value={promptsPerPlayer} onValueChange={setPromptsPerPlayer} />
+              <MobileNumberInput disabled={promptMode === "deck"} id="promptCount" describedBy={showPromptEstimate && promptMode !== "deck" ? "prompt-count-estimate" : undefined} min={1} max={20} value={promptsPerPlayer} onValueChange={setPromptsPerPlayer} />
+              {showPromptEstimate && promptMode !== "deck" ? <PromptBowlEstimate id="prompt-count-estimate" playerCount={writtenPlayerCount} promptsPerPlayer={promptsPerPlayer} /> : null}
             </div>
             {promptMode !== "free" ? (
               <CategorySelector
@@ -930,7 +969,7 @@ function Setup({
           <div><span>Teams</span><strong>{teamCount}</strong></div>
           <div><span>Timer</span><strong>{turnDurationSeconds}s</strong></div>
           <div><span>Players</span><strong>{playMode === "pass_and_play" ? passAndPlayPlayers.length : expectedPlayers || "Open"}</strong></div>
-          <div><span>Cards</span><strong>{playMode === "pass_and_play" && promptMode === "deck" ? passAndPlayCardCount : promptMode === "deck" ? `${cardsKeptPerPlayer} kept` : `${promptsPerPlayer} each`}</strong></div>
+          <div><span>Cards</span><strong>{playMode === "pass_and_play" && promptMode === "deck" ? passAndPlayCardCount : promptMode === "deck" ? `${cardsKeptPerPlayer} kept` : showPromptEstimate && writtenPlayerCount ? `${writtenPlayerCount * promptsPerPlayer} total · ${promptsPerPlayer} each` : `${promptsPerPlayer} each`}</strong></div>
         </div>
       ) : null}
 
@@ -959,6 +998,15 @@ function Setup({
   );
 }
 
+function PromptBowlEstimate({ id, playerCount, promptsPerPlayer }: { id: string; playerCount: number | null; promptsPerPlayer: number }) {
+  return (
+    <div className="muted tiny" id={id} role="status" aria-live="polite">
+      {playerCount ? <p>{playerCount} {playerCount === 1 ? "player" : "players"} × {promptsPerPlayer} {promptsPerPlayer === 1 ? "prompt" : "prompts"} = {playerCount * promptsPerPlayer} cards.</p> : <p>Enter Expected players in Mode to estimate the bowl size.</p>}
+      <p>You can change this count. The same cards are used in all three rounds.</p>
+    </div>
+  );
+}
+
 function PassAndPlaySetup({
   cardCount,
   categories,
@@ -974,6 +1022,7 @@ function PassAndPlaySetup({
   setPromptsPerPlayer,
   showPlayers = true,
   showPrompts = true,
+  showPromptEstimate = false,
   teamCount,
   teamNames
 }: {
@@ -991,6 +1040,7 @@ function PassAndPlaySetup({
   setPromptsPerPlayer: (count: number) => void;
   showPlayers?: boolean;
   showPrompts?: boolean;
+  showPromptEstimate?: boolean;
   teamCount: number;
   teamNames: string[];
 }) {
@@ -1035,7 +1085,8 @@ function PassAndPlaySetup({
             ) : (
               <div className="field">
                 <label htmlFor="passPromptCount">Prompts per player</label>
-                <MobileNumberInput id="passPromptCount" min={1} max={20} value={promptsPerPlayer} onValueChange={setPromptsPerPlayer} />
+                <MobileNumberInput id="passPromptCount" describedBy={showPromptEstimate ? "pass-prompt-count-estimate" : undefined} min={1} max={20} value={promptsPerPlayer} onValueChange={setPromptsPerPlayer} />
+                {showPromptEstimate ? <PromptBowlEstimate id="pass-prompt-count-estimate" playerCount={playerCount} promptsPerPlayer={promptsPerPlayer} /> : null}
                 <p className="muted tiny">Pass the phone around during the lobby and collect this many prompts per player.</p>
               </div>
             )}
@@ -1201,6 +1252,7 @@ function isDefaultPassAndPlayPlayerName(name: string, index: number) {
 
 function MobileNumberInput({
   disabled = false,
+  describedBy,
   id,
   max,
   min,
@@ -1209,6 +1261,7 @@ function MobileNumberInput({
   value
 }: {
   disabled?: boolean;
+  describedBy?: string;
   id: string;
   max: number;
   min: number;
@@ -1235,13 +1288,14 @@ function MobileNumberInput({
 
     const nextValue = clamp(Number(nextDraftValue));
     setDraftValue(String(nextValue));
-    onValueChange(nextValue);
+    if (nextValue !== value) onValueChange(nextValue);
     onCommit?.(nextValue);
   }
 
   return (
     <input
       className="input"
+      aria-describedby={describedBy}
       disabled={disabled}
       id={id}
       inputMode="numeric"

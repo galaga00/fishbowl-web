@@ -10,6 +10,12 @@ export const DEFAULT_CARDS_KEPT_PER_PLAYER = 5;
 export const DEFAULT_TEAM_ASSIGNMENT_MODE = "auto";
 export const DEFAULT_PLAY_MODE = "multi_device";
 
+// Keep written bowls near 40 cards while giving everyone the same contribution.
+export function getSuggestedPromptsPerPlayer(playerCount: number | null) {
+  if (!playerCount || !Number.isFinite(playerCount) || playerCount < 1) return DEFAULT_PROMPTS_PER_PLAYER;
+  return Math.min(20, Math.max(1, Math.round(40 / playerCount)));
+}
+
 export function createJoinCode() {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   return Array.from({ length: 5 }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join("");
