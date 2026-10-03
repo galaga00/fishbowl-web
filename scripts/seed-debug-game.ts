@@ -1,3 +1,5 @@
+import { randomBytes } from "node:crypto";
+import os from "node:os";
 import fs from "node:fs";
 import path from "node:path";
 import { ConvexHttpClient } from "convex/browser";
@@ -11,8 +13,11 @@ async function main() {
     throw new Error("Set NEXT_PUBLIC_CONVEX_URL and E2E_TEST_SECRET before running npm run debug:seed.");
   }
 
+  if (convexUrl !== "https://ardent-lemming-605.convex.cloud") throw new Error("Debug seeding is development-only.");
+  const sessionToken = randomBytes(32).toString("hex");
   const game = await new ConvexHttpClient(convexUrl).mutation(api.e2e.seedReadyPassAndPlayGame, {
     secret,
+    sessionToken,
     promptCount: 12,
     teamPlayers: [
       ["Host", "Sam"],
@@ -21,6 +26,9 @@ async function main() {
     turnDurationSeconds: 60
   });
 
+  const sessionFile = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "fish-bowl-debug-")), "session.json");
+  fs.writeFileSync(sessionFile, JSON.stringify({ ...game, sessionToken }), { mode: 0o600 });
+  console.log(`Private recovery code saved to ${sessionFile}`);
   console.log(`Debug Convex game created: ${game.code}`);
   console.log(`Open /game/${game.gameId}`);
 }

@@ -19,6 +19,10 @@ const gameAction = v.union(v.literal("correct"), v.literal("skip"), v.literal("e
 export default defineSchema({
   games: defineTable({
     code: v.string(),
+    access_version: v.optional(v.number()),
+    match_number: v.optional(v.number()),
+    finish_reason: v.optional(v.union(v.literal("completed"), v.literal("host"))),
+    previous_card_titles: v.optional(v.array(v.string())),
     host_player_id: v.union(v.id("players"), v.null()),
     phase: gamePhase,
     current_team_id: v.union(v.id("teams"), v.null()),
@@ -49,13 +53,16 @@ export default defineSchema({
   }).index("by_game", ["game_id"]),
 
   players: defineTable({
+    session_token_hash: v.optional(v.string()),
     game_id: v.id("games"),
     name: v.string(),
     is_host: v.boolean(),
     team_id: v.union(v.id("teams"), v.null()),
     has_submitted: v.boolean(),
     created_at: v.string()
-  }).index("by_game", ["game_id"]),
+  }).index("by_game", ["game_id"])
+    .index("by_game_session", ["game_id", "session_token_hash"])
+    .index("by_session", ["session_token_hash"]),
 
   prompts: defineTable({
     game_id: v.id("games"),

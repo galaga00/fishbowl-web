@@ -11,14 +11,15 @@ test.describe("Turn rotation", () => {
   });
 
   test("rotates clue giver within a team when play cycles back to that team", async ({ page }) => {
-    const { gameId, hostPlayerId } = await seedReadyPassAndPlayGame();
+    const { gameId, hostPlayerId, sessionToken } = await seedReadyPassAndPlayGame();
     createdGameIds.push(gameId);
 
     await page.addInitScript(
-      ({ seededGameId, seededHostPlayerId }) => {
+      ({ seededGameId, seededHostPlayerId, sessionToken }) => {
         window.localStorage.setItem(`fish-bowl:${seededGameId}:player`, seededHostPlayerId);
+        window.localStorage.setItem(`fish-bowl:${seededGameId}:session`, sessionToken);
       },
-      { seededGameId: gameId, seededHostPlayerId: hostPlayerId }
+      { seededGameId: gameId, seededHostPlayerId: hostPlayerId, sessionToken }
     );
 
     await page.goto(`/game/${gameId}`);
@@ -34,7 +35,7 @@ test.describe("Turn rotation", () => {
   });
 
   test("rotates clue givers fairly across uneven teams", async ({ page }) => {
-    const { gameId, hostPlayerId } = await seedReadyPassAndPlayGame({
+    const { gameId, hostPlayerId, sessionToken } = await seedReadyPassAndPlayGame({
       teamPlayers: [
         ["Austin", "Briar", "Cam"],
         ["Devon", "Elliot"]
@@ -43,10 +44,11 @@ test.describe("Turn rotation", () => {
     createdGameIds.push(gameId);
 
     await page.addInitScript(
-      ({ seededGameId, seededHostPlayerId }) => {
+      ({ seededGameId, seededHostPlayerId, sessionToken }) => {
         window.localStorage.setItem(`fish-bowl:${seededGameId}:player`, seededHostPlayerId);
+        window.localStorage.setItem(`fish-bowl:${seededGameId}:session`, sessionToken);
       },
-      { seededGameId: gameId, seededHostPlayerId: hostPlayerId }
+      { seededGameId: gameId, seededHostPlayerId: hostPlayerId, sessionToken }
     );
 
     await page.goto(`/game/${gameId}`);

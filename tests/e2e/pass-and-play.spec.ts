@@ -92,6 +92,7 @@ test.describe("Pass & Play game loop", () => {
   test("host can adjust team scores from play controls", async ({ page }) => {
     await startPassAndPlayTurn(page);
 
+    await page.getByText("More host controls", { exact: true }).click();
     const teamOneScore = page.locator(".score", { hasText: "Team 1" });
     await expect(teamOneScore.locator("strong")).toHaveText("0");
     await expect(page.getByRole("button", { name: "Remove point from Team 1" })).toBeDisabled();
@@ -106,14 +107,15 @@ test.describe("Pass & Play game loop", () => {
   });
 
   test("host can redo the current turn's last prompts after pausing", async ({ page }) => {
-    const { gameId, hostPlayerId } = await seedReadyPassAndPlayGame();
+    const { gameId, hostPlayerId, sessionToken } = await seedReadyPassAndPlayGame();
     createdGameIds.push(gameId);
 
     await page.addInitScript(
-      ({ seededGameId, seededHostPlayerId }) => {
+      ({ seededGameId, seededHostPlayerId, sessionToken }) => {
         window.localStorage.setItem(`fish-bowl:${seededGameId}:player`, seededHostPlayerId);
+        window.localStorage.setItem(`fish-bowl:${seededGameId}:session`, sessionToken);
       },
-      { seededGameId: gameId, seededHostPlayerId: hostPlayerId }
+      { seededGameId: gameId, seededHostPlayerId: hostPlayerId, sessionToken }
     );
 
     await page.goto(`/game/${gameId}`);
@@ -132,11 +134,9 @@ test.describe("Pass & Play game loop", () => {
     await page.getByRole("button", { name: "Pause" }).click();
     await expect(page.getByText("Game paused")).toBeVisible();
 
-    page.once("dialog", async (dialog) => {
-      expect(dialog.message()).toContain("Redo this player's last few prompts");
-      await dialog.accept();
-    });
+    await page.getByText("More host controls", { exact: true }).click();
     await page.getByRole("button", { name: "Redo last 5" }).click();
+    await page.getByRole("button", { name: "Redo prompts", exact: true }).click();
     await expect(page.locator(".score", { hasText: "Team 1" }).locator("strong")).toHaveText("0");
 
     await page.getByRole("button", { name: "Resume" }).click();

@@ -31,7 +31,8 @@ Safe-to-document env var names:
 - `NEXT_PUBLIC_CONVEX_URL`
 - `NEXT_PUBLIC_CONVEX_SITE_URL`
 - `OWNER_ANALYTICS_KEY`
-- `E2E_TEST_SECRET`
+- `E2E_TEST_SECRET` (development only)
+- `FISH_BOWL_E2E_ENABLED` (development only)
 - `ANALYTICS_IP_SALT`
 - `RESEND_API_KEY`
 - `OWNER_NOTIFY_EMAIL`
@@ -55,15 +56,18 @@ npx convex dev --once --typecheck enable
 npm run lint
 npm run test:e2e
 npm run build
+npx convex deploy --typecheck enable
 vercel --prod --yes
 vercel alias set <deployment-url> fish-bowl-game.vercel.app
 ```
 
-End-to-end testing uses Playwright with one headless Chromium worker by default. Run `npx playwright install chromium` once on a new machine, then `npm run test:e2e`. Use `npm run test:e2e:headed` or `npm run test:e2e:ui` only when you want to watch/debug the browser. Coverage includes host-only Pass & Play setup/gameplay, second-browser joining/realtime, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams. Test-created Convex games are cleaned up through guarded E2E helper functions when `.env.local` has `NEXT_PUBLIC_CONVEX_URL` and `E2E_TEST_SECRET`.
+End-to-end testing uses Playwright with one headless Chromium worker by default. Run `npx playwright install chromium` once on a new machine, then `npm run test:e2e`. Use `npm run test:e2e:headed` or `npm run test:e2e:ui` only when you want to watch/debug the browser. Coverage includes host-only Pass & Play setup/gameplay, second-browser joining/realtime, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams. Test-created Convex games are cleaned up through guarded E2E helpers on the named dev deployment only. Both `E2E_TEST_SECRET` and `FISH_BOWL_E2E_ENABLED=true` must be set in development Convex; keep both unset in production. The 32-test suite also covers access protection, private cards, capacity, quick start, a complete three-round game, timer races, recovery, undo, rematches and responsive controls.
 
 Card deck target-fill review artifacts live in `card-review/target-fill/`. After review Markdown is updated, run `npm run cards:apply-target-fill` to regenerate `lib/target-fill-deck.ts` from cards still marked Keep in `candidates.json`; the generated deck is wired into `STARTER_DECK`, and family-friendly additions are included in the family-friendly filter.
 
-Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. It records Vercel geo headers and a salted IP hash. The dashboard has an "Ignore this device" browser-local opt-out for Austin's own devices and a confirmed "Purge data" control for clearing test data. Optional owner email notifications use Resend env vars. Keep keys only in ignored env files, Vercel env vars, or a password manager.
+The matching Vercel and Convex deployments must share `OWNER_ANALYTICS_KEY`; owner functions and analytics writes fail closed without it. Room sessions use private browser-held recovery codes and hashed backend credentials. Rooms predating `access_version: 2` are retired and require a new game; do not restore public-ID seat claiming. See [Foundation behavior and deployment](docs/FOUNDATION.md).
+
+Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. It records Vercel geo headers and a salted IP hash. The dashboard has an "Ignore this device" browser-local opt-out for Austin's own devices and a confirmed "Purge data" control for clearing all game and analytics data. Purge requires typing `DELETE ALL DATA`; it is not limited to test games. Optional owner email notifications use Resend env vars. Keep keys only in ignored env files, Vercel env vars, or a password manager.
 
 ## Source Of Truth
 

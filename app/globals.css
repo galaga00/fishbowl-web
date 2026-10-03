@@ -1450,3 +1450,31 @@ a {
     transform: scale(1.035);
   }
 }
+
+/* Foundation pass: clear game context and touch-friendly recovery. */
+.quick-presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.quick-start { border-color: #d7aa47; background: #fffcf1; }
+.quick-start .team-choice { min-width: 0; }
+.quick-start .team-choice span { font-size: .8rem; }
+.turn-context { display: grid; gap: 8px; }
+.turn-context h2 { font-size: 1.25rem; overflow-wrap: anywhere; }
+.turn-context .pill { justify-self: start; }
+.turn-progress { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 10px; font-size: .85rem; }
+.turn-focus { grid-template-columns: minmax(0, 1fr) 90px; align-items: stretch; }
+.turn-focus .prompt { min-height: 136px; padding: 14px; font-size: clamp(1.65rem, 6vw, 3rem); }
+.turn-focus .timer { min-height: 0; font-size: 2rem; font-variant-numeric: tabular-nums; }
+.score.active-team { border: 2px solid #3271b5; background: #eef6ff; }
+.host-more summary, .recovery-details summary, details.card > summary { cursor: pointer; min-height: 44px; padding-block: 12px; font-weight: 800; }
+.host-more > .stack { padding-top: 12px; }
+.recovery-details { order: 5; min-width: 0; }
+.recovery-code { font-family: monospace; font-size: .8rem; }
+.confirmation-panel { border: 2px solid #d7aa47; background: #fff8df; scroll-margin-top: 18px; }
+.play-priority-shell > .confirmation-panel { order: -1; }
+.play-priority-shell > .notice { order: -2; }
+.continue-game { width: 100%; margin-bottom: 10px; }
+button:focus-visible, summary:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #286cad; outline-offset: 3px; }
+@media (max-width: 360px) {
+  .quick-presets { grid-template-columns: 1fr; }
+  .turn-focus { grid-template-columns: minmax(0, 1fr) 74px; }
+  .turn-focus .timer { font-size: 1.7rem; }
+}

@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as access from "../access.js";
 import type * as analytics from "../analytics.js";
 import type * as e2e from "../e2e.js";
 import type * as game from "../game.js";
@@ -19,6 +20,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  access: typeof access;
   analytics: typeof analytics;
   e2e: typeof e2e;
   game: typeof game;

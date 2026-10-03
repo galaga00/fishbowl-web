@@ -3,17 +3,12 @@
 import { useState } from "react";
 
 export function PurgeDataControl({ ownerKey }: { ownerKey: string }) {
+  const [confirmation, setConfirmation] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
   async function purgeData() {
-    const confirmed = window.confirm(
-      "Are you sure? This will permanently delete all Fish Bowl games, players, prompts, turns, draft cards, game events, and analytics data."
-    );
-    if (!confirmed) return;
-
-    const finalConfirmed = window.confirm("Last warning: this cannot be undone. Purge all data now?");
-    if (!finalConfirmed) return;
+    if (confirmation !== "DELETE ALL DATA") return;
 
     setBusy(true);
     setMessage("");
@@ -35,6 +30,8 @@ export function PurgeDataControl({ ownerKey }: { ownerKey: string }) {
 
       setMessage("Data purged. Refreshing dashboard...");
       window.location.reload();
+    } catch {
+      setMessage("Could not reach the server. No deletion was confirmed.");
     } finally {
       setBusy(false);
     }
@@ -47,7 +44,9 @@ export function PurgeDataControl({ ownerKey }: { ownerKey: string }) {
         Permanently clears games, players, prompts, turns, draft cards, game events, and analytics. Use this when you want a fresh
         test slate.
       </p>
-      <button className="button danger" disabled={busy} type="button" onClick={purgeData}>
+      <label htmlFor="purge-confirmation">Type DELETE ALL DATA to confirm permanent deletion.</label>
+      <input className="input" id="purge-confirmation" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} autoComplete="off" />
+      <button className="button danger" disabled={busy || confirmation !== "DELETE ALL DATA"} type="button" onClick={purgeData}>
         {busy ? "Purging..." : "Purge data"}
       </button>
       {message ? <p className="muted tiny">{message}</p> : null}

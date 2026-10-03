@@ -11,16 +11,17 @@ test.describe("Turn timer races", () => {
   });
 
   test("auto-ending still advances after a scoring action near the timer boundary", async ({ page }) => {
-    const { gameId, hostPlayerId } = await seedPlayingPassAndPlayGame({ promptCount: 3, turnDurationSeconds: 30 });
+    const { gameId, hostPlayerId, sessionToken } = await seedPlayingPassAndPlayGame({ promptCount: 3, turnDurationSeconds: 30 });
     createdGameIds.push(gameId);
 
     await setActiveTurnStartedAt(gameId, new Date(Date.now() - 24_000).toISOString());
 
     await page.addInitScript(
-      ({ seededGameId, seededHostPlayerId }) => {
+      ({ seededGameId, seededHostPlayerId, sessionToken }) => {
         window.localStorage.setItem(`fish-bowl:${seededGameId}:player`, seededHostPlayerId);
+        window.localStorage.setItem(`fish-bowl:${seededGameId}:session`, sessionToken);
       },
-      { seededGameId: gameId, seededHostPlayerId: hostPlayerId }
+      { seededGameId: gameId, seededHostPlayerId: hostPlayerId, sessionToken }
     );
 
     await page.goto(`/game/${gameId}`);

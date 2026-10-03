@@ -1,5 +1,7 @@
 "use client";
 
+import { getSessionToken } from "./player-session";
+
 const ANALYTICS_IGNORE_KEY = "fish-bowl-ignore-analytics";
 const ANALYTICS_IGNORE_QUERY_KEY = "ignoreAnalytics";
 
@@ -48,6 +50,7 @@ export function trackAnalyticsEvent(payload: AnalyticsPayload) {
 
   const body = JSON.stringify({
     ...payload,
+    sessionToken: payload.gameId ? getSessionToken(payload.gameId) : undefined,
     path: window.location.pathname,
     referrer: document.referrer || null
   });

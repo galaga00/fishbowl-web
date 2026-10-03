@@ -56,7 +56,7 @@ export function hasPlayerSubmitted(playerId: string, prompts: Prompt[], required
 }
 
 export function getDraftSelectedCountForPlayer(playerId: string, snapshot: GameSnapshot) {
-  return snapshot.draftCards.filter((card) => card.player_id === playerId && card.selected).length;
+  return snapshot.players.find((player) => player.id === playerId)?.draft_selected_count ?? snapshot.draftCards.filter((card) => card.player_id === playerId && card.selected).length;
 }
 
 export function hasPlayerDrafted(playerId: string, snapshot: GameSnapshot) {
@@ -81,7 +81,7 @@ export function getPromptProgress(snapshot: GameSnapshot) {
   const perPlayer = snapshot.game.prompt_mode === "deck" ? snapshot.game.cards_kept_per_player : snapshot.game.prompts_per_player;
   const submittedTotal =
     snapshot.game.prompt_mode === "deck"
-      ? snapshot.draftCards.filter((card) => card.selected).length
+      ? snapshot.players.reduce((sum, player) => sum + getDraftSelectedCountForPlayer(player.id, snapshot), 0)
       : snapshot.prompts.length;
   const requiredTotal = snapshot.players.length * perPlayer;
   const expectedTotal = snapshot.game.expected_players ? snapshot.game.expected_players * perPlayer : null;

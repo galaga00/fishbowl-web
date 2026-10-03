@@ -55,7 +55,7 @@ test.describe("Multiplayer joining", () => {
       await expect(playerPage.getByText(/You're on Team/)).toBeVisible();
       await playerPage.getByRole("button", { name: "Continue" }).click();
       await expect(playerPage.getByRole("heading", { name: "Lobby" })).toBeVisible();
-      await expect(page.getByText("Mira")).toBeVisible();
+      await expect(page.getByText("Mira", { exact: true })).toBeVisible();
 
       await playerPage.getByLabel("Prompts").fill(["Moon landing", "Pizza oven", "Tap dance"].join("\n"));
       await playerPage.getByRole("button", { name: "Submit 3 prompts" }).click();

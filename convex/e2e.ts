@@ -1,3 +1,4 @@
+import { hashSessionToken } from "./access";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -10,26 +11,28 @@ const gameId = v.id("games");
 export const seedReadyPassAndPlayGame = mutation({
   args: {
     secret: v.string(),
+    sessionToken: v.string(),
     promptCount: v.number(),
     teamPlayers: v.array(v.array(v.string())),
     turnDurationSeconds: v.union(v.literal(30), v.literal(60))
   },
   handler: async (ctx, args) => {
     requireSecret(args.secret);
-    return seedReady(ctx, args.promptCount, args.teamPlayers, args.turnDurationSeconds);
+    return seedReady(ctx, args.promptCount, args.teamPlayers, args.turnDurationSeconds, args.sessionToken);
   }
 });
 
 export const seedPlayingPassAndPlayGame = mutation({
   args: {
     secret: v.string(),
+    sessionToken: v.string(),
     promptCount: v.number(),
     teamPlayers: v.array(v.array(v.string())),
     turnDurationSeconds: v.union(v.literal(30), v.literal(60))
   },
   handler: async (ctx, args) => {
     requireSecret(args.secret);
-    const seeded = await seedReady(ctx, args.promptCount, args.teamPlayers, args.turnDurationSeconds);
+    const seeded = await seedReady(ctx, args.promptCount, args.teamPlayers, args.turnDurationSeconds, args.sessionToken);
     const snapshot = await loadSnapshot(ctx, seeded.gameId);
     if (!snapshot.game.current_team_id || !snapshot.game.active_player_id) {
       throw new Error("E2E seed did not create a playable turn assignment.");
@@ -116,12 +119,14 @@ export const setActiveTurnStartedAt = mutation({
   }
 });
 
-async function seedReady(ctx: MutationCtx, promptCount: number, teamPlayers: string[][], turnDurationSeconds: 30 | 60) {
+async function seedReady(ctx: MutationCtx, promptCount: number, teamPlayers: string[][], turnDurationSeconds: 30 | 60, sessionToken: string) {
   const flatPlayers = teamPlayers.flat();
   const hostName = flatPlayers[0] ?? "Austin";
   const code = createJoinCode();
   const id = await ctx.db.insert("games", {
     code,
+    access_version: 2,
+    match_number: 1,
     phase: "setup",
     host_player_id: null,
     current_team_id: null,
@@ -167,6 +172,7 @@ async function seedReady(ctx: MutationCtx, promptCount: number, teamPlayers: str
         game_id: id,
         name,
         is_host: name === hostName,
+        session_token_hash: name === hostName ? await hashSessionToken(sessionToken) : undefined,
         team_id: teams[teamIndex]?.id ?? null,
         has_submitted: true,
         created_at: new Date(baseCreatedAt + flatIndex * 1_000).toISOString()
@@ -260,6 +266,7 @@ async function deleteRows(
 }
 
 function requireSecret(secret: string) {
+  if (process.env.FISH_BOWL_E2E_ENABLED !== "true") throw new Error("E2E helpers are disabled on this deployment.");
   const expected = process.env.E2E_TEST_SECRET;
   if (!expected || secret !== expected) throw new Error("Unauthorized E2E helper call.");
 }

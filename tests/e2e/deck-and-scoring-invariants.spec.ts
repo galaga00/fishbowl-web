@@ -1,9 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { createGame, joinGame, loadSnapshot, markCorrect, saveGameSetup, skipPrompt } from "../../lib/game-api";
+import { randomBytes } from "node:crypto";
+import { api } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { getFirstTurnAssignment, getNextTurnAssignment, getPromptForPlayerTurn } from "../../lib/game-utils";
 import { FAMILY_FRIENDLY_DECK_FILTER, filterStarterDeckByCategories, MIXED_PASS_PLAY_CATEGORY } from "../../lib/pass-play-deck";
 import { seedPlayingPassAndPlayGame, loadSeededSnapshot } from "./helpers/seed-game";
-import { deleteTestGames, loadLocalEnv } from "./helpers/convex-cleanup";
+import { createE2EConvexClient, deleteTestGames, loadLocalEnv } from "./helpers/convex-cleanup";
 import type { GameSnapshot } from "../../lib/types";
 
 test.describe("Deck and scoring invariants", () => {
@@ -59,40 +61,24 @@ test.describe("Deck and scoring invariants", () => {
   });
 
   test("parallel deck-draft joins receive unique visible card titles", async () => {
-    const { game } = await createGame("Austin");
+    const convex = createE2EConvexClient();
+    const sessionToken = randomBytes(32).toString("hex");
+    const { game } = await convex.mutation(api.game.createGame, { hostName: "Austin", sessionToken });
     createdGameIds.push(game.id);
-
-    await saveGameSetup(
-      game.id,
-      3,
-      ["Team 1", "Team 2", "Team 3"],
-      "auto",
-      "deck",
-      3,
-      10,
-      5,
-      60,
-      "multi_device",
-      [],
-      30,
-      [MIXED_PASS_PLAY_CATEGORY],
-      [MIXED_PASS_PLAY_CATEGORY]
-    );
-
-    await Promise.all([joinGame(game.code, "Briar"), joinGame(game.code, "Casey")]);
-
-    const snapshot = await loadSnapshot(game.id);
+    await convex.mutation(api.game.saveGameSetup, { gameId: game.id, sessionToken, promptsPerPlayer: 3, teamNames: ["Team 1", "Team 2", "Team 3"], teamAssignmentMode: "auto", promptMode: "deck", expectedPlayers: 3, cardsDealtPerPlayer: 10, cardsKeptPerPlayer: 5, turnDurationSeconds: 60, playMode: "multi_device", passAndPlayPlayers: [], passPlayCardCount: 30, passPlayCategories: [MIXED_PASS_PLAY_CATEGORY], promptCategories: [MIXED_PASS_PLAY_CATEGORY] });
+    await Promise.all(["Briar", "Casey"].map((playerName) => convex.mutation(api.game.joinGame, { code: game.code, playerName, sessionToken: randomBytes(32).toString("hex") })));
+    const snapshot = await loadSeededSnapshot(game.id);
     const titles = snapshot.draftCards.map((card) => normalizeVisibleTitle(card.title));
     expect(titles).toHaveLength(30);
     expect(new Set(titles).size).toBe(30);
   });
 
   test("a stale duplicate Correct action cannot score the same prompt twice", async () => {
-    const { gameId } = await seedPlayingPassAndPlayGame({ promptCount: 2 });
+    const { gameId, sessionToken } = await seedPlayingPassAndPlayGame({ promptCount: 2 });
     createdGameIds.push(gameId);
 
     const snapshot = await loadSeededSnapshot(gameId);
-    await Promise.all([markCorrect(snapshot), markCorrect(snapshot)]);
+    await Promise.all([createE2EConvexClient().mutation(api.game.markCorrect, actionArgs(snapshot, sessionToken)), createE2EConvexClient().mutation(api.game.markCorrect, actionArgs(snapshot, sessionToken))]);
 
     const result = await loadSeededSnapshot(gameId);
     const totalScore = result.teams.reduce((sum, team) => sum + team.score, 0);
@@ -100,12 +86,12 @@ test.describe("Deck and scoring invariants", () => {
   });
 
   test("a stale Skip action cannot revive a prompt after it was scored", async () => {
-    const { gameId } = await seedPlayingPassAndPlayGame({ promptCount: 2 });
+    const { gameId, sessionToken } = await seedPlayingPassAndPlayGame({ promptCount: 2 });
     createdGameIds.push(gameId);
 
     const snapshot = await loadSeededSnapshot(gameId);
-    await markCorrect(snapshot);
-    await skipPrompt(snapshot);
+    await createE2EConvexClient().mutation(api.game.markCorrect, actionArgs(snapshot, sessionToken));
+    await createE2EConvexClient().mutation(api.game.skipPrompt, actionArgs(snapshot, sessionToken));
 
     const result = await loadSeededSnapshot(gameId);
     const scoredPrompt = result.prompts.find((prompt) => prompt.id === snapshot.game.current_prompt_id);
@@ -206,4 +192,8 @@ function buildPrompt(id: string, playerId: string) {
     deck_order: null,
     created_at: "2026-01-01T00:00:00.000Z"
   };
+}
+
+function actionArgs(snapshot: GameSnapshot, sessionToken: string) {
+  return { gameId: snapshot.game.id as Id<"games">, sessionToken, expectedMatchNumber: snapshot.game.match_number ?? 1, expectedTurnId: snapshot.activeTurn?.id as Id<"turns"> | null ?? null, expectedPromptId: snapshot.game.current_prompt_id as Id<"prompts"> | null, expectedTeamId: snapshot.game.current_team_id as Id<"teams"> | null, expectedActivePlayerId: snapshot.game.active_player_id as Id<"players"> | null, expectedTurnNumber: snapshot.game.turn_number };
 }

@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    await createServerConvexClient().mutation(api.analytics.purgeAll, {});
+    await createServerConvexClient().mutation(api.analytics.purgeAll, { ownerKey: process.env.OWNER_ANALYTICS_KEY! });
   } catch (error) {
     console.error("Owner purge failed", error);
     return NextResponse.json({ ok: false, error: "purge-failed" }, { status: 500 });

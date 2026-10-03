@@ -37,7 +37,9 @@ OWNER_ANALYTICS_KEY=make-a-private-random-key
 ANALYTICS_IP_SALT=make-another-private-random-key
 ```
 
-6. Start the app:
+6. Set the same `OWNER_ANALYTICS_KEY` in the matching Convex deployment using its dashboard or secure stdin to `npx convex env set OWNER_ANALYTICS_KEY`.
+
+7. Start the app:
 
 ```bash
 npm run dev
@@ -48,6 +50,8 @@ Open `http://localhost:3000`.
 ## Backend Notes
 
 Fish Bowl's active backend is Convex. Game state, live updates, owner analytics, and E2E seeding/cleanup run through the Convex functions in `convex/`.
+
+New rooms use private player sessions, with host/controller permissions enforced in Convex and card text visible only to the appropriate player. Read [Foundation behavior and deployment](docs/FOUNDATION.md) for recovery, legacy-room migration, timing and rematches.
 
 The active Convex project is `austin-hill:fish-bowl`. Production uses deployment `quaint-mink-705` at `https://quaint-mink-705.convex.cloud`; local development uses dev deployment `ardent-lemming-605` at `https://ardent-lemming-605.convex.cloud`.
 
@@ -86,7 +90,7 @@ Run the E2E suite:
 npm run test:e2e
 ```
 
-The Playwright config starts `npm run dev` for you at `http://127.0.0.1:3000`, reuses an already-running local server when available, and stores screenshots/traces only when a test fails. The suite covers the host-only Pass & Play path, joining from a second browser context, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams.
+The Playwright config starts `npm run dev` for you at `http://127.0.0.1:3000`, reuses an already-running local server when available, and stores screenshots/traces only when a test fails. The 32-test suite covers the full game loop, multiplayer realtime, private sessions/cards, recovery, setup capacity, quick start, server deadlines, pause/undo, fresh rematches and responsive turn controls. Foundation UI tests also save layout screenshots.
 
 Useful variants:
 
@@ -95,7 +99,7 @@ npm run test:e2e:headed
 npm run test:e2e:ui
 ```
 
-Use headed or UI mode only when you want to watch or debug the browser. Test-created games are deleted from Convex after each test when `.env.local` has `NEXT_PUBLIC_CONVEX_URL` and the local `E2E_TEST_SECRET`.
+Use headed or UI mode only when you want to watch or debug the browser. Test-created games are deleted after each test on the named development Convex deployment. Set `E2E_TEST_SECRET` locally and in development Convex, and `FISH_BOWL_E2E_ENABLED=true` in development Convex. Never enable these helpers in production. Test and debug clients reject other deployment URLs.
 
 ## Vercel Deployment
 
@@ -119,7 +123,8 @@ OWNER_ANALYTICS_KEY=...
 ANALYTICS_IP_SALT=...
 ```
 
-6. Deploy.
+6. Set the same `OWNER_ANALYTICS_KEY` in production Convex. Keep the E2E flag and secret unset there.
+7. Deploy the matching Convex functions with `npx convex deploy --typecheck enable`, then deploy Next.js. For the existing project, use `vercel --prod --yes` and alias its URL to `fish-bowl-game.vercel.app`. The live frontend must use production Convex, not development.
 
 ## Owner Analytics
 
@@ -136,7 +141,7 @@ On Vercel, analytics also stores approximate IP-derived location fields from req
 
 The IP hash uses `ANALYTICS_IP_SALT`, so you can spot repeat networks without storing raw IP addresses.
 
-Set `OWNER_ANALYTICS_KEY` locally and in Vercel, then open:
+Set matching `OWNER_ANALYTICS_KEY` values in each frontend/backend environment (local with development Convex; Vercel production with production Convex), then open:
 
 ```bash
 /owner/analytics?key=YOUR_OWNER_ANALYTICS_KEY
@@ -146,7 +151,7 @@ For production, use `https://fish-bowl-game.vercel.app/owner/analytics?key=YOUR_
 
 Use the **Ignore this device** control on the owner dashboard from any browser or phone you do not want counted. It stores a local opt-out flag in that browser only. The dashboard also shows an opt-out link you can open once in Chrome, Safari, your phone, or any other browser to set that flag before testing.
 
-Use the **Purge data** button on the owner dashboard to permanently clear test games, players, prompts, turns, draft cards, game events, and analytics. It asks for confirmation before deleting anything.
+Use the **Purge data** button on the owner dashboard to permanently clear test games, players, prompts, turns, draft cards, game events, and analytics. It requires typing `DELETE ALL DATA`. This clears all records, including real games, so do not use it as test-only cleanup.
 
 Optional email notifications can be enabled with Resend:
 
@@ -157,7 +162,7 @@ OWNER_NOTIFY_FROM=Fish Bowl <onboarding@resend.dev>
 ANALYTICS_NOTIFY_EVENTS=game_started
 ```
 
-`ANALYTICS_NOTIFY_EVENTS` is a comma-separated list. Good options are `game_created` and `game_started`.
+`ANALYTICS_NOTIFY_EVENTS=game_started` enables notifications for verified, deduplicated starts. Anonymous page views and other unverified events never trigger an email.
 
 ## Debug Seed
 
@@ -174,7 +179,7 @@ Then run:
 npm run debug:seed
 ```
 
-The script prints a join code and game URL. The seeded game starts in the lobby so you can test starting a round from the UI.
+The script prints a join code and game path, and saves the private recovery code in a temporary `session.json` file with mode 0600. Use that code to recover the seeded host. The development E2E flag and secret described above must also be configured.
 
 ## Card Review Pipeline
 
@@ -211,8 +216,10 @@ Included:
 - Prompts are shuffled into a shared deck.
 - Active player sees one prompt and can mark Correct, Skip, or End turn.
 - Score, turn state, and prompt state persist in Convex.
-- Phone refresh keeps player identity through local storage.
+- Phone refresh keeps the private player session; a recovery code can restore it on another browser.
+- Quick Start presets, validated custom setup, three rounds, pause/undo, score correction, and same/fresh-bowl rematches.
+- Convex enforces host and clue-giver permissions, private cards and turn deadlines.
 
 Not included yet:
 
-- Login/auth, moderation, custom deck libraries, payments, native app, image/audio prompts, or a polished animation system.
+- User accounts, moderation, custom deck libraries, payments, native app, image/audio prompts, or a polished animation system.

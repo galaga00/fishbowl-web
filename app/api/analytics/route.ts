@@ -8,6 +8,7 @@ const MAX_METADATA_KEYS = 32;
 
 type AnalyticsRequestBody = {
   eventName?: unknown;
+  sessionToken?: unknown;
   gameId?: unknown;
   playerId?: unknown;
   path?: unknown;
@@ -45,7 +46,9 @@ export async function POST(request: NextRequest) {
   const city = cleanGeoHeader(request.headers.get("x-vercel-ip-city"), 120);
   try {
     const convex = createServerConvexClient();
-    await convex.mutation(api.analytics.record, {
+    const recorded = await convex.mutation(api.analytics.record, {
+      sessionToken: cleanText(body.sessionToken, 64) ?? undefined,
+      ownerKey: process.env.OWNER_ANALYTICS_KEY ?? "",
       event_name: eventName,
       game_id: cleanId(body.gameId),
       player_id: cleanId(body.playerId),
@@ -65,7 +68,7 @@ export async function POST(request: NextRequest) {
       prompt_count: cleanNumber(body.promptCount),
       metadata: cleanMetadata(body.metadata)
     });
-    await sendOwnerNotification({
+    if (recorded.notify) await sendOwnerNotification({
       eventName,
       gameId: cleanId(body.gameId),
       path: cleanText(body.path, MAX_TEXT_LENGTH),

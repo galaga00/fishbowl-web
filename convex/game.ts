@@ -1,3 +1,4 @@
+import { findViewer, hashSessionToken, requireController, requireHost, requirePlayer } from "./access";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -23,6 +24,8 @@ import {
 } from "../lib/game-utils";
 import type { GameEvent, GameSnapshot, PlayMode, PromptMode, Team } from "../lib/types";
 
+type FullGameSnapshot = Omit<GameSnapshot, "latestUndoableEvent"> & { latestUndoableEvent: GameEvent | null };
+const sessionToken = v.string();
 const gameId = v.id("games");
 const playerId = v.id("players");
 const teamId = v.id("teams");
@@ -43,7 +46,9 @@ const promptInput = v.union(
   })
 );
 
+const matchArgs = { gameId, sessionToken, expectedMatchNumber: v.number() };
 const actionStateArgs = {
+  expectedTurnId: v.union(v.id("turns"), v.null()),
   expectedPromptId: v.union(promptId, v.null()),
   expectedTeamId: v.union(teamId, v.null()),
   expectedActivePlayerId: v.union(playerId, v.null()),
@@ -51,8 +56,15 @@ const actionStateArgs = {
 };
 
 export const createGame = mutation({
-  args: { hostName: v.string() },
+  args: { hostName: v.string(), sessionToken },
   handler: async (ctx, args) => {
+    const hash = await hashSessionToken(args.sessionToken);
+    const existingHost = await ctx.db.query("players").withIndex("by_session", (q) => q.eq("session_token_hash", hash)).unique();
+    if (existingHost?.is_host) {
+      const existingGame = await requireGame(ctx, existingHost.game_id);
+      return { game: toGame(existingGame), player: toPlayer(existingHost) };
+    }
+    if (existingHost) throw new Error("Use a new session for this game.");
     let id: Id<"games"> | null = null;
     let code = "";
 
@@ -66,6 +78,8 @@ export const createGame = mutation({
 
       id = await ctx.db.insert("games", {
         code,
+        access_version: 2,
+        match_number: 1,
         host_player_id: null,
         phase: "setup",
         current_team_id: null,
@@ -92,7 +106,8 @@ export const createGame = mutation({
 
     const host = await ctx.db.insert("players", {
       game_id: id,
-      name: args.hostName.trim() || "Host",
+      session_token_hash: hash,
+      name: args.hostName.trim().slice(0, 60) || "Host",
       is_host: true,
       team_id: null,
       has_submitted: false,
@@ -110,6 +125,7 @@ export const createGame = mutation({
 export const saveGameSetup = mutation({
   args: {
     gameId,
+    sessionToken,
     promptsPerPlayer: v.number(),
     teamNames: v.array(v.string()),
     teamAssignmentMode: v.union(v.literal("auto"), v.literal("choose")),
@@ -126,15 +142,17 @@ export const saveGameSetup = mutation({
   },
   handler: async (ctx, args) => {
     const game = await requireGame(ctx, args.gameId);
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    requirePhase(game.phase, ["setup", "lobby"]);
     const cleanPromptsPerPlayer = clampRound(args.promptsPerPlayer, 1, 20);
     const cleanCardsDealtPerPlayer = clampRound(args.cardsDealtPerPlayer, 1, 20);
     const cleanCardsKeptPerPlayer = Math.min(cleanCardsDealtPerPlayer, clampRound(args.cardsKeptPerPlayer, 1, 20));
-    const cleanTeamNames = args.teamNames.map((name, index) => name.trim() || `Team ${index + 1}`).slice(0, 12);
+    const cleanTeamNames = args.teamNames.map((name, index) => name.trim().slice(0, 60) || `Team ${index + 1}`).slice(0, 12);
     const cleanPlayMode: PlayMode = args.playMode === "pass_and_play" ? "pass_and_play" : DEFAULT_PLAY_MODE;
     const cleanPromptMode: PromptMode = args.promptMode;
     const cleanPassAndPlayPlayers = args.passAndPlayPlayers
       .map((player, index) => ({
-        name: player.name.trim() || `Player ${index + 1}`,
+        name: player.name.trim().slice(0, 60) || `Player ${index + 1}`,
         teamIndex: Math.max(0, Math.round(player.teamIndex || 0))
       }))
       .slice(0, 40);
@@ -145,6 +163,13 @@ export const saveGameSetup = mutation({
       ? args.turnDurationSeconds
       : TURN_DURATION_SECONDS;
 
+    const categories = cleanPlayMode === "pass_and_play" ? args.passPlayCategories : cleanPromptCategories;
+    if (cleanPromptMode === "deck") {
+      const capacity = filterStarterDeckByCategories(categories).length;
+      const currentPlayers = await playersByGame(ctx, game._id);
+      const needed = cleanPlayMode === "pass_and_play" ? cleanPassPlayCardCount : Math.max(currentPlayers.length, cleanExpectedPlayers ?? 1) * cleanCardsDealtPerPlayer;
+      if (needed > capacity) throw new Error(`These categories have ${capacity} unique cards. Choose fewer cards or add categories before creating the lobby.`);
+    }
     if (cleanTeamNames.length < 1) throw new Error("Add at least one team.");
 
     await deleteByGame(ctx, "prompts", game._id);
@@ -223,8 +248,12 @@ export const saveGameSetup = mutation({
         }
       }
     } else {
-      const host = await getHostPlayer(ctx, game._id);
-      if (host) await ctx.db.patch(host._id, { team_id: firstTeam._id });
+      const allPlayers = await playersByGame(ctx, game._id);
+      const existingPlayers = allPlayers.filter((player) => player.session_token_hash || player.is_host);
+      for (const player of allPlayers.filter((player) => !player.session_token_hash && !player.is_host)) await ctx.db.delete(player._id);
+      for (const [index, player] of existingPlayers.entries()) {
+        await ctx.db.patch(player._id, { team_id: player.is_host || args.teamAssignmentMode === "auto" ? teams[index % teams.length]._id : null, has_submitted: false });
+      }
       if (cleanPromptMode === "deck") {
         const players = await playersByGame(ctx, game._id);
         for (const player of players) {
@@ -236,7 +265,7 @@ export const saveGameSetup = mutation({
 });
 
 export const joinGame = mutation({
-  args: { code: v.string(), playerName: v.string() },
+  args: { code: v.string(), playerName: v.string(), sessionToken },
   handler: async (ctx, args) => {
     const game = await ctx.db
       .query("games")
@@ -244,15 +273,22 @@ export const joinGame = mutation({
       .unique();
 
     if (!game) throw new Error("No game found for that code.");
+    const hash = await hashSessionToken(args.sessionToken);
+    const existing = await findViewer(ctx, game._id, args.sessionToken);
+    if (existing) return { game: toGame(game), player: toPlayer(existing) };
+    if (game.access_version !== 2) throw new Error("This older room has retired. Create a new game to use secure player sessions.");
     if (game.phase === "setup") throw new Error("The host is still setting up this game.");
     if (game.play_mode === "pass_and_play") throw new Error("This game is in Pass & Play mode. Use the host phone.");
 
     const teams = await teamsByGame(ctx, game._id);
     const players = await playersByGame(ctx, game._id);
-    const team = teams[players.length % Math.max(teams.length, 1)] as Doc<"teams"> | undefined;
+    requirePhase(game.phase, ["lobby"]);
+    if (players.length >= 200) throw new Error("This room is full.");
+    const team = [...teams].sort((a, b) => players.filter((p) => p.team_id === a._id).length - players.filter((p) => p.team_id === b._id).length)[0];
     const id = await ctx.db.insert("players", {
       game_id: game._id,
-      name: args.playerName.trim() || `Player ${players.length + 1}`,
+      session_token_hash: hash,
+      name: args.playerName.trim().slice(0, 60) || `Player ${players.length + 1}`,
       is_host: false,
       team_id: game.team_assignment_mode === "auto" ? (team?._id ?? null) : null,
       has_submitted: false,
@@ -270,36 +306,80 @@ export const joinGame = mutation({
 });
 
 export const loadSnapshot = query({
-  args: { gameId },
+  args: { gameId: v.string(), sessionToken: v.optional(v.string()) },
+  handler: async (ctx, args): Promise<GameSnapshot | null> => {
+    const id = ctx.db.normalizeId("games", args.gameId);
+    const game = id ? await ctx.db.get(id) : null;
+    if (!game) return null;
+    const viewer = await findViewer(ctx, game._id, args.sessionToken);
+    if (!viewer) return { game: toGame(game), players: [], teams: [], prompts: [], draftCards: [], activeTurn: null, latestUndoableEvent: null, viewer_player_id: null, server_now: Date.now() };
+    const snapshot = await loadSnapshotForGame(ctx, game._id);
+    const controlsTurn = game.active_player_id === viewer._id || (game.play_mode === "pass_and_play" && game.host_player_id === viewer._id);
+    return {
+      ...snapshot,
+      viewer_player_id: viewer._id,
+      server_now: Date.now(),
+      players: snapshot.players.map((player) => ({ ...player, draft_selected_count: snapshot.draftCards.filter((card) => card.player_id === player.id && card.selected).length })),
+      // Keep counts/statuses available without exposing the bowl's contents.
+      prompts: snapshot.prompts.map((prompt) => {
+        const ownSubmission = game.phase === "lobby" && game.prompt_mode !== "deck" && prompt.player_id === viewer._id;
+        const currentCard = game.phase === "playing" && controlsTurn && prompt.id === game.current_prompt_id;
+        return ownSubmission || currentCard ? prompt : { ...prompt, text: "", description: null, category: null };
+      }),
+      draftCards: game.phase === "lobby" ? snapshot.draftCards.filter((card) => card.player_id === viewer._id) : [],
+      latestUndoableEvent: viewer.is_host && snapshot.latestUndoableEvent ? { id: snapshot.latestUndoableEvent.id, action: snapshot.latestUndoableEvent.action } : null
+    };
+  }
+});
+
+// A one-shot mutation avoids cached query timestamps when a phone reconnects.
+export const synchronizeClock = mutation({
+  args: { gameId, sessionToken },
   handler: async (ctx, args) => {
-    return loadSnapshotForGame(ctx, args.gameId);
+    await requirePlayer(ctx, args.gameId, args.sessionToken);
+    return Date.now();
   }
 });
 
 export const updatePlayerName = mutation({
-  args: { playerId, name: v.string() },
+  args: { gameId, sessionToken, playerId, name: v.string() },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.playerId, { name: args.name.trim() || "Player" });
+    const viewer = await requirePlayer(ctx, args.gameId, args.sessionToken);
+    if (viewer._id !== args.playerId) throw new Error("You can only rename yourself.");
+    await ctx.db.patch(args.playerId, { name: args.name.trim().slice(0, 60) || "Player" });
   }
 });
 
 export const assignPlayerToTeam = mutation({
-  args: { playerId, teamId },
+  args: { gameId, sessionToken, playerId, teamId },
   handler: async (ctx, args) => {
+    const viewer = await requirePlayer(ctx, args.gameId, args.sessionToken);
+    const game = await requireGame(ctx, args.gameId);
+    requirePhase(game.phase, ["lobby"]);
+    const player = await ctx.db.get(args.playerId);
+    const team = await ctx.db.get(args.teamId);
+    if (!player || player.game_id !== args.gameId || !team || team.game_id !== args.gameId) throw new Error("Choose a player and team in this room.");
+    if (!viewer.is_host && (viewer._id !== args.playerId || game.team_assignment_mode !== "choose")) throw new Error("Only the host can assign that team.");
     await ctx.db.patch(args.playerId, { team_id: args.teamId });
   }
 });
 
 export const submitPrompts = mutation({
-  args: { gameId, playerId, prompts: v.array(promptInput) },
+  args: { gameId, sessionToken, playerId, prompts: v.array(promptInput) },
   handler: async (ctx, args) => {
+    const viewer = await requirePlayer(ctx, args.gameId, args.sessionToken);
+    if (viewer._id !== args.playerId) throw new Error("You can only submit your own prompts.");
+    if (args.prompts.length > 800) throw new Error("Too many prompts.");
     const cleanPrompts = args.prompts
       .map((prompt) => {
         if (typeof prompt === "string") return { text: prompt.trim(), category: null as string | null };
         return { text: prompt.text.trim(), category: prompt.category?.trim() || null };
       })
       .filter((prompt) => prompt.text);
+    if (cleanPrompts.some((prompt) => prompt.text.length > 120)) throw new Error("Keep each prompt to 120 characters.");
     const game = await requireGame(ctx, args.gameId);
+    requirePhase(game.phase, ["lobby"]);
+    if (game.prompt_mode === "deck") throw new Error("Choose cards from your hand for this game.");
     const prompts = await promptsByGame(ctx, game._id);
     const players = await playersByGame(ctx, game._id);
     const currentCount = game.play_mode === "pass_and_play" ? prompts.length : prompts.filter((prompt) => prompt.player_id === args.playerId).length;
@@ -332,9 +412,12 @@ export const submitPrompts = mutation({
 });
 
 export const setDraftCardSelected = mutation({
-  args: { gameId, playerId, draftCardId, selected: v.boolean() },
+  args: { gameId, sessionToken, playerId, draftCardId, selected: v.boolean() },
   handler: async (ctx, args) => {
+    const viewer = await requirePlayer(ctx, args.gameId, args.sessionToken);
+    if (viewer._id !== args.playerId) throw new Error("You can only select your own cards.");
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
+    requirePhase(snapshot.game.phase, ["lobby"]);
     if (snapshot.game.prompt_mode !== "deck") return;
 
     const currentSelectedCount = snapshot.draftCards.filter((card) => card.player_id === args.playerId && card.selected).length;
@@ -351,9 +434,12 @@ export const setDraftCardSelected = mutation({
 });
 
 export const startGame = mutation({
-  args: { gameId },
+  args: { ...matchArgs },
   handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
+    if (snapshot.game.phase !== "lobby") return;
     const unreadyPlayer = snapshot.players.find((player) => {
       if (!player.team_id) return true;
       if (snapshot.game.play_mode === "pass_and_play") return false;
@@ -401,9 +487,11 @@ export const startGame = mutation({
 });
 
 export const startTurn = mutation({
-  args: { gameId },
+  args: { ...matchArgs, expectedTurnNumber: v.number() },
   handler: async (ctx, args) => {
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
+    await requireController(ctx, args.gameId, args.sessionToken);
+    if (snapshot.game.phase !== "ready" || snapshot.game.turn_number !== args.expectedTurnNumber || (snapshot.game.match_number ?? 1) !== args.expectedMatchNumber) return;
     const activePlayer = snapshot.players.find((player) => player.id === snapshot.game.active_player_id);
     const team = snapshot.teams.find((candidate) => candidate.id === snapshot.game.current_team_id);
     if (!activePlayer || !team || !snapshot.game.current_prompt_id) {
@@ -426,17 +514,23 @@ export const startTurn = mutation({
 });
 
 export const pauseGame = mutation({
-  args: { gameId },
+  args: { ...matchArgs },
   handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
     const game = await requireGame(ctx, args.gameId);
     if (game.phase !== "playing") return;
+    const snapshot = await loadSnapshotForGame(ctx, args.gameId);
+    if (turnExpired(snapshot)) { await endTurnForSnapshot(ctx, snapshot); return; }
     await ctx.db.patch(args.gameId, { phase: "paused", paused_at: nowIso() });
   }
 });
 
 export const resumeGame = mutation({
-  args: { gameId },
+  args: { ...matchArgs },
   handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
     if (snapshot.game.phase !== "paused") return;
     const pausedAt = snapshot.game.paused_at ? new Date(snapshot.game.paused_at).getTime() : Date.now();
@@ -450,9 +544,17 @@ export const resumeGame = mutation({
 });
 
 export const finishGame = mutation({
-  args: { gameId },
+  args: { ...matchArgs },
   handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
+    const game = await requireGame(ctx, args.gameId);
+    requirePhase(game.phase, ["ready", "playing", "paused", "finished"]);
+    for (const turn of await turnsByGame(ctx, args.gameId)) {
+      if (turn.ended_at === null) await ctx.db.patch(turn._id, { ended_at: nowIso() });
+    }
     await ctx.db.patch(args.gameId, {
+      finish_reason: "host",
       phase: "finished",
       current_prompt_id: null,
       active_player_id: null,
@@ -463,8 +565,31 @@ export const finishGame = mutation({
 });
 
 export const resetToLobby = mutation({
-  args: { gameId },
+  args: { ...matchArgs, freshCards: v.boolean() },
   handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
+    const game = await requireGame(ctx, args.gameId);
+    requirePhase(game.phase, ["ready", "playing", "paused", "finished"]);
+    const prompts = await promptsByGame(ctx, args.gameId);
+    const drafts = await draftCardsByGame(ctx, args.gameId);
+    for (const event of await eventsByGame(ctx, args.gameId)) await ctx.db.delete(event._id);
+    if (args.freshCards) {
+      const previousTitles = [...new Set([...prompts.map((p) => p.text), ...drafts.map((c) => c.title)])];
+      await ctx.db.patch(args.gameId, { previous_card_titles: previousTitles });
+      await deleteByGame(ctx, "prompts", args.gameId);
+      await deleteByGame(ctx, "draft_cards", args.gameId);
+      for (const player of await playersByGame(ctx, args.gameId)) {
+        await ctx.db.patch(player._id, { has_submitted: game.play_mode === "pass_and_play" && game.prompt_mode === "deck" });
+        if (game.prompt_mode === "deck" && game.play_mode === "multi_device") await ensureDraftHand(ctx, args.gameId, player._id, game.cards_dealt_per_player, game.prompt_categories);
+      }
+      if (game.prompt_mode === "deck" && game.play_mode === "pass_and_play" && game.host_player_id) {
+        const pool = filterStarterDeckByCategories(game.prompt_categories);
+        const previous = new Set(previousTitles);
+        const deck = [...shuffle(pool.filter((c) => !previous.has(c.title))), ...shuffle(pool.filter((c) => previous.has(c.title)))].slice(0, game.pass_play_card_count);
+        for (const card of deck) await ctx.db.insert("prompts", { game_id: args.gameId, player_id: game.host_player_id, text: card.title, description: card.description, category: card.category, status: "available", deck_order: null, created_at: nowIso() });
+      }
+    }
     const turns = await turnsByGame(ctx, args.gameId);
     for (const turn of turns.filter((candidate) => candidate.ended_at === null)) {
       await ctx.db.patch(turn._id, { ended_at: nowIso() });
@@ -477,6 +602,8 @@ export const resetToLobby = mutation({
     }
     await ctx.db.patch(args.gameId, {
       phase: "lobby",
+      match_number: (game.match_number ?? 1) + 1,
+      finish_reason: undefined,
       current_prompt_id: null,
       active_player_id: null,
       current_team_id: null,
@@ -488,8 +615,17 @@ export const resetToLobby = mutation({
 });
 
 export const adjustTeamScore = mutation({
-  args: { gameId, teamId, delta: v.number() },
+  args: { ...matchArgs, teamId, delta: v.number() },
   handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
+    const game = await requireGame(ctx, args.gameId);
+    requirePhase(game.phase, ["ready", "playing", "paused", "finished"]);
+    if (args.delta !== 1 && args.delta !== -1) throw new Error("Adjust the score one point at a time.");
+    // Score overrides invalidate historical snapshots that would overwrite this correction.
+    for (const event of await eventsByGame(ctx, args.gameId)) {
+      if (!event.undone_at) await ctx.db.patch(event._id, { undone_at: nowIso() });
+    }
     const team = await ctx.db.get(args.teamId);
     if (!team || team.game_id !== args.gameId) return;
 
@@ -499,8 +635,10 @@ export const adjustTeamScore = mutation({
 });
 
 export const redoLastFivePrompts = mutation({
-  args: { gameId },
+  args: { ...matchArgs },
   handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
     if (snapshot.game.phase !== "paused" && snapshot.game.phase !== "ready") return;
 
@@ -537,22 +675,39 @@ export const redoLastFivePrompts = mutation({
 });
 
 export const undoLastAction = mutation({
-  args: { gameId },
+  args: { ...matchArgs },
   handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
+    requirePhase(snapshot.game.phase, ["playing", "paused", "ready", "finished"]);
     const event = snapshot.latestUndoableEvent;
     if (!event) throw new Error("Nothing to undo yet.");
 
     await restoreGameEventState(ctx, args.gameId, event);
+    // Close any newer turn before reopening the captured turn. Never run two clocks.
+    for (const turn of await turnsByGame(ctx, args.gameId)) {
+      if (turn.ended_at === null && turn._id !== event.payload.activeTurn?.id) await ctx.db.patch(turn._id, { ended_at: nowIso() });
+    }
+    if (event.payload.activeTurn) {
+      const turn = await ctx.db.get(event.payload.activeTurn.id as Id<"turns">);
+      const remainingAt = event.payload.game.paused_at ?? event.created_at;
+      const remaining = turn ? Math.min(snapshot.game.turn_duration_seconds * 1_000, Math.max(1_000, snapshot.game.turn_duration_seconds * 1_000 - (Date.parse(remainingAt) - Date.parse(event.payload.activeTurn.started_at ?? turn.started_at)))) : 15_000;
+      const now = Date.now();
+      await ctx.db.patch(event.payload.activeTurn.id as Id<"turns">, { started_at: new Date(now - snapshot.game.turn_duration_seconds * 1_000 + remaining).toISOString(), ended_at: null });
+      await ctx.db.patch(args.gameId, { phase: "paused", paused_at: new Date(now).toISOString() });
+    }
     await ctx.db.patch(event.id as Id<"game_events">, { undone_at: nowIso() });
   }
 });
 
 export const markCorrect = mutation({
-  args: { gameId, ...actionStateArgs },
+  args: { ...matchArgs, ...actionStateArgs },
   handler: async (ctx, args) => {
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
+    await requireController(ctx, args.gameId, args.sessionToken);
     if (!snapshotMatchesActionState(snapshot, args)) return;
+    if (turnExpired(snapshot)) { await endTurnForSnapshot(ctx, snapshot); return; }
     const promptId = snapshot.game.current_prompt_id as Id<"prompts"> | null;
     const teamId = snapshot.game.current_team_id as Id<"teams"> | null;
     if (!promptId || !teamId) return;
@@ -575,10 +730,12 @@ export const markCorrect = mutation({
 });
 
 export const skipPrompt = mutation({
-  args: { gameId, ...actionStateArgs },
+  args: { ...matchArgs, ...actionStateArgs },
   handler: async (ctx, args) => {
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
+    await requireController(ctx, args.gameId, args.sessionToken);
     if (!snapshotMatchesActionState(snapshot, args)) return;
+    if (turnExpired(snapshot)) { await endTurnForSnapshot(ctx, snapshot); return; }
     const promptId = snapshot.game.current_prompt_id as Id<"prompts"> | null;
     if (!promptId) return;
     const prompt = await ctx.db.get(promptId);
@@ -597,10 +754,20 @@ export const skipPrompt = mutation({
 });
 
 export const endTurn = mutation({
-  args: { gameId },
+  args: { ...matchArgs, expectedTurnId: v.union(v.id("turns"), v.null()), expiredOnly: v.boolean() },
   handler: async (ctx, args) => {
+    await requirePlayer(ctx, args.gameId, args.sessionToken);
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
-    if (snapshot.game.phase !== "playing" || !snapshot.activeTurn) return;
+    if (snapshot.game.phase !== "playing" || !snapshot.activeTurn || snapshot.activeTurn.id !== args.expectedTurnId || (snapshot.game.match_number ?? 1) !== args.expectedMatchNumber) return true;
+    if (args.expiredOnly && !turnExpired(snapshot)) return false;
+    if (!turnExpired(snapshot)) await requireController(ctx, args.gameId, args.sessionToken);
+    await endTurnForSnapshot(ctx, snapshot);
+    return true;
+  }
+});
+
+async function endTurnForSnapshot(ctx: MutationCtx, snapshot: FullGameSnapshot) {
+    if (!snapshot.activeTurn) return;
     await recordUndoPoint(ctx, snapshot, "end_turn");
     await ctx.db.patch(snapshot.activeTurn.id as Id<"turns">, { ended_at: nowIso() });
 
@@ -617,7 +784,7 @@ export const endTurn = mutation({
     const nextPrompt = getPromptForPlayerTurn(reusablePrompts, nextAssignment?.player.id, activePromptId);
 
     if (!nextAssignment || !nextPrompt) {
-      await ctx.db.patch(args.gameId, {
+      await ctx.db.patch(snapshot.game.id as Id<"games">, {
         phase: "finished",
         current_prompt_id: null,
         active_player_id: null,
@@ -628,7 +795,7 @@ export const endTurn = mutation({
     }
 
     await ctx.db.patch(nextPrompt.id as Id<"prompts">, { status: "active" });
-    await ctx.db.patch(args.gameId, {
+    await ctx.db.patch(snapshot.game.id as Id<"games">, {
       phase: "ready",
       active_player_id: nextAssignment.player.id as Id<"players">,
       current_team_id: nextAssignment.team.id as Id<"teams">,
@@ -636,8 +803,20 @@ export const endTurn = mutation({
       turn_number: snapshot.game.turn_number + 1,
       paused_at: null
     });
-  }
-});
+
+}
+
+function turnExpired(snapshot: GameSnapshot) {
+  return !snapshot.activeTurn || Date.now() >= Date.parse(snapshot.activeTurn.started_at) + snapshot.game.turn_duration_seconds * 1_000;
+}
+
+function requirePhase(phase: string, allowed: string[]) {
+  if (!allowed.includes(phase)) throw new Error("This action is no longer available. Refresh to see the current game.");
+}
+
+async function matchesMatch(ctx: QueryOrMutationCtx, id: Id<"games">, expected: number) {
+  return ((await requireGame(ctx, id)).match_number ?? 1) === expected;
+}
 
 async function requireGame(ctx: QueryOrMutationCtx, id: Id<"games">) {
   const game = await ctx.db.get(id);
@@ -645,7 +824,7 @@ async function requireGame(ctx: QueryOrMutationCtx, id: Id<"games">) {
   return game;
 }
 
-async function loadSnapshotForGame(ctx: QueryOrMutationCtx, id: Id<"games">): Promise<GameSnapshot> {
+async function loadSnapshotForGame(ctx: QueryOrMutationCtx, id: Id<"games">): Promise<FullGameSnapshot> {
   const game = await requireGame(ctx, id);
   const [players, teams, prompts, draftCards, turns, events] = await Promise.all([
     playersByGame(ctx, id),
@@ -699,8 +878,12 @@ async function ensureDraftHand(
   const categoryCards = filterStarterDeckByCategories(selectedCategories);
   const unusedCards = categoryCards.filter((card) => !usedIds.has(card.id));
   const cardsNeeded = cardsToDeal - validPlayerCards.length;
-  const sourceCards = unusedCards.length >= cardsNeeded ? unusedCards : categoryCards;
-  const hand = shuffle(sourceCards).slice(0, cardsNeeded);
+  if (unusedCards.length < cardsNeeded) throw new Error("Not enough unique cards for another hand. Ask the host to add categories or reduce the hand size.");
+  const game = await requireGame(ctx, game_id);
+  const previousTitles = new Set(game.previous_card_titles ?? []);
+  const freshCards = unusedCards.filter((card) => !previousTitles.has(card.title));
+  const repeatCards = unusedCards.filter((card) => previousTitles.has(card.title));
+  const hand = [...shuffle(freshCards), ...shuffle(repeatCards)].slice(0, cardsNeeded);
   const nextSortOrder = validPlayerCards.reduce((max, card) => Math.max(max, card.sort_order), -1) + 1;
 
   for (const [sort_order, card] of hand.entries()) {
@@ -718,7 +901,8 @@ async function ensureDraftHand(
 }
 
 async function ensureDeckDraftPrompts(ctx: MutationCtx, snapshot: GameSnapshot) {
-  if (snapshot.prompts.length > 0) return snapshot.prompts;
+  if (snapshot.game.play_mode === "pass_and_play") return snapshot.prompts;
+  await deleteByGame(ctx, "prompts", snapshot.game.id as Id<"games">);
   const selectedCards = snapshot.draftCards.filter((card) => card.selected);
   if (selectedCards.length === 0) throw new Error("Choose at least one card before starting.");
 
@@ -759,6 +943,7 @@ async function recordUndoPoint(ctx: MutationCtx, snapshot: GameSnapshot, action:
       activeTurn: snapshot.activeTurn
         ? {
             id: snapshot.activeTurn.id,
+            started_at: snapshot.activeTurn.started_at,
             ended_at: snapshot.activeTurn.ended_at,
             correct_count: snapshot.activeTurn.correct_count,
             skip_count: snapshot.activeTurn.skip_count
@@ -807,6 +992,8 @@ async function restorePausedTurnTime(ctx: MutationCtx, gameId: Id<"games">, turn
 function snapshotMatchesActionState(
   snapshot: GameSnapshot,
   args: {
+    expectedTurnId: Id<"turns"> | null;
+    expectedMatchNumber: number;
     expectedPromptId: Id<"prompts"> | null;
     expectedTeamId: Id<"teams"> | null;
     expectedActivePlayerId: Id<"players"> | null;
@@ -815,6 +1002,8 @@ function snapshotMatchesActionState(
 ) {
   return (
     snapshot.game.phase === "playing" &&
+    snapshot.activeTurn?.id === args.expectedTurnId &&
+    (snapshot.game.match_number ?? 1) === args.expectedMatchNumber &&
     snapshot.game.current_prompt_id === args.expectedPromptId &&
     snapshot.game.current_team_id === args.expectedTeamId &&
     snapshot.game.active_player_id === args.expectedActivePlayerId &&
@@ -840,6 +1029,7 @@ async function prepareNextRound(ctx: MutationCtx, snapshot: GameSnapshot) {
   const id = snapshot.game.id as Id<"games">;
   if (isFinalRound(snapshot.game.round_number)) {
     await ctx.db.patch(id, {
+      finish_reason: "completed",
       phase: "finished",
       current_prompt_id: null,
       active_player_id: null,
@@ -922,15 +1112,18 @@ async function eventsByGame(ctx: QueryOrMutationCtx, id: Id<"games">) {
 }
 
 function clampRound(value: number, min: number, max: number) {
+  if (!Number.isFinite(value)) throw new Error("Choose a valid number.");
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
 function toGame(doc: Doc<"games">) {
-  return { ...stripDoc(doc), id: doc._id };
+  const { previous_card_titles, ...game } = stripDoc(doc);
+  void previous_card_titles;
+  return { ...game, id: doc._id };
 }
 
 function toPlayer(doc: Doc<"players">) {
-  return { ...stripDoc(doc), id: doc._id };
+  return { id: doc._id, game_id: doc.game_id, name: doc.name, is_host: doc.is_host, team_id: doc.team_id, has_submitted: doc.has_submitted, created_at: doc.created_at };
 }
 
 function toTeam(doc: Doc<"teams">): Team {

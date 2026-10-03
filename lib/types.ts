@@ -6,6 +6,9 @@ export type PlayMode = "multi_device" | "pass_and_play";
 export type Game = {
   id: string;
   code: string;
+  access_version?: number;
+  match_number?: number;
+  finish_reason?: "completed" | "host";
   host_player_id: string | null;
   phase: GamePhase;
   current_team_id: string | null;
@@ -34,6 +37,7 @@ export type Player = {
   is_host: boolean;
   team_id: string | null;
   has_submitted: boolean;
+  draft_selected_count?: number;
   created_at: string;
 };
 
@@ -88,7 +92,7 @@ export type GameEvent = {
     game: Pick<Game, "phase" | "current_team_id" | "active_player_id" | "current_prompt_id" | "turn_number" | "round_number" | "paused_at">;
     teams: Array<Pick<Team, "id" | "score">>;
     prompts: Array<Pick<Prompt, "id" | "status" | "deck_order">>;
-    activeTurn: Pick<Turn, "id" | "ended_at" | "correct_count" | "skip_count"> | null;
+    activeTurn: (Pick<Turn, "id" | "ended_at" | "correct_count" | "skip_count"> & { started_at?: string }) | null;
   };
   undone_at: string | null;
   created_at: string;
@@ -124,5 +128,7 @@ export type GameSnapshot = {
   prompts: Prompt[];
   draftCards: DraftCard[];
   activeTurn: Turn | null;
-  latestUndoableEvent: GameEvent | null;
+  latestUndoableEvent: Pick<GameEvent, "id" | "action"> | null;
+  viewer_player_id?: string | null;
+  server_now?: number;
 };

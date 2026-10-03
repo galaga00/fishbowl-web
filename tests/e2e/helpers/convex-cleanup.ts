@@ -42,6 +42,7 @@ export function createE2EConvexClient() {
     throw new Error("Missing NEXT_PUBLIC_CONVEX_URL for Convex E2E setup.");
   }
 
+  if (convexUrl !== "https://ardent-lemming-605.convex.cloud") throw new Error("E2E tests must use the Fish Bowl development deployment.");
   return new ConvexHttpClient(convexUrl);
 }
 

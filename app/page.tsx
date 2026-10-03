@@ -1,6 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
+import { getSessionToken, LAST_GAME_KEY, readableGameError } from "@/lib/player-session";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ASSETS } from "@/lib/assets";
@@ -21,6 +23,11 @@ const howToPages = [
 
 export default function Home() {
   const router = useRouter();
+  const [lastGameId, setLastGameId] = useState<string | null>(null);
+  useEffect(() => {
+    const saved = localStorage.getItem(LAST_GAME_KEY);
+    if (saved && getSessionToken(saved)) setLastGameId(saved);
+  }, []);
   const [mode, setMode] = useState<"menu" | "join" | "howTo">("menu");
   const [howToIndex, setHowToIndex] = useState(0);
   const [playerName, setPlayerName] = useState("");
@@ -46,7 +53,7 @@ export default function Home() {
       });
       router.push(`/game/${game.id}`);
     } catch (createError) {
-      setError(createError instanceof Error ? createError.message : "Could not create game.");
+      setError(readableGameError(createError));
     } finally {
       setBusy(false);
     }
@@ -68,7 +75,7 @@ export default function Home() {
       });
       router.push(`/game/${game.id}`);
     } catch (joinError) {
-      setError(joinError instanceof Error ? joinError.message : "Could not join game.");
+      setError(readableGameError(joinError));
     } finally {
       setBusy(false);
     }
@@ -184,6 +191,7 @@ export default function Home() {
         )}
 
         <div className="home-action-panel">
+          {mode === "menu" && lastGameId ? <Link className="button secondary continue-game" href={`/game/${lastGameId}`}>Continue my game</Link> : null}
           {mode === "join" ? (
             <form className="home-join-form" onSubmit={handleJoin}>
               <div className="field">

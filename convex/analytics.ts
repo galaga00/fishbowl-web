@@ -1,11 +1,15 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+import { requireOwner, requirePlayer } from "./access";
+
 const nullableString = v.union(v.string(), v.null());
 const nullableNumber = v.union(v.number(), v.null());
 
 export const record = mutation({
   args: {
+    ownerKey: v.string(),
+    sessionToken: v.optional(v.string()),
     event_name: v.string(),
     game_id: nullableString,
     player_id: nullableString,
@@ -26,16 +30,41 @@ export const record = mutation({
     metadata: v.any()
   },
   handler: async (ctx, args) => {
+    requireOwner(args.ownerKey);
+    let notify = false;
+    let metadata = args.metadata;
+    if (args.game_id) {
+      const id = ctx.db.normalizeId("games", args.game_id);
+      if (!id) throw new Error("Invalid game.");
+      await requirePlayer(ctx, id, args.sessionToken ?? "");
+      const game = await ctx.db.get(id);
+      if (args.event_name === "game_started") {
+        if (!game || game.phase === "setup" || game.phase === "lobby") return { notify: false };
+        const previous = await ctx.db.query("analytics_events").withIndex("by_game", (q) => q.eq("game_id", args.game_id)).collect();
+        const matchNumber = game.match_number ?? 1;
+        if (previous.some((event) => event.event_name === "game_started" && event.metadata?.matchNumber === matchNumber)) return { notify: false };
+        notify = true;
+        metadata = { ...args.metadata, matchNumber };
+      }
+    } else if (args.event_name !== "page_view") {
+      return { notify: false };
+    }
+    const { ownerKey, sessionToken, ...event } = args;
+    void sessionToken;
+    void ownerKey;
     await ctx.db.insert("analytics_events", {
-      ...args,
+      ...event,
+      metadata,
       created_at: new Date().toISOString()
     });
+    return { notify };
   }
 });
 
 export const ownerSnapshot = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { ownerKey: v.string() },
+  handler: async (ctx, args) => {
+    requireOwner(args.ownerKey);
     const [events, games, players, prompts, teams, turns] = await Promise.all([
       ctx.db.query("analytics_events").collect(),
       ctx.db.query("games").collect(),
@@ -48,7 +77,7 @@ export const ownerSnapshot = query({
     return {
       events: events.map((event) => ({ ...stripDoc(event), id: event._id })).sort(descCreated).slice(0, 1500),
       games: games.map((game) => ({ ...stripDoc(game), id: game._id })).sort(descCreated).slice(0, 200),
-      players: players.map((player) => ({ ...stripDoc(player), id: player._id })).sort(descCreated).slice(0, 1000),
+      players: players.map((player) => ({ id: player._id, game_id: player.game_id, name: player.name, is_host: player.is_host, team_id: player.team_id, has_submitted: player.has_submitted, created_at: player.created_at })).sort(descCreated).slice(0, 1000),
       prompts: prompts
         .map((prompt) => ({
           id: prompt._id,
@@ -65,8 +94,9 @@ export const ownerSnapshot = query({
 });
 
 export const purgeAll = mutation({
-  args: {},
-  handler: async (ctx) => {
+  args: { ownerKey: v.string() },
+  handler: async (ctx, args) => {
+    requireOwner(args.ownerKey);
     for (const table of ["analytics_events", "game_events", "turns", "draft_cards", "prompts", "players", "teams", "games"] as const) {
       const rows = await ctx.db.query(table).collect();
       for (const row of rows) {

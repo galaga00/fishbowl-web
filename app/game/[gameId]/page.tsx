@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
+import { getSessionToken, saveSession, readableGameError } from "@/lib/player-session";
+import { QuickStart } from "@/app/quick-start";
 import { useQuery } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +13,7 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { CONFETTI_PIECES } from "@/lib/confetti";
 import {
+  synchronizeClock,
   adjustTeamScore,
   assignPlayerToTeam,
   endTurn,
@@ -33,6 +36,8 @@ import {
 } from "@/lib/game-api";
 import {
   FAMILY_FRIENDLY_DECK_FILTER,
+  filterStarterDeckByCategories,
+  setFamilyFriendlyDeckFilter,
   getDefaultPassPlayCardCount,
   hasFamilyFriendlyDeckFilter,
   MIXED_PASS_PLAY_CATEGORY,
@@ -50,7 +55,6 @@ import {
   TURN_DURATION_SECONDS,
   getDraftSelectedCountForPlayer,
   getPlayerStorageKey,
-  getPreviousPlayerStorageKey,
   getPromptCountForPlayer,
   getPromptProgress,
   getRoundSummary,
@@ -77,6 +81,10 @@ export default function GamePage() {
   const params = useParams<{ gameId: string }>();
   const gameId = params.gameId;
   const [snapshot, setSnapshot] = useState<GameSnapshot | null>(null);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [clockOffset, setClockOffset] = useState(0);
+  const [editingSetup, setEditingSetup] = useState(false);
+  const [confirmation, setConfirmation] = useState<{ title: string; body: string; label: string; action: () => Promise<void> } | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [acknowledgedLobbyTeamId, setAcknowledgedLobbyTeamId] = useState<string | null>(null);
   const [joinName, setJoinName] = useState("");
@@ -102,7 +110,7 @@ export default function GamePage() {
   const [error, setError] = useState("");
   const actionInFlightRef = useRef(false);
   const refreshRequestIdRef = useRef(0);
-  const liveSnapshot = useQuery(api.game.loadSnapshot, gameId ? { gameId: gameId as Id<"games"> } : "skip") as GameSnapshot | undefined;
+  const liveSnapshot = useQuery(api.game.loadSnapshot, gameId && sessionToken !== null ? { gameId: gameId as Id<"games">, sessionToken } : "skip") as GameSnapshot | null | undefined;
 
   const refresh = useCallback(async () => {
     const requestId = refreshRequestIdRef.current + 1;
@@ -115,7 +123,8 @@ export default function GamePage() {
   }, [gameId]);
 
   useEffect(() => {
-    const savedPlayerId = localStorage.getItem(getPlayerStorageKey(gameId)) ?? localStorage.getItem(getPreviousPlayerStorageKey(gameId));
+    const savedPlayerId = localStorage.getItem(getPlayerStorageKey(gameId));
+    setSessionToken(getSessionToken(gameId));
     if (savedPlayerId) {
       localStorage.setItem(getPlayerStorageKey(gameId), savedPlayerId);
       setPlayerId(savedPlayerId);
@@ -124,13 +133,35 @@ export default function GamePage() {
   }, [gameId, refresh]);
 
   useEffect(() => {
-    if (liveSnapshot) setSnapshot(liveSnapshot);
+    if (liveSnapshot === null) { setSnapshot(null); setError("This room is no longer available. Create a new game from Home."); }
+    if (liveSnapshot) setSnapshot((current) => !current || (liveSnapshot.server_now ?? 0) >= (current.server_now ?? 0) ? liveSnapshot : current);
   }, [liveSnapshot]);
 
+  useEffect(() => {
+    if (confirmation) document.getElementById("confirmation-title")?.scrollIntoView({ block: "center" });
+  }, [confirmation]);
+
   const me = useMemo(() => {
-    if (!snapshot || !playerId) return null;
-    return snapshot.players.find((player) => player.id === playerId) ?? null;
-  }, [snapshot, playerId]);
+    if (!snapshot?.viewer_player_id) return null;
+    return snapshot.players.find((player) => player.id === snapshot.viewer_player_id) ?? null;
+  }, [snapshot]);
+
+  useEffect(() => {
+    if (!sessionToken) return;
+    let cancelled = false;
+    async function syncClock() {
+      if (document.visibilityState === "hidden") return;
+      const sent = Date.now();
+      try {
+        const server = await synchronizeClock(gameId);
+        if (!cancelled) setClockOffset(server - (sent + Date.now()) / 2);
+      } catch { /* The game subscription and action errors provide connection recovery. */ }
+    }
+    void syncClock();
+    window.addEventListener("online", syncClock);
+    document.addEventListener("visibilitychange", syncClock);
+    return () => { cancelled = true; window.removeEventListener("online", syncClock); document.removeEventListener("visibilitychange", syncClock); };
+  }, [gameId, sessionToken]);
 
   const activePlayer = useMemo(() => {
     if (!snapshot) return null;
@@ -152,7 +183,7 @@ export default function GamePage() {
       await refresh();
       return true;
     } catch (actionError) {
-      setError(actionError instanceof Error ? actionError.message : "Something went wrong.");
+      setError(readableGameError(actionError));
       return false;
     } finally {
       actionInFlightRef.current = false;
@@ -188,6 +219,7 @@ export default function GamePage() {
       const { player } = await joinGame(snapshot.game.code, joinName);
       localStorage.setItem(getPlayerStorageKey(snapshot.game.id), player.id);
       setPlayerId(player.id);
+      setSessionToken(getSessionToken(snapshot.game.id));
       setAcknowledgedLobbyTeamId(null);
       trackSnapshotEvent("player_joined", snapshot, {
         joinedPlayerId: player.id,
@@ -196,17 +228,42 @@ export default function GamePage() {
     });
   }
 
-  function handleReclaimPlayer(nextPlayerId: string) {
+  async function handleReclaimPlayer(token: string) {
     if (!snapshot) return;
-    localStorage.setItem(getPlayerStorageKey(snapshot.game.id), nextPlayerId);
-    setPlayerId(nextPlayerId);
-    setAcknowledgedLobbyTeamId(null);
+    await runAction(async () => {
+      const recovered = await loadSnapshot(snapshot.game.id, token.trim().toLowerCase());
+      if (!recovered.viewer_player_id) throw new Error("That recovery code does not match a player in this room.");
+      saveSession(snapshot.game.id, snapshot.game.code, recovered.viewer_player_id, token.trim().toLowerCase());
+      setSessionToken(token.trim().toLowerCase());
+      setPlayerId(recovered.viewer_player_id);
+      setAcknowledgedLobbyTeamId(null);
+    });
+  }
+
+  function handleEditSetup() {
+    if (!snapshot) return;
+    const game = snapshot.game;
+    setPromptsPerPlayer(game.prompts_per_player);
+    setTurnDurationSeconds(game.turn_duration_seconds);
+    setCardsDealtPerPlayer(game.cards_dealt_per_player);
+    setCardsKeptPerPlayer(game.cards_kept_per_player);
+    setTeamCount(snapshot.teams.length);
+    setTeamNames(snapshot.teams.map((team) => team.name));
+    setExpectedPlayers(game.expected_players?.toString() ?? "");
+    setTeamAssignmentMode(game.team_assignment_mode);
+    setPromptMode(game.prompt_mode);
+    setPromptCategories(game.prompt_categories ?? [MIXED_PASS_PLAY_CATEGORY]);
+    setPassAndPlayCategories(game.prompt_categories ?? [MIXED_PASS_PLAY_CATEGORY]);
+    setPlayMode(game.play_mode);
+    setPassAndPlayCardCount(game.pass_play_card_count);
+    setPassAndPlayPlayers(snapshot.players.map((player) => ({ name: player.name, teamIndex: Math.max(0, snapshot.teams.findIndex((team) => team.id === player.team_id)) })));
+    setEditingSetup(true);
   }
 
   async function handleNameSave(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!me) return;
-    await runAction(() => updatePlayerName(me.id, joinName || me.name));
+    await runAction(() => updatePlayerName(gameId, me.id, joinName || me.name));
   }
 
   async function handleSubmitPrompts(event: FormEvent<HTMLFormElement>) {
@@ -283,6 +340,7 @@ export default function GamePage() {
         passAndPlayCategories,
         promptCategories
       );
+      setEditingSetup(false);
     });
   }
 
@@ -293,11 +351,11 @@ export default function GamePage() {
 
   async function handleChooseTeam(teamId: string) {
     if (!me) return;
-    await runAction(() => assignPlayerToTeam(me.id, teamId));
+    await runAction(() => assignPlayerToTeam(gameId, me.id, teamId));
   }
 
   async function handleAssignPlayerToTeam(playerId: string, teamId: string) {
-    await runAction(() => assignPlayerToTeam(playerId, teamId));
+    await runAction(() => assignPlayerToTeam(gameId, playerId, teamId));
   }
 
   function handlePassAndPlayPlayerCountChange(nextCount: number) {
@@ -322,15 +380,14 @@ export default function GamePage() {
   if (!snapshot) {
     return (
       <main className="shell">
-        <p className="muted">Loading game...</p>
-        {error ? <p className="notice">{error}</p> : null}
+        <p className="muted">{error ? "Could not open this game" : "Loading game…"}</p>
+        {error ? <><p className="notice" role="alert">{readableGameError(new Error(error))}</p><Link className="button secondary" href="/">Home</Link></> : null}
       </main>
     );
   }
 
   const host = snapshot.players.find((player) => player.id === snapshot.game.host_player_id);
   const isHost = Boolean(me?.is_host);
-  const promptCount = snapshot.prompts.length;
   const promptProgress = getPromptProgress(snapshot);
   const joinUrl = typeof window === "undefined" ? "" : `${window.location.origin}/game/${snapshot.game.id}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(joinUrl)}`;
@@ -401,6 +458,17 @@ export default function GamePage() {
         ) : null}
       </section>
 
+      {error ? <p className="notice" role="alert">{error}</p> : null}
+      {confirmation ? (
+        <section className="card confirmation-panel stack" role="alertdialog" aria-labelledby="confirmation-title" aria-describedby="confirmation-body">
+          <h2 id="confirmation-title">{confirmation.title}</h2>
+          <p id="confirmation-body">{confirmation.body}</p>
+          <div className="button-row">
+            <button autoFocus className="button secondary" disabled={busy} onClick={() => setConfirmation(null)}>Cancel</button>
+            <button className="button accent" disabled={busy} onClick={async () => { if (await runAction(confirmation.action)) setConfirmation(null); }}>{confirmation.label}</button>
+          </div>
+        </section>
+      ) : null}
       <div className="game-content">
         {!me ? (
           <JoinThisGame
@@ -411,7 +479,9 @@ export default function GamePage() {
             busy={busy}
             onReclaimPlayer={handleReclaimPlayer}
           />
-        ) : snapshot.game.phase === "setup" ? (
+        ) : snapshot.game.phase === "setup" || editingSetup ? (
+          <div className="stack">
+          {editingSetup ? <section className="notice stack"><p>Saving setup clears submitted prompts and drafted cards. Everyone will prepare the bowl again. Changing play mode may require players to rejoin.</p><button className="button secondary" disabled={busy} onClick={() => setEditingSetup(false)}>Cancel editing</button></section> : <QuickStart gameId={gameId} onComplete={refresh} onBusyChange={setBusy} />}
           <Setup
             busy={busy}
             isHost={isHost}
@@ -446,10 +516,12 @@ export default function GamePage() {
             setPassAndPlayPlayerCount={handlePassAndPlayPlayerCountChange}
             onSave={handleSetupSave}
           />
+          </div>
         ) : snapshot.game.phase === "lobby" ? (
           <Lobby
             snapshot={snapshot}
             me={me}
+            onEditSetup={handleEditSetup}
             isHost={isHost}
             busy={busy}
             joinName={joinName}
@@ -458,7 +530,6 @@ export default function GamePage() {
             setPromptText={setPromptText}
             categoryPromptValues={categoryPromptValues}
             setCategoryPromptValues={setCategoryPromptValues}
-            promptCount={promptCount}
             promptProgress={promptProgress}
             onNameSave={handleNameSave}
             onPromptSubmit={handleSubmitPrompts}
@@ -485,6 +556,11 @@ export default function GamePage() {
           />
         ) : (
           <Play
+            clockOffset={clockOffset}
+            onExpireTurn={async () => {
+              try { const ended = await endTurn(snapshot, true); if (ended) await refresh(); return ended; }
+              catch (cause) { setError(readableGameError(cause)); return false; }
+            }}
             snapshot={snapshot}
             me={me}
             activePlayer={activePlayer}
@@ -551,37 +627,15 @@ export default function GamePage() {
                 });
               })
             }
-            onRedoLastFive={() => {
-              if (window.confirm("Redo this player's last few prompts and give them 15 seconds?")) {
-                runAction(async () => {
-                  await redoLastFivePrompts(snapshot);
-                  trackSnapshotEvent("redo_last_five", snapshot, {
-                    activePlayerId: snapshot.game.active_player_id
-                  });
-                });
-              }
-            }}
-            onFinishGame={() => {
-              if (window.confirm("End the game now?")) {
-                runAction(async () => {
-                  await finishGame(snapshot);
-                  trackSnapshotEvent("game_finished", snapshot);
-                });
-              }
-            }}
-            onResetToLobby={() => {
-              if (window.confirm("Reset scores and return to the lobby?")) {
-                runAction(async () => {
-                  await resetToLobby(snapshot);
-                  trackSnapshotEvent("reset_to_lobby", snapshot);
-                });
-              }
-            }}
+            onRedoLastFive={() => setConfirmation({ title: "Redo recent prompts?", body: "Restore up to five prompts from this turn, reverse their points, and give the clue giver 15 seconds. The timer will stay paused until you resume.", label: "Redo prompts", action: () => redoLastFivePrompts(snapshot) })}
+            onFinishGame={() => setConfirmation({ title: "End this game?", body: "Keep the scores and show the results now.", label: "End game now", action: () => finishGame(snapshot) })}
+            onResetToLobby={() => setConfirmation({ title: "Return to the lobby?", body: "Reset scores and keep this bowl, players, and teams.", label: "Reset scores", action: () => resetToLobby(snapshot) })}
+            onFreshRematch={() => setConfirmation({ title: "Play again with a fresh bowl?", body: snapshot.game.prompt_mode === "deck" ? "Keep your players, teams, and settings. Deal fresh cards, using unseen cards first. Small categories may need some repeats." : "Keep your players and teams. Clear scores and collect new prompts.", label: "Prepare new game", action: () => resetToLobby(snapshot, true) })}
           />
         )}
       </div>
 
-      {error ? <p className="notice">{error}</p> : null}
+      {me && sessionToken ? <details className="card recovery-details"><summary>Your recovery code</summary><p className="muted">Your seat is saved on this browser. Keep this code private; use it to rejoin this room on another device.</p><input className="input recovery-code" aria-label="Your private recovery code" value={sessionToken} readOnly onFocus={(event) => event.target.select()} /></details> : null}
     </main>
   );
 }
@@ -654,6 +708,10 @@ function Setup({
   onSave: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   const [setupStep, setSetupStep] = useState(0);
+  const selectedCategories = playMode === "pass_and_play" ? passAndPlayCategories : promptCategories;
+  const capacity = useMemo(() => filterStarterDeckByCategories(selectedCategories).length, [selectedCategories]);
+  const requestedCards = playMode === "pass_and_play" ? passAndPlayCardCount : Math.max(1, Number(expectedPlayers) || 1) * cardsDealtPerPlayer;
+  const capacityError = promptMode === "deck" && requestedCards > capacity;
   const stepLabels = ["Mode", "Prompts", "Teams", "Review"];
   const isFirstStep = setupStep === 0;
   const isLastStep = setupStep === stepLabels.length - 1;
@@ -668,7 +726,7 @@ function Setup({
   }
 
   return (
-    <form className="card setup-wizard stack" onSubmit={onSave}>
+    <form className="card setup-wizard stack" onSubmit={(event) => { if (!isLastStep || capacityError) { event.preventDefault(); return; } onSave(event); }}>
       <div className="setup-wizard-heading">
         <div>
           <span className="muted tiny">Step {setupStep + 1} of {stepLabels.length}</span>
@@ -677,6 +735,7 @@ function Setup({
         <div className="wizard-progress" aria-label="Setup progress">
           {stepLabels.map((label, index) => (
             <button
+              aria-current={index === setupStep ? "step" : undefined}
               aria-label={`Go to ${label}`}
               className={index === setupStep ? "wizard-dot active" : index < setupStep ? "wizard-dot complete" : "wizard-dot"}
               key={label}
@@ -861,16 +920,23 @@ function Setup({
         </div>
       ) : null}
 
+      {promptMode === "deck" && setupStep > 0 ? <div className={capacityError ? "notice stack" : "muted tiny"} role={capacityError ? "alert" : "status"}>
+        <p>{capacity} unique cards in these categories. {playMode === "pass_and_play" ? `${passAndPlayCardCount} requested.` : `Enough for ${Math.floor(capacity / cardsDealtPerPlayer)} hands of ${cardsDealtPerPlayer}.`}</p>
+        {capacityError ? <><p>Choose fewer cards or add categories to make this game playable.</p><div className="button-row">
+          {playMode === "pass_and_play" && capacity >= 10 ? <button className="button secondary" type="button" onClick={() => setPassAndPlayCardCount(Math.min(80, capacity))}>Use {Math.min(80, capacity)} cards</button> : null}
+          <button className="button secondary" type="button" onClick={() => { if (playMode === "pass_and_play") setPassAndPlayCategories([MIXED_PASS_PLAY_CATEGORY]); else setPromptCategories([MIXED_PASS_PLAY_CATEGORY]); }}>Use Mixed categories</button>
+        </div></> : null}
+      </div> : null}
       <div className="wizard-actions">
         <button className="button secondary" disabled={isFirstStep || busy} type="button" onClick={() => setSetupStep((step) => Math.max(0, step - 1))}>
           Back
         </button>
         {isLastStep ? (
-          <button className="button accent" disabled={busy}>
+          <button key="create-lobby" type="submit" className="button accent" disabled={busy || capacityError}>
             Create lobby
           </button>
         ) : (
-          <button className="button accent" disabled={busy} type="button" onClick={() => setSetupStep((step) => Math.min(stepLabels.length - 1, step + 1))}>
+          <button key="next-step" className="button accent" disabled={busy || (setupStep === 1 && capacityError)} type="button" onClick={() => setSetupStep((step) => Math.min(stepLabels.length - 1, step + 1))}>
             Next
           </button>
         )}
@@ -1058,7 +1124,7 @@ function CategorySelector({
 
   function toggleCategory(categoryId: string) {
     if (categoryId === MIXED_PASS_PLAY_CATEGORY) {
-      setCategories([MIXED_PASS_PLAY_CATEGORY]);
+      setCategories(setFamilyFriendlyDeckFilter([MIXED_PASS_PLAY_CATEGORY], familyFriendlyEnabled));
       return;
     }
 
@@ -1066,11 +1132,11 @@ function CategorySelector({
     const nextCategories = withoutMixed.includes(categoryId)
       ? withoutMixed.filter((category) => category !== categoryId)
       : [...withoutMixed, categoryId];
-    setCategories(nextCategories.length > 0 ? nextCategories : [MIXED_PASS_PLAY_CATEGORY]);
+    setCategories(setFamilyFriendlyDeckFilter(nextCategories.length > 0 ? nextCategories : [MIXED_PASS_PLAY_CATEGORY], familyFriendlyEnabled));
   }
 
   function toggleFamilyFriendly() {
-    setCategories(familyFriendlyEnabled ? [MIXED_PASS_PLAY_CATEGORY] : [MIXED_PASS_PLAY_CATEGORY, FAMILY_FRIENDLY_DECK_FILTER]);
+    setCategories(setFamilyFriendlyDeckFilter(categories, !familyFriendlyEnabled));
   }
 
   return (
@@ -1080,6 +1146,7 @@ function CategorySelector({
       <div className="category-toggle-grid">
         {showFamilyFriendly ? (
           <button
+            aria-pressed={familyFriendlyEnabled}
             className={familyFriendlyEnabled ? "team-choice selected" : "team-choice"}
             type="button"
             onClick={toggleFamilyFriendly}
@@ -1089,7 +1156,8 @@ function CategorySelector({
           </button>
         ) : null}
         <button
-          className={!familyFriendlyEnabled && categories.includes(MIXED_PASS_PLAY_CATEGORY) ? "team-choice selected" : "team-choice"}
+          aria-pressed={categories.includes(MIXED_PASS_PLAY_CATEGORY)}
+          className={categories.includes(MIXED_PASS_PLAY_CATEGORY) ? "team-choice selected" : "team-choice"}
           type="button"
           onClick={() => toggleCategory(MIXED_PASS_PLAY_CATEGORY)}
         >
@@ -1098,13 +1166,14 @@ function CategorySelector({
         </button>
         {PASS_PLAY_CATEGORY_OPTIONS.map((category) => (
           <button
-            className={!familyFriendlyEnabled && categories.includes(category.id) ? "team-choice selected" : "team-choice"}
+            aria-pressed={categories.includes(category.id)}
+            className={categories.includes(category.id) ? "team-choice selected" : "team-choice"}
             key={category.id}
             type="button"
             onClick={() => toggleCategory(category.id)}
           >
             <strong>{category.label}</strong>
-            <span>{!familyFriendlyEnabled && categories.includes(category.id) ? "Included" : "Tap to include"}</span>
+            <span>{categories.includes(category.id) ? "Included" : "Tap to include"}</span>
           </button>
         ))}
       </div>
@@ -1178,53 +1247,30 @@ function MobileNumberInput({
   );
 }
 
-function JoinThisGame({
-  snapshot,
-  onSubmit,
-  name,
-  setName,
-  busy,
-  onReclaimPlayer
-}: {
+function JoinThisGame({ snapshot, onSubmit, name, setName, busy, onReclaimPlayer }: {
   snapshot: GameSnapshot;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   name: string;
   setName: (name: string) => void;
   busy: boolean;
-  onReclaimPlayer: (playerId: string) => void;
+  onReclaimPlayer: (token: string) => void;
 }) {
-  return (
-    <div className="stack">
-      <form className="card stack" onSubmit={onSubmit}>
-        <h2>Join this game</h2>
-        <p className="muted">Enter your name to claim this phone as a player.</p>
-        <div className="field">
-          <label htmlFor="name">Your name</label>
-          <input className="input" id="name" value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" />
-        </div>
-        <button className="button accent" disabled={busy}>
-          Join
-        </button>
-      </form>
-      {snapshot.players.length > 0 ? (
-        <section className="card stack">
-          <h2>Rejoin as yourself</h2>
-          <p className="muted">Lost your tab? Pick your name to reconnect on this phone.</p>
-          <div className="button-list">
-            {snapshot.players.map((player) => (
-              <button className="button secondary" disabled={busy} key={player.id} onClick={() => onReclaimPlayer(player.id)}>
-                {player.name}
-              </button>
-            ))}
-          </div>
-        </section>
-      ) : null}
-    </div>
-  );
+  const [recoveryCode, setRecoveryCode] = useState("");
+  if (snapshot.game.access_version !== 2) return <section className="card stack"><h2>This room has retired</h2><p>This older room predates secure player sessions. Start a new game to play.</p><Link className="button accent" href="/">Create a new game</Link></section>;
+  const canJoin = snapshot.game.phase === "lobby" && snapshot.game.play_mode === "multi_device";
+  return <div className="stack">
+    {canJoin ? <form className="card stack" onSubmit={onSubmit}>
+      <h2>Join this game</h2><p className="muted">Enter your name. This browser will remember your seat.</p>
+      <div className="field"><label htmlFor="name">Your name</label><input className="input" id="name" maxLength={60} required value={name} onChange={(event) => setName(event.target.value)} autoComplete="name" /></div>
+      <button className="button accent" disabled={busy}>Join</button>
+    </form> : <section className="card"><h2>{snapshot.game.phase === "setup" ? "Waiting for the host" : snapshot.game.play_mode === "pass_and_play" ? "Use the shared phone" : "This game has started"}</h2><p className="muted">Already playing? Recover your seat below, or return to the browser where you joined.</p></section>}
+    <details className="card"><summary>Rejoin with a recovery code</summary><form className="stack" onSubmit={(event) => { event.preventDefault(); onReclaimPlayer(recoveryCode); }}><p className="muted">Use the private code saved from your original browser.</p><label htmlFor="recoveryCode">Recovery code</label><input className="input" id="recoveryCode" autoComplete="off" autoCapitalize="off" spellCheck={false} value={recoveryCode} onChange={(event) => setRecoveryCode(event.target.value)} /><button className="button secondary" disabled={busy || !recoveryCode.trim()}>Recover my seat</button></form></details>
+  </div>;
 }
 
 function Lobby({
   snapshot,
+  onEditSetup,
   me,
   isHost,
   busy,
@@ -1234,7 +1280,6 @@ function Lobby({
   setPromptText,
   categoryPromptValues,
   setCategoryPromptValues,
-  promptCount,
   promptProgress,
   onNameSave,
   onPromptSubmit,
@@ -1246,6 +1291,7 @@ function Lobby({
   onStart
 }: {
   snapshot: GameSnapshot;
+  onEditSetup: () => void;
   me: Player;
   isHost: boolean;
   busy: boolean;
@@ -1255,7 +1301,6 @@ function Lobby({
   setPromptText: (text: string) => void;
   categoryPromptValues: string[];
   setCategoryPromptValues: (values: string[]) => void;
-  promptCount: number;
   promptProgress: { submittedTotal: number; requiredTotal: number; expectedTotal: number | null; isComplete: boolean };
   onNameSave: (event: FormEvent<HTMLFormElement>) => void;
   onPromptSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -1266,6 +1311,7 @@ function Lobby({
   onTeamStepContinue: () => void;
   onStart: () => void;
 }) {
+  const [confirmingStart, setConfirmingStart] = useState(false);
   const [draftReadyToastVisible, setDraftReadyToastVisible] = useState(false);
   const [promptReadyToastVisible, setPromptReadyToastVisible] = useState(false);
   const [readyToastBottomOffset, setReadyToastBottomOffset] = useState(18);
@@ -1376,18 +1422,14 @@ function Lobby({
   }, [isHost, readyToastVisible, promptProgress.submittedTotal, promptProgress.requiredTotal, snapshot.players.length]);
 
   function handleStartClick() {
-    if (startBlockMessage) {
-      window.alert(startBlockMessage);
-      return;
-    }
-
-    if (expectedPlayerWarning && !window.confirm(expectedPlayerWarning)) return;
+    if (startBlockMessage) return;
+    if (expectedPlayerWarning && !confirmingStart) { setConfirmingStart(true); return; }
     onStart();
   }
 
   const playerTask = passAndPlayDeck ? (
     <section className="card stack">
-      <h2>Card deck ready</h2>
+      <h2>{canStart ? "Card deck ready" : "Card deck needs attention"}</h2>
       <p className="muted">
         {snapshot.prompts.length} cards are loaded for this one-phone game. Start when teams look right.
       </p>
@@ -1409,6 +1451,7 @@ function Lobby({
             <button
               className={card.selected ? (draftIsReady ? "draft-card selected ready" : "draft-card selected picking") : "draft-card"}
               disabled={busy || needsTeam || (!card.selected && myDraftSelectedCount >= requiredDraftCount)}
+              aria-pressed={card.selected}
               key={card.id}
               onClick={() => onDraftCardToggle(card.id, !card.selected)}
               type="button"
@@ -1582,14 +1625,13 @@ function Lobby({
               : `${snapshot.game.prompts_per_player} / ${snapshot.game.prompts_per_player} prompts`}.
             {!allPlayersHaveTeams ? " Everyone also needs a team." : ""}
           </p>
-          <button className="button blue" disabled={busy || (!isDeckDraft && promptCount < 1)} onClick={handleStartClick} ref={startGameButtonRef}>
+          <button className="button blue" disabled={busy || !canStart} onClick={handleStartClick} ref={startGameButtonRef}>
             Start game
           </button>
-          {!canStart || expectedPlayerWarning ? (
-            <p className="muted tiny">
-              {!canStart ? "Tap Start game for a readiness message." : "You can start now, but fewer players are here than expected."}
-            </p>
-          ) : null}
+          {startBlockMessage ? <p className="notice" role="status">{startBlockMessage}</p> : null}
+          {expectedPlayerWarning ? <p className="muted tiny">{expectedPlayerWarning}</p> : null}
+          {confirmingStart && canStart ? <div className="confirmation-panel stack" role="alertdialog" aria-label="Start with fewer players?"><p>Start with {snapshot.players.length} players? New players can join after this match.</p><div className="button-row"><button className="button secondary" disabled={busy} onClick={() => setConfirmingStart(false)}>Keep waiting</button><button className="button accent" disabled={busy} onClick={onStart}>Start with these players</button></div></div> : null}
+          <button className="button secondary" disabled={busy} onClick={onEditSetup}>Edit setup</button>
         </section>
       ) : (
         <section className="card">
@@ -1771,6 +1813,8 @@ function PlayerLobbyRow({
 
 function Play({
   snapshot,
+  clockOffset,
+  onExpireTurn,
   me,
   activePlayer,
   currentPrompt,
@@ -1786,9 +1830,12 @@ function Play({
   onScoreChange,
   onRedoLastFive,
   onFinishGame,
-  onResetToLobby
+  onResetToLobby,
+  onFreshRematch
 }: {
   snapshot: GameSnapshot;
+  clockOffset: number;
+  onExpireTurn: () => Promise<boolean>;
   me: Player;
   activePlayer: Player | null;
   currentPrompt: Prompt | null;
@@ -1805,6 +1852,7 @@ function Play({
   onRedoLastFive: () => ActionResult;
   onFinishGame: () => void;
   onResetToLobby: () => void;
+  onFreshRematch: () => void;
 }) {
   const isActive = me.id === activePlayer?.id;
   const passAndPlay = isPassAndPlay(snapshot);
@@ -1812,8 +1860,9 @@ function Play({
   const [now, setNow] = useState(Date.now());
   const [autoEndedTurnId, setAutoEndedTurnId] = useState<string | null>(null);
   const [confirmingEndTurn, setConfirmingEndTurn] = useState(false);
+  const expiryAttempts = useRef({ turnId: "", count: 0, nextAt: 0 });
   const autoEndAttemptingTurnIdRef = useRef<string | null>(null);
-  const secondsLeft = getTurnSecondsLeft(snapshot.activeTurn?.started_at, snapshot.game.turn_duration_seconds, now);
+  const secondsLeft = getTurnSecondsLeft(snapshot.activeTurn?.started_at, snapshot.game.turn_duration_seconds, snapshot.game.phase === "paused" && snapshot.game.paused_at ? Date.parse(snapshot.game.paused_at) : now + clockOffset);
   const isTurnRunning = snapshot.game.phase === "playing";
   const isPaused = snapshot.game.phase === "paused";
   const canRedoLastFive = isPaused || (snapshot.game.phase === "ready" && snapshot.latestUndoableEvent?.action === "end_turn");
@@ -1829,7 +1878,6 @@ function Play({
   useEffect(() => {
     if (
       !isTurnRunning ||
-      !isController ||
       !snapshot.activeTurn ||
       busy ||
       secondsLeft > 0 ||
@@ -1839,13 +1887,16 @@ function Play({
       return;
     }
 
-    let cancelled = false;
     const activeTurnId = snapshot.activeTurn.id;
+    if (expiryAttempts.current.turnId !== activeTurnId) expiryAttempts.current = { turnId: activeTurnId, count: 0, nextAt: 0 };
+    if (expiryAttempts.current.count >= 3 || Date.now() < expiryAttempts.current.nextAt) return;
+    expiryAttempts.current.count += 1;
+    expiryAttempts.current.nextAt = Date.now() + 2_000;
     autoEndAttemptingTurnIdRef.current = activeTurnId;
 
-    void Promise.resolve(onEndTurn())
+    void Promise.resolve(onExpireTurn())
       .then((result) => {
-        if (!cancelled && result !== false) {
+        if (result !== false) {
           setAutoEndedTurnId(activeTurnId);
         }
       })
@@ -1855,10 +1906,7 @@ function Play({
         }
       });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [autoEndedTurnId, busy, isController, isTurnRunning, onEndTurn, secondsLeft, snapshot.activeTurn]);
+  }, [autoEndedTurnId, busy, isTurnRunning, onExpireTurn, secondsLeft, snapshot.activeTurn, now]);
 
   useEffect(() => {
     if (!isTurnRunning) setConfirmingEndTurn(false);
@@ -1888,12 +1936,10 @@ function Play({
         <Scoreboard snapshot={snapshot} celebrateWinner />
         <section className="card winner-card stack">
           <h2>Game finished</h2>
-          <p className="muted">All prompts were guessed through Charades.</p>
-          <div className="winner-callout">{getWinningTeams(snapshot.teams).map((team) => team.name).join(" + ")} wins!</div>
+          <p className="muted">{snapshot.game.finish_reason === "host" ? "The host ended this game. Here are the final scores." : "All prompts were guessed through Charades."}</p>
+          <div className="winner-callout">{getWinningTeams(snapshot.teams).map((team) => team.name).join(" + ")} {getWinningTeams(snapshot.teams).length > 1 ? "tie!" : "wins!"}</div>
           {isHost ? (
-            <button className="button secondary" disabled={busy} onClick={onResetToLobby}>
-              Reset to lobby
-            </button>
+            <div className="stack"><button className="button accent" disabled={busy} onClick={onFreshRematch}>Play again · fresh bowl</button><button className="button secondary" disabled={busy} onClick={onResetToLobby}>Play again · same bowl</button></div>
           ) : null}
         </section>
       </div>
@@ -1903,6 +1949,8 @@ function Play({
   return (
     <div className="stack play-stage">
       <section className="card stack game-top-card">
+        <div className="turn-context"><span className="pill">Round {snapshot.game.round_number} · {getRoundName(snapshot.game.round_number)}</span><h2>{activePlayer?.name ?? "Next player"} <span className="muted">· {snapshot.teams.find((team) => team.id === snapshot.game.current_team_id)?.name}</span></h2><p className="muted tiny">{getRoundSummary(snapshot.game.round_number)}</p></div>
+        <div className="turn-progress" aria-label="Turn progress"><span><strong>{snapshot.prompts.filter((prompt) => prompt.status !== "correct").length}</strong> cards left</span><span><strong>{snapshot.activeTurn?.correct_count ?? 0}</strong> correct this turn</span></div>
         {snapshot.game.phase === "ready" ? (
           <div className={snapshot.game.round_number > 1 ? "ready-panel round-transition stack" : "ready-panel stack"}>
             {snapshot.game.round_number > 1 ? (
@@ -1912,7 +1960,8 @@ function Play({
                 <p className="muted">{getRoundSummary(snapshot.game.round_number)}</p>
               </>
             ) : null}
-            <p className="muted">
+            {secondsLeft <= 0 ? <div className="stack"><p className="muted" role="status">Time is up. Passing to the next player…</p>{expiryAttempts.current.count >= 3 ? <button className="button secondary" onClick={() => { expiryAttempts.current.count = 0; expiryAttempts.current.nextAt = 0; setNow(Date.now()); }}>Retry turn handoff</button> : null}</div> : null}
+            <p className="muted tiny">
               {isController
                 ? passAndPlay
                   ? `Pass the phone to ${activePlayer?.name ?? "the active player"}, then tap Ready.`
@@ -1929,14 +1978,14 @@ function Play({
         {isPaused ? (
           <div className="ready-panel stack">
             <h2>Game paused</h2>
-            <p className="muted">The host paused the timer.</p>
+            <p className="muted">{secondsLeft}s remaining. Your card stays hidden until play resumes.</p>
           </div>
         ) : null}
         {isTurnRunning ? (
           <>
             <div className="turn-focus">
               <div className="prompt">{isController ? currentPrompt?.text ?? "No prompt" : "Waiting..."}</div>
-              <div className={secondsLeft <= 10 ? "timer urgent" : "timer"} aria-live="polite">
+              <div className={secondsLeft <= 10 ? "timer urgent" : "timer"} aria-label={`${secondsLeft} seconds remaining`}>
                 {secondsLeft}s
               </div>
             </div>
@@ -2007,7 +2056,6 @@ function Play({
           </div>
         ) : null}
         <div className="round-meta play-details">
-          <span>Round {snapshot.game.round_number}: {getRoundName(snapshot.game.round_number)}</span>
           <span>Turn {snapshot.game.turn_number}</span>
           <span>{snapshot.game.turn_duration_seconds}s timer</span>
           <span>{activePlayer?.name ?? "Someone"} is up</span>
@@ -2081,6 +2129,7 @@ function HostPlayControls({
           Undo last
         </button>
       </div>
+      <details className="host-more"><summary>More host controls</summary><div className="stack">
       <button className="button secondary redo-button" disabled={busy || !canRedoLastFive} onClick={onRedoLastFive}>
         Redo last 5
       </button>
@@ -2118,6 +2167,7 @@ function HostPlayControls({
           End game
         </button>
       </div>
+      </div></details>
     </section>
   );
 }
@@ -2127,7 +2177,7 @@ function Scoreboard({ snapshot, celebrateWinner = false }: { snapshot: GameSnaps
   return (
     <section className="score-grid">
       {snapshot.teams.map((team) => (
-        <div className={winningTeamIds.has(team.id) ? "score winner" : "score"} key={team.id}>
+        <div className={winningTeamIds.has(team.id) ? "score winner" : snapshot.game.current_team_id === team.id ? "score active-team" : "score"} key={team.id}>
           <span className="muted tiny">{team.name}</span>
           <strong>{team.score}</strong>
         </div>

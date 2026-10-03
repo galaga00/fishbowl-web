@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import type { GameSnapshot } from "../../../lib/types";
@@ -5,6 +6,7 @@ import { createE2EConvexClient, getE2ESecret } from "./convex-cleanup";
 
 export type SeededTurnGame = {
   code: string;
+  sessionToken: string;
   gameId: string;
   hostPlayerId: string;
   playerIdsByName: Record<string, string>;
@@ -26,22 +28,28 @@ export async function seedReadyPassAndPlayGame({
   teamPlayers = defaultTeamPlayers,
   turnDurationSeconds = 60
 }: SeedReadyPassAndPlayOptions = {}): Promise<SeededTurnGame> {
-  return createE2EConvexClient().mutation(api.e2e.seedReadyPassAndPlayGame, {
+  const sessionToken = randomBytes(32).toString("hex");
+  const result = await createE2EConvexClient().mutation(api.e2e.seedReadyPassAndPlayGame, {
     secret: getE2ESecret(),
+    sessionToken,
     promptCount,
     teamPlayers,
     turnDurationSeconds
   });
+  return { ...result, sessionToken };
 }
 
 export async function seedPlayingPassAndPlayGame(options: SeedReadyPassAndPlayOptions = {}): Promise<SeededTurnGame> {
   const { promptCount = 10, teamPlayers = defaultTeamPlayers, turnDurationSeconds = 60 } = options;
-  return createE2EConvexClient().mutation(api.e2e.seedPlayingPassAndPlayGame, {
+  const sessionToken = randomBytes(32).toString("hex");
+  const result = await createE2EConvexClient().mutation(api.e2e.seedPlayingPassAndPlayGame, {
     secret: getE2ESecret(),
+    sessionToken,
     promptCount,
     teamPlayers,
     turnDurationSeconds
   });
+  return { ...result, sessionToken };
 }
 
 export async function getActivePlayerName(gameId: string) {

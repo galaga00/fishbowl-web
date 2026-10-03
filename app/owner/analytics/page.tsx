@@ -82,7 +82,7 @@ export default async function OwnerAnalyticsPage({ searchParams }: OwnerAnalytic
     );
   }
 
-  const ownerSnapshot = await createServerConvexClient().query(api.analytics.ownerSnapshot, {});
+  const ownerSnapshot = await createServerConvexClient().query(api.analytics.ownerSnapshot, { ownerKey: process.env.OWNER_ANALYTICS_KEY! });
   const events = (ownerSnapshot.events as AnalyticsEventRow[]).filter(Boolean);
   const games = (ownerSnapshot.games as Game[]).filter(Boolean);
   const players = (ownerSnapshot.players as Player[]).filter(Boolean);

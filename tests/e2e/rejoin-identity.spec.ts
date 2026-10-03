@@ -11,14 +11,15 @@ test.describe("Refresh and rejoin identity", () => {
   });
 
   test("keeps the same player identity after refresh", async ({ page }) => {
-    const { gameId, hostPlayerId } = await seedReadyPassAndPlayGame();
+    const { gameId, hostPlayerId, sessionToken } = await seedReadyPassAndPlayGame();
     createdGameIds.push(gameId);
 
     await page.addInitScript(
-      ({ seededGameId, seededHostPlayerId }) => {
+      ({ seededGameId, seededHostPlayerId, sessionToken }) => {
         window.localStorage.setItem(`fish-bowl:${seededGameId}:player`, seededHostPlayerId);
+        window.localStorage.setItem(`fish-bowl:${seededGameId}:session`, sessionToken);
       },
-      { seededGameId: gameId, seededHostPlayerId: hostPlayerId }
+      { seededGameId: gameId, seededHostPlayerId: hostPlayerId, sessionToken }
     );
 
     await page.goto(`/game/${gameId}`);

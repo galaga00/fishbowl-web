@@ -11,14 +11,15 @@ test.describe("Round transition", () => {
   });
 
   test("moves to round two after all round-one prompts are guessed", async ({ page }) => {
-    const { gameId, hostPlayerId } = await seedReadyPassAndPlayGame({ promptCount: 2 });
+    const { gameId, hostPlayerId, sessionToken } = await seedReadyPassAndPlayGame({ promptCount: 2 });
     createdGameIds.push(gameId);
 
     await page.addInitScript(
-      ({ seededGameId, seededHostPlayerId }) => {
+      ({ seededGameId, seededHostPlayerId, sessionToken }) => {
         window.localStorage.setItem(`fish-bowl:${seededGameId}:player`, seededHostPlayerId);
+        window.localStorage.setItem(`fish-bowl:${seededGameId}:session`, sessionToken);
       },
-      { seededGameId: gameId, seededHostPlayerId: hostPlayerId }
+      { seededGameId: gameId, seededHostPlayerId: hostPlayerId, sessionToken }
     );
 
     await page.goto(`/game/${gameId}`);
