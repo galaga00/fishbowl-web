@@ -25,6 +25,7 @@ test.describe("Multiplayer joining", () => {
   test("a second browser context can join by code and host sees the player", async ({ browser, page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Create Game" }).click();
+    await page.getByRole("button", { name: "Custom game", exact: true }).click();
 
     await expect(page.getByRole("heading", { name: "Mode" })).toBeVisible();
     const gameId = page.url().match(/\/game\/([^/?#]+)/)?.[1];
@@ -69,6 +70,7 @@ test.describe("Multiplayer joining", () => {
   test("a joining player chooses a team before picking cards", async ({ browser, page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Create Game" }).click();
+    await page.getByRole("button", { name: "Custom game", exact: true }).click();
 
     await expect(page.getByRole("heading", { name: "Mode" })).toBeVisible();
     const gameId = page.url().match(/\/game\/([^/?#]+)/)?.[1];
@@ -123,6 +125,7 @@ test.describe("Multiplayer joining", () => {
   test("host ready message does not cover the start game button", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: "Create Game" }).click();
+    await page.getByRole("button", { name: "Custom game", exact: true }).click();
 
     await expect(page.getByRole("heading", { name: "Mode" })).toBeVisible();
     const gameId = page.url().match(/\/game\/([^/?#]+)/)?.[1];

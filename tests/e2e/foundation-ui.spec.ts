@@ -20,7 +20,7 @@ test.afterEach(async () => {
 async function createInBrowser(page: Page) {
   await page.goto("/");
   await page.getByRole("button", { name: "Create Game", exact: true }).click();
-  await expect(page.getByRole("heading", { name: "Mode", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Custom game", exact: true })).toBeVisible();
   const gameId = page.url().split("/game/")[1];
   ids.push(gameId);
   return gameId;
@@ -36,6 +36,7 @@ async function useSeed(page: Page) {
 
 test("capacity recovery is inline and Review never submits itself", async ({ page }) => {
   const gameId = await createInBrowser(page);
+  await page.getByRole("button", { name: "Custom game", exact: true }).click();
   await page.getByRole("button", { name: /Pass & Play/ }).click();
   await page.getByRole("button", { name: "Next", exact: true }).click();
   await page.locator("#passCardCount").fill("80");
@@ -50,6 +51,8 @@ test("capacity recovery is inline and Review never submits itself", async ({ pag
   await page.getByRole("button", { name: "Create lobby", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Card deck ready" })).toBeVisible();
   await page.getByRole("button", { name: "Edit setup" }).click();
+  await expect(page.getByRole("group", { name: "Choose game setup" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Mode", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Go to Prompts" }).click();
   await expect(page.locator("#passCardCount")).toHaveValue("44");
   await expect(page.getByRole("button", { name: /Internet & Memes/ })).toHaveAttribute("aria-pressed", "true");
@@ -60,6 +63,7 @@ test("capacity recovery is inline and Review never submits itself", async ({ pag
 test("quick start completes all three rounds and offers a fresh rematch", async ({ page }) => {
   test.setTimeout(300_000);
   const gameId = await createInBrowser(page);
+  await page.getByRole("button", { name: "Quick game", exact: true }).click();
   await page.getByRole("button", { name: /Quick 20 cards/ }).click();
   await page.getByRole("button", { name: "Start quick game" }).click();
   await expect(page.getByRole("button", { name: "Ready!", exact: true })).toBeVisible();

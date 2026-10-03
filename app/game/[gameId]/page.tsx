@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
 import { getSessionToken, saveSession, readableGameError } from "@/lib/player-session";
 import { QuickStart } from "@/app/quick-start";
+import { SetupChoice, type SetupPath } from "@/app/setup-choice";
 import { VersionSelector } from "@/app/version-selector";
 import { GAME_VERSIONS, resolveGameVersion } from "@/lib/game-versions";
 import { useQuery } from "convex/react";
@@ -87,6 +88,7 @@ export default function GamePage() {
   const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [clockOffset, setClockOffset] = useState(0);
   const [editingSetup, setEditingSetup] = useState(false);
+  const [setupPath, setSetupPath] = useState<SetupPath | null>(null);
   const [confirmation, setConfirmation] = useState<{ title: string; body: string; label: string; action: () => Promise<void> } | null>(null);
   const [playerId, setPlayerId] = useState<string | null>(null);
   const [acknowledgedLobbyTeamId, setAcknowledgedLobbyTeamId] = useState<string | null>(null);
@@ -487,7 +489,12 @@ export default function GamePage() {
         ) : snapshot.game.phase === "setup" || editingSetup ? (
           <div className="stack">
           {isHost && snapshot.game.phase === "setup" ? <VersionSelector version={gameVersion} busy={busy} onChange={(version) => runAction(() => setGameVersion(gameId, version))} /> : null}
-          {editingSetup ? <section className="notice stack"><p>Saving setup clears submitted prompts and drafted cards. Everyone will prepare the bowl again. Changing play mode may require players to rejoin.</p><button className="button secondary" disabled={busy} onClick={() => setEditingSetup(false)}>Cancel editing</button></section> : <div hidden={gameVersion !== "v2"}><QuickStart gameId={gameId} disabled={busy || gameVersion !== "v2"} onComplete={refresh} onBusyChange={setBusy} /></div>}
+          {editingSetup ? <section className="notice stack"><p>Saving setup clears submitted prompts and drafted cards. Everyone will prepare the bowl again. Changing play mode may require players to rejoin.</p><button className="button secondary" disabled={busy} onClick={() => setEditingSetup(false)}>Cancel editing</button></section> : null}
+          {isHost && gameVersion === "v2" && !editingSetup ? <SetupChoice selected={setupPath} busy={busy} onSelect={setSetupPath} /> : null}
+          {isHost ? <div id="quick-setup" hidden={editingSetup || gameVersion !== "v2" || setupPath !== "quick"}>
+            <QuickStart gameId={gameId} disabled={busy || editingSetup || gameVersion !== "v2" || setupPath !== "quick"} onComplete={refresh} onBusyChange={setBusy} />
+          </div> : null}
+          <div id="custom-setup" hidden={isHost && !editingSetup && gameVersion === "v2" && setupPath !== "custom"}>
           <Setup
             busy={busy}
             isHost={isHost}
@@ -522,6 +529,7 @@ export default function GamePage() {
             setPassAndPlayPlayerCount={handlePassAndPlayPlayerCountChange}
             onSave={handleSetupSave}
           />
+          </div>
           </div>
         ) : snapshot.game.phase === "lobby" ? (
           <Lobby

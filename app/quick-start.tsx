@@ -41,7 +41,7 @@ export function QuickStart({ gameId, onComplete, onBusyChange, disabled = false 
   }
 
   return <section className="card quick-start stack" aria-labelledby="quick-start-title">
-    <div><span className="eyebrow">One phone · two teams</span><h2 id="quick-start-title">Quick start</h2><p className="muted">Pick a bowl and play. Use the setup below for names, teams, or everyone’s own phones.</p></div>
+    <div><span className="eyebrow">One phone · two teams</span><h2 id="quick-start-title">Quick start</h2><p className="muted">Pick a bowl and play. Choose Custom game above for your own prompts, names, teams, or everyone’s own phones.</p></div>
     <div className="quick-presets">{presets.map((item) => <button type="button" className={item.id === presetId ? "quick-preset selected" : "quick-preset"} key={item.id} aria-pressed={item.id === presetId} disabled={busy || disabled} onClick={() => setPresetId(item.id)}><strong>{item.title}</strong><span>{item.cards} cards · {item.seconds}s turns</span><span>{item.description}</span></button>)}</div>
     <div className="field"><label htmlFor="quick-players">Number of players</label><select className="input" id="quick-players" disabled={busy || disabled} value={playerCount} onChange={(event) => setPlayerCount(Number(event.target.value))}>{Array.from({ length: 39 }, (_, index) => index + 2).map((count) => <option key={count} value={count}>{count}</option>)}</select></div>
     <p className="muted tiny">{playerCount} players, alternating teams. Three rounds with the same {preset.cards} cards: describe, one word, then charades.</p>
