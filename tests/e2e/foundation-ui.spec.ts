@@ -89,6 +89,8 @@ test("quick start completes all three rounds and offers a fresh rematch", async 
   await page.getByRole("button", { name: "Prepare new game" }).click();
   await expect(page.getByRole("heading", { name: "Lobby", exact: true })).toBeVisible();
   const fresh = await loadSeededSnapshot(gameId);
+  expect(fresh.game.game_version).toBe("v2");
+  await expect(page.getByRole("button", { name: "Change game version" })).toHaveCount(0);
   expect(fresh.prompts.every((prompt) => !originalTitles.has(prompt.text))).toBe(true);
 });
 

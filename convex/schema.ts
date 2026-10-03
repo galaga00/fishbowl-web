@@ -19,6 +19,7 @@ const gameAction = v.union(v.literal("correct"), v.literal("skip"), v.literal("e
 export default defineSchema({
   games: defineTable({
     code: v.string(),
+    game_version: v.optional(v.union(v.literal("v1"), v.literal("v2"))),
     access_version: v.optional(v.number()),
     match_number: v.optional(v.number()),
     finish_reason: v.optional(v.union(v.literal("completed"), v.literal("host"))),

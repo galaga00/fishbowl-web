@@ -6,6 +6,7 @@ import { getSessionToken, pendingSession, saveSession } from "./player-session";
 import { getConvexClient } from "./convex-client";
 import { getDefaultPassPlayCardCount, MIXED_PASS_PLAY_CATEGORY } from "./pass-play-deck";
 import type { GameSnapshot, PlayMode, PromptMode } from "./types";
+import type { GameVersion } from "./game-versions";
 import {
   DEFAULT_CARDS_DEALT_PER_PLAYER,
   DEFAULT_CARDS_KEPT_PER_PLAYER,
@@ -20,6 +21,10 @@ export async function createGame(hostName: string) {
   saveSession(result.game.id, result.game.code, result.player.id, sessionToken);
   localStorage.removeItem("fish-bowl:pending:create");
   return result;
+}
+
+export async function setGameVersion(gameId: string, gameVersion: GameVersion) {
+  await getConvexClient().mutation(api.game.setGameVersion, { ...roomArgs(gameId), gameVersion });
 }
 
 export async function saveGameSetup(

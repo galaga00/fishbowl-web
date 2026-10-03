@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
 import { getSessionToken, saveSession, readableGameError } from "@/lib/player-session";
 import { QuickStart } from "@/app/quick-start";
+import { VersionSelector } from "@/app/version-selector";
+import { GAME_VERSIONS, resolveGameVersion } from "@/lib/game-versions";
 import { useQuery } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +16,7 @@ import { trackAnalyticsEvent } from "@/lib/analytics";
 import { CONFETTI_PIECES } from "@/lib/confetti";
 import {
   synchronizeClock,
+  setGameVersion,
   adjustTeamScore,
   assignPlayerToTeam,
   endTurn,
@@ -388,6 +391,7 @@ export default function GamePage() {
 
   const host = snapshot.players.find((player) => player.id === snapshot.game.host_player_id);
   const isHost = Boolean(me?.is_host);
+  const gameVersion = resolveGameVersion(snapshot.game.game_version);
   const promptProgress = getPromptProgress(snapshot);
   const joinUrl = typeof window === "undefined" ? "" : `${window.location.origin}/game/${snapshot.game.id}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=192x192&data=${encodeURIComponent(joinUrl)}`;
@@ -409,11 +413,12 @@ export default function GamePage() {
   }
 
   return (
-    <main className={prioritizePrimaryTask ? "shell play-priority-shell" : "shell"}>
+    <main className={`${prioritizePrimaryTask ? "shell play-priority-shell" : "shell"} game-${gameVersion}`}>
       <header className="topbar">
         <div className="brand">
           <strong>Fish Bowl</strong>
           <span className="eyebrow">Host: {host?.name ?? "loading"}</span>
+          {isHost ? <span className="muted tiny" aria-label="Selected game version">{GAME_VERSIONS[gameVersion].title}</span> : null}
         </div>
         <Link className="button secondary" href="/">
           Home
@@ -481,7 +486,8 @@ export default function GamePage() {
           />
         ) : snapshot.game.phase === "setup" || editingSetup ? (
           <div className="stack">
-          {editingSetup ? <section className="notice stack"><p>Saving setup clears submitted prompts and drafted cards. Everyone will prepare the bowl again. Changing play mode may require players to rejoin.</p><button className="button secondary" disabled={busy} onClick={() => setEditingSetup(false)}>Cancel editing</button></section> : <QuickStart gameId={gameId} onComplete={refresh} onBusyChange={setBusy} />}
+          {isHost && snapshot.game.phase === "setup" ? <VersionSelector version={gameVersion} busy={busy} onChange={(version) => runAction(() => setGameVersion(gameId, version))} /> : null}
+          {editingSetup ? <section className="notice stack"><p>Saving setup clears submitted prompts and drafted cards. Everyone will prepare the bowl again. Changing play mode may require players to rejoin.</p><button className="button secondary" disabled={busy} onClick={() => setEditingSetup(false)}>Cancel editing</button></section> : <div hidden={gameVersion !== "v2"}><QuickStart gameId={gameId} disabled={busy || gameVersion !== "v2"} onComplete={refresh} onBusyChange={setBusy} /></div>}
           <Setup
             busy={busy}
             isHost={isHost}
@@ -1631,7 +1637,7 @@ function Lobby({
           {startBlockMessage ? <p className="notice" role="status">{startBlockMessage}</p> : null}
           {expectedPlayerWarning ? <p className="muted tiny">{expectedPlayerWarning}</p> : null}
           {confirmingStart && canStart ? <div className="confirmation-panel stack" role="alertdialog" aria-label="Start with fewer players?"><p>Start with {snapshot.players.length} players? New players can join after this match.</p><div className="button-row"><button className="button secondary" disabled={busy} onClick={() => setConfirmingStart(false)}>Keep waiting</button><button className="button accent" disabled={busy} onClick={onStart}>Start with these players</button></div></div> : null}
-          <button className="button secondary" disabled={busy} onClick={onEditSetup}>Edit setup</button>
+          {resolveGameVersion(snapshot.game.game_version) === "v2" ? <button className="button secondary" disabled={busy} onClick={onEditSetup}>Edit setup</button> : null}
         </section>
       ) : (
         <section className="card">
@@ -1855,6 +1861,7 @@ function Play({
   onFreshRematch: () => void;
 }) {
   const isActive = me.id === activePlayer?.id;
+  const improved = resolveGameVersion(snapshot.game.game_version) === "v2";
   const passAndPlay = isPassAndPlay(snapshot);
   const isController = isActive || (isHost && passAndPlay);
   const [now, setNow] = useState(Date.now());
@@ -1939,7 +1946,8 @@ function Play({
           <p className="muted">{snapshot.game.finish_reason === "host" ? "The host ended this game. Here are the final scores." : "All prompts were guessed through Charades."}</p>
           <div className="winner-callout">{getWinningTeams(snapshot.teams).map((team) => team.name).join(" + ")} {getWinningTeams(snapshot.teams).length > 1 ? "tie!" : "wins!"}</div>
           {isHost ? (
-            <div className="stack"><button className="button accent" disabled={busy} onClick={onFreshRematch}>Play again · fresh bowl</button><button className="button secondary" disabled={busy} onClick={onResetToLobby}>Play again · same bowl</button></div>
+            improved ? <div className="stack"><button className="button accent" disabled={busy} onClick={onFreshRematch}>Play again · fresh bowl</button><button className="button secondary" disabled={busy} onClick={onResetToLobby}>Play again · same bowl</button></div>
+              : <button className="button secondary" disabled={busy} onClick={onResetToLobby}>Reset to lobby</button>
           ) : null}
         </section>
       </div>
@@ -1949,8 +1957,10 @@ function Play({
   return (
     <div className="stack play-stage">
       <section className="card stack game-top-card">
-        <div className="turn-context"><span className="pill">Round {snapshot.game.round_number} · {getRoundName(snapshot.game.round_number)}</span><h2>{activePlayer?.name ?? "Next player"} <span className="muted">· {snapshot.teams.find((team) => team.id === snapshot.game.current_team_id)?.name}</span></h2><p className="muted tiny">{getRoundSummary(snapshot.game.round_number)}</p></div>
-        <div className="turn-progress" aria-label="Turn progress"><span><strong>{snapshot.prompts.filter((prompt) => prompt.status !== "correct").length}</strong> cards left</span><span><strong>{snapshot.activeTurn?.correct_count ?? 0}</strong> correct this turn</span></div>
+        {improved ? <>
+          <div className="turn-context"><span className="pill">Round {snapshot.game.round_number} · {getRoundName(snapshot.game.round_number)}</span><h2>{activePlayer?.name ?? "Next player"} <span className="muted">· {snapshot.teams.find((team) => team.id === snapshot.game.current_team_id)?.name}</span></h2><p className="muted tiny">{getRoundSummary(snapshot.game.round_number)}</p></div>
+          <div className="turn-progress" aria-label="Turn progress"><span><strong>{snapshot.prompts.filter((prompt) => prompt.status !== "correct").length}</strong> cards left</span><span><strong>{snapshot.activeTurn?.correct_count ?? 0}</strong> correct this turn</span></div>
+        </> : null}
         {snapshot.game.phase === "ready" ? (
           <div className={snapshot.game.round_number > 1 ? "ready-panel round-transition stack" : "ready-panel stack"}>
             {snapshot.game.round_number > 1 ? (
@@ -2056,6 +2066,7 @@ function Play({
           </div>
         ) : null}
         <div className="round-meta play-details">
+          {!improved ? <span>Round {snapshot.game.round_number}: {getRoundName(snapshot.game.round_number)}</span> : null}
           <span>Turn {snapshot.game.turn_number}</span>
           <span>{snapshot.game.turn_duration_seconds}s timer</span>
           <span>{activePlayer?.name ?? "Someone"} is up</span>
@@ -2064,6 +2075,7 @@ function Play({
       <Scoreboard snapshot={snapshot} />
       {isHost ? (
         <HostPlayControls
+          improved={improved}
           busy={busy}
           canRedoLastFive={canRedoLastFive}
           canUndo={Boolean(snapshot.latestUndoableEvent)}
@@ -2084,6 +2096,7 @@ function Play({
 }
 
 function HostPlayControls({
+  improved,
   busy,
   canRedoLastFive,
   canUndo,
@@ -2098,6 +2111,7 @@ function HostPlayControls({
   teams,
   onUndo
 }: {
+  improved: boolean;
   busy: boolean;
   canRedoLastFive: boolean;
   canUndo: boolean;
@@ -2112,24 +2126,7 @@ function HostPlayControls({
   teams: Team[];
   onUndo: () => void;
 }) {
-  return (
-    <section className="host-play-controls stack">
-      <h2>Host controls</h2>
-      <div className="button-row">
-        {isPaused ? (
-          <button className="button accent" disabled={busy} onClick={onResume}>
-            Resume
-          </button>
-        ) : (
-          <button className="button secondary" disabled={busy || !isTurnRunning} onClick={onPause}>
-            Pause
-          </button>
-        )}
-        <button className="button secondary" disabled={busy || !canUndo} onClick={onUndo}>
-          Undo last
-        </button>
-      </div>
-      <details className="host-more"><summary>More host controls</summary><div className="stack">
+  const additionalControls = <div className="stack">
       <button className="button secondary redo-button" disabled={busy || !canRedoLastFive} onClick={onRedoLastFive}>
         Redo last 5
       </button>
@@ -2167,7 +2164,20 @@ function HostPlayControls({
           End game
         </button>
       </div>
-      </div></details>
+    </div>;
+
+  return (
+    <section className="host-play-controls stack">
+      <h2>Host controls</h2>
+      <div className="button-row">
+        {isPaused ? (
+          <button className="button accent" disabled={busy} onClick={onResume}>Resume</button>
+        ) : (
+          <button className="button secondary" disabled={busy || !isTurnRunning} onClick={onPause}>Pause</button>
+        )}
+        <button className="button secondary" disabled={busy || !canUndo} onClick={onUndo}>Undo last</button>
+      </div>
+      {improved ? <details className="host-more"><summary>More host controls</summary>{additionalControls}</details> : additionalControls}
     </section>
   );
 }
@@ -2177,7 +2187,7 @@ function Scoreboard({ snapshot, celebrateWinner = false }: { snapshot: GameSnaps
   return (
     <section className="score-grid">
       {snapshot.teams.map((team) => (
-        <div className={winningTeamIds.has(team.id) ? "score winner" : snapshot.game.current_team_id === team.id ? "score active-team" : "score"} key={team.id}>
+        <div className={winningTeamIds.has(team.id) ? "score winner" : resolveGameVersion(snapshot.game.game_version) === "v2" && snapshot.game.current_team_id === team.id ? "score active-team" : "score"} key={team.id}>
           <span className="muted tiny">{team.name}</span>
           <strong>{team.score}</strong>
         </div>
