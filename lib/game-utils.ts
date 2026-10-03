@@ -70,6 +70,10 @@ export function hasPlayerDrafted(playerId: string, snapshot: GameSnapshot) {
 }
 
 export function getPromptProgress(snapshot: GameSnapshot) {
+  if (snapshot.game.deck_selection === "vote" && snapshot.game.prompt_mode === "deck" && snapshot.game.play_mode === "multi_device") {
+    const requiredTotal = snapshot.game.vote_card_count ?? 40;
+    return { submittedTotal: snapshot.prompts.length, requiredTotal, expectedTotal: requiredTotal, isComplete: snapshot.prompts.length === requiredTotal };
+  }
   if (snapshot.game.play_mode === "pass_and_play") {
     const requiredTotal =
       snapshot.game.prompt_mode === "deck"

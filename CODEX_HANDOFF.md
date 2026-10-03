@@ -75,6 +75,7 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 
 - GitHub/repo files are source of truth for code.
 - V2 Custom game's written prompts suggest a contribution near 40 total cards from the selected player count (six players: seven each). A manual prompt-count edit stops automatic changes; lobby creation saves the count, which joins, refresh, and rematches retain. Quick presets and deck drafting keep their existing counts. See `docs/GAME_VERSIONS.md`.
+- V2 Custom game also offers Category vote when everyone joins on their own phone. The server presents shared random ballots, keeps votes/winners private, and fills a balanced built-in bowl. Default: 40 cards and three categories. Same-bowl rematches retain the mix; fresh bowls vote again. See [Category voting](docs/CATEGORY_VOTING.md) for the optional schema, authorization, and preview rollout contract.
 - Notion's main Fish Bowl page is the project map and status log, not a secret vault.
 - `CODEX_HANDOFF.md` is a short, stable onboarding map. Do not use it as a changelog.
 

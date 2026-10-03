@@ -1,3 +1,4 @@
+import { buildVotedBowl, chooseCategoryWinner, createCategoryBallots, usesCategoryVote } from "../lib/category-vote";
 import { findViewer, hashSessionToken, requireController, requireHost, requirePlayer } from "./access";
 import { DEFAULT_GAME_VERSION, resolveGameVersion } from "../lib/game-versions";
 import { v } from "convex/values";
@@ -150,12 +151,21 @@ export const saveGameSetup = mutation({
     passAndPlayPlayers: v.array(passAndPlayPlayer),
     passPlayCardCount: v.number(),
     passPlayCategories: v.array(v.string()),
-    promptCategories: v.array(v.string())
+    promptCategories: v.array(v.string()),
+    deckSelection: v.optional(v.union(v.literal("draft"), v.literal("vote"))),
+    voteCardCount: v.optional(v.number()),
+    voteCategoryCount: v.optional(v.number())
   },
   handler: async (ctx, args) => {
     const game = await requireGame(ctx, args.gameId);
     await requireHost(ctx, args.gameId, args.sessionToken);
     requirePhase(game.phase, ["setup", "lobby"]);
+    if (game.category_vote?.status === "voting") throw new Error("Finish category voting before editing setup.");
+    const voting = args.deckSelection === "vote";
+    if (voting && (resolveGameVersion(game.game_version) !== "v2" || args.playMode !== "multi_device" || args.promptMode !== "deck")) throw new Error("Category voting needs V2, built-in cards, and everyone on their own phone.");
+    const voteCardCount = clampRound(args.voteCardCount ?? 40, 10, 80);
+    const voteCategoryCount = clampRound(args.voteCategoryCount ?? 3, 1, 3);
+    if (voting) createCategoryBallots(voteCardCount, voteCategoryCount);
     const cleanPromptsPerPlayer = clampRound(args.promptsPerPlayer, 1, 20);
     const cleanCardsDealtPerPlayer = clampRound(args.cardsDealtPerPlayer, 1, 20);
     const cleanCardsKeptPerPlayer = Math.min(cleanCardsDealtPerPlayer, clampRound(args.cardsKeptPerPlayer, 1, 20));
@@ -176,7 +186,7 @@ export const saveGameSetup = mutation({
       : TURN_DURATION_SECONDS;
 
     const categories = cleanPlayMode === "pass_and_play" ? args.passPlayCategories : cleanPromptCategories;
-    if (cleanPromptMode === "deck") {
+    if (cleanPromptMode === "deck" && !voting) {
       const capacity = filterStarterDeckByCategories(categories).length;
       const currentPlayers = await playersByGame(ctx, game._id);
       const needed = cleanPlayMode === "pass_and_play" ? cleanPassPlayCardCount : Math.max(currentPlayers.length, cleanExpectedPlayers ?? 1) * cleanCardsDealtPerPlayer;
@@ -204,6 +214,10 @@ export const saveGameSetup = mutation({
     if (!firstTeam) throw new Error("Add at least one team.");
 
     await ctx.db.patch(game._id, {
+      deck_selection: voting ? "vote" : "draft",
+      vote_card_count: voteCardCount,
+      vote_category_count: voteCategoryCount,
+      category_vote: undefined,
       prompts_per_player: cleanPromptsPerPlayer,
       turn_duration_seconds: cleanTurnDurationSeconds,
       cards_dealt_per_player: cleanCardsDealtPerPlayer,
@@ -212,7 +226,7 @@ export const saveGameSetup = mutation({
       expected_players: cleanPlayMode === "pass_and_play" ? Math.max(cleanPassAndPlayPlayers.length, 1) : cleanExpectedPlayers,
       team_assignment_mode: cleanPlayMode === "pass_and_play" ? "auto" : args.teamAssignmentMode,
       prompt_mode: cleanPromptMode,
-      prompt_categories: cleanPlayMode === "pass_and_play" ? args.passPlayCategories : cleanPromptCategories,
+      prompt_categories: voting ? [MIXED_PASS_PLAY_CATEGORY] : cleanPlayMode === "pass_and_play" ? args.passPlayCategories : cleanPromptCategories,
       play_mode: cleanPlayMode,
       phase: "lobby"
     });
@@ -266,7 +280,7 @@ export const saveGameSetup = mutation({
       for (const [index, player] of existingPlayers.entries()) {
         await ctx.db.patch(player._id, { team_id: player.is_host || args.teamAssignmentMode === "auto" ? teams[index % teams.length]._id : null, has_submitted: false });
       }
-      if (cleanPromptMode === "deck") {
+      if (cleanPromptMode === "deck" && !voting) {
         const players = await playersByGame(ctx, game._id);
         for (const player of players) {
           await ensureDraftHand(ctx, game._id, player._id, cleanCardsDealtPerPlayer, cleanPromptCategories);
@@ -295,6 +309,7 @@ export const joinGame = mutation({
     const teams = await teamsByGame(ctx, game._id);
     const players = await playersByGame(ctx, game._id);
     requirePhase(game.phase, ["lobby"]);
+    if (game.category_vote?.status === "voting") throw new Error("Category voting is underway. Join once the bowl is ready.");
     if (players.length >= 200) throw new Error("This room is full.");
     const team = [...teams].sort((a, b) => players.filter((p) => p.team_id === a._id).length - players.filter((p) => p.team_id === b._id).length)[0];
     const id = await ctx.db.insert("players", {
@@ -303,19 +318,102 @@ export const joinGame = mutation({
       name: args.playerName.trim().slice(0, 60) || `Player ${players.length + 1}`,
       is_host: false,
       team_id: game.team_assignment_mode === "auto" ? (team?._id ?? null) : null,
-      has_submitted: false,
+      has_submitted: usesCategoryVote(game) && game.category_vote?.status === "complete",
       created_at: nowIso()
     });
     const player = await ctx.db.get(id);
     if (!player) throw new Error("Could not join game.");
 
-    if (game.prompt_mode === "deck") {
+    if (game.prompt_mode === "deck" && !usesCategoryVote(game)) {
       await ensureDraftHand(ctx, game._id, player._id, game.cards_dealt_per_player, game.prompt_categories);
     }
 
     return { game: toGame(game), player: toPlayer(player) };
   }
 });
+
+export const startCategoryVoting = mutation({
+  args: { ...matchArgs },
+  handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
+    const game = await requireGame(ctx, args.gameId);
+    requirePhase(game.phase, ["lobby"]);
+    if (!usesCategoryVote(game)) throw new Error("Choose category voting in setup first.");
+    if (game.category_vote) return; // Retried starts never reroll a ballot.
+    const players = await playersByGame(ctx, args.gameId);
+    if (players.length < 2) throw new Error("Wait for at least one other player to join before voting.");
+    await ctx.db.patch(game._id, { category_vote: {
+      id: crypto.randomUUID(), status: "voting", round: 1,
+      ballots: createCategoryBallots(game.vote_card_count ?? 40, game.vote_category_count ?? 3),
+      winners: [], voter_ids: players.map((player) => player._id), votes: []
+    } });
+  }
+});
+
+const ballotArgs = { ...matchArgs, voteId: v.string(), expectedRound: v.number() };
+
+export const castCategoryVote = mutation({
+  args: { ...ballotArgs, category: v.string() },
+  handler: async (ctx, args) => {
+    const player = await requirePlayer(ctx, args.gameId, args.sessionToken);
+    const game = await requireCurrentBallot(ctx, args);
+    const vote = game.category_vote!;
+    if (!vote.voter_ids.includes(player._id)) throw new Error("You are not part of this vote.");
+    if (!vote.ballots[vote.round - 1].includes(args.category)) throw new Error("Choose one of the three categories on this ballot.");
+    if (vote.votes.some((entry) => entry.player_id === player._id)) return;
+    const updated = { ...vote, votes: [...vote.votes, { player_id: player._id, category: args.category }] };
+    if (updated.votes.length === updated.voter_ids.length) await finishCategoryBallot(ctx, game, updated);
+    else await ctx.db.patch(game._id, { category_vote: updated });
+  }
+});
+
+export const closeCategoryVoteRound = mutation({
+  args: ballotArgs,
+  handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    const game = await requireCurrentBallot(ctx, args);
+    await finishCategoryBallot(ctx, game, game.category_vote!);
+  }
+});
+
+async function requireCurrentBallot(ctx: MutationCtx, args: { gameId: Id<"games">; expectedMatchNumber: number; voteId: string; expectedRound: number }) {
+  const game = await requireGame(ctx, args.gameId);
+  const vote = game.category_vote;
+  if (game.phase !== "lobby" || !usesCategoryVote(game) || (game.match_number ?? 1) !== args.expectedMatchNumber || !vote || vote.status !== "voting" || vote.id !== args.voteId || vote.round !== args.expectedRound) {
+    throw new Error("That voting round has ended. Use the current ballot.");
+  }
+  return game;
+}
+
+async function finishCategoryBallot(ctx: MutationCtx, game: Doc<"games">, vote: NonNullable<Doc<"games">["category_vote"]>) {
+  const winner = chooseCategoryWinner(vote.ballots[vote.round - 1], vote.votes.map((entry) => entry.category));
+  const winners = [...vote.winners, winner];
+  if (winners.length < vote.ballots.length) {
+    await ctx.db.patch(game._id, { category_vote: { ...vote, winners, round: vote.round + 1, votes: [] } });
+    return;
+  }
+  if (!game.host_player_id) throw new Error("The host is no longer available.");
+  const cards = buildVotedBowl(game.vote_card_count ?? 40, winners, game.previous_card_titles);
+  for (const card of cards) await ctx.db.insert("prompts", {
+    game_id: game._id, player_id: game.host_player_id, text: card.title,
+    description: card.description, category: card.category, status: "available", deck_order: null, created_at: nowIso()
+  });
+  for (const player of await playersByGame(ctx, game._id)) await ctx.db.patch(player._id, { has_submitted: true });
+  await ctx.db.patch(game._id, { category_vote: { ...vote, winners, votes: [], status: "complete" } });
+}
+
+function publicCategoryVote(game: Doc<"games">, viewerId: Id<"players">, playerCount: number): NonNullable<GameSnapshot["categoryVote"]> {
+  const vote = game.category_vote;
+  return {
+    id: vote?.id ?? null, status: vote?.status ?? "waiting", round: vote?.round ?? 1,
+    totalRounds: game.vote_category_count ?? 3,
+    choices: vote?.status === "voting" ? vote.ballots[vote.round - 1] : [],
+    votedCount: vote?.status === "voting" ? vote.votes.length : 0,
+    voterCount: vote?.voter_ids.length ?? playerCount,
+    myVote: vote?.status === "voting" ? vote.votes.find((entry) => entry.player_id === viewerId)?.category ?? null : null
+  };
+}
 
 export const loadSnapshot = query({
   args: { gameId: v.string(), sessionToken: v.optional(v.string()) },
@@ -329,6 +427,7 @@ export const loadSnapshot = query({
     const controlsTurn = game.active_player_id === viewer._id || (game.play_mode === "pass_and_play" && game.host_player_id === viewer._id);
     return {
       ...snapshot,
+      categoryVote: usesCategoryVote(game) ? publicCategoryVote(game, viewer._id, snapshot.players.length) : undefined,
       viewer_player_id: viewer._id,
       server_now: Date.now(),
       players: snapshot.players.map((player) => ({ ...player, draft_selected_count: snapshot.draftCards.filter((card) => card.player_id === player.id && card.selected).length })),
@@ -430,6 +529,7 @@ export const setDraftCardSelected = mutation({
     if (viewer._id !== args.playerId) throw new Error("You can only select your own cards.");
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
     requirePhase(snapshot.game.phase, ["lobby"]);
+    if (usesCategoryVote(snapshot.game)) throw new Error("This bowl is filled by category voting, not drafting.");
     if (snapshot.game.prompt_mode !== "deck") return;
 
     const currentSelectedCount = snapshot.draftCards.filter((card) => card.player_id === args.playerId && card.selected).length;
@@ -452,9 +552,11 @@ export const startGame = mutation({
     if (!await matchesMatch(ctx, args.gameId, args.expectedMatchNumber)) return;
     const snapshot = await loadSnapshotForGame(ctx, args.gameId);
     if (snapshot.game.phase !== "lobby") return;
+    const game = await requireGame(ctx, args.gameId);
+    if (usesCategoryVote(game) && (game.category_vote?.status !== "complete" || snapshot.prompts.length !== game.vote_card_count)) throw new Error("Finish category voting before starting the game.");
     const unreadyPlayer = snapshot.players.find((player) => {
       if (!player.team_id) return true;
-      if (snapshot.game.play_mode === "pass_and_play") return false;
+      if (snapshot.game.play_mode === "pass_and_play" || usesCategoryVote(snapshot.game)) return false;
       if (snapshot.game.prompt_mode === "deck") return !hasPlayerDrafted(player.id, snapshot);
       return !hasPlayerSubmitted(player.id, snapshot.prompts, snapshot.game.prompts_per_player);
     });
@@ -588,12 +690,12 @@ export const resetToLobby = mutation({
     for (const event of await eventsByGame(ctx, args.gameId)) await ctx.db.delete(event._id);
     if (args.freshCards) {
       const previousTitles = [...new Set([...prompts.map((p) => p.text), ...drafts.map((c) => c.title)])];
-      await ctx.db.patch(args.gameId, { previous_card_titles: previousTitles });
+      await ctx.db.patch(args.gameId, { previous_card_titles: previousTitles, category_vote: undefined });
       await deleteByGame(ctx, "prompts", args.gameId);
       await deleteByGame(ctx, "draft_cards", args.gameId);
       for (const player of await playersByGame(ctx, args.gameId)) {
         await ctx.db.patch(player._id, { has_submitted: game.play_mode === "pass_and_play" && game.prompt_mode === "deck" });
-        if (game.prompt_mode === "deck" && game.play_mode === "multi_device") await ensureDraftHand(ctx, args.gameId, player._id, game.cards_dealt_per_player, game.prompt_categories);
+        if (game.prompt_mode === "deck" && game.play_mode === "multi_device" && !usesCategoryVote(game)) await ensureDraftHand(ctx, args.gameId, player._id, game.cards_dealt_per_player, game.prompt_categories);
       }
       if (game.prompt_mode === "deck" && game.play_mode === "pass_and_play" && game.host_player_id) {
         const pool = filterStarterDeckByCategories(game.prompt_categories);
@@ -913,7 +1015,7 @@ async function ensureDraftHand(
 }
 
 async function ensureDeckDraftPrompts(ctx: MutationCtx, snapshot: GameSnapshot) {
-  if (snapshot.game.play_mode === "pass_and_play") return snapshot.prompts;
+  if (snapshot.game.play_mode === "pass_and_play" || usesCategoryVote(snapshot.game)) return snapshot.prompts;
   await deleteByGame(ctx, "prompts", snapshot.game.id as Id<"games">);
   const selectedCards = snapshot.draftCards.filter((card) => card.selected);
   if (selectedCards.length === 0) throw new Error("Choose at least one card before starting.");
@@ -1129,8 +1231,9 @@ function clampRound(value: number, min: number, max: number) {
 }
 
 function toGame(doc: Doc<"games">) {
-  const { previous_card_titles, ...game } = stripDoc(doc);
+  const { previous_card_titles, category_vote, ...game } = stripDoc(doc);
   void previous_card_titles;
+  void category_vote;
   return { ...game, game_version: resolveGameVersion(game.game_version), id: doc._id };
 }
 

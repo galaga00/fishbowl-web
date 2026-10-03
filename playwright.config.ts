@@ -34,7 +34,7 @@ export default defineConfig({
     },
     {
       name: "webkit-phone",
-      testMatch: /(setup-responsive|setup-choice|game-versions|prompt-count)\.spec\.ts/,
+      testMatch: /(setup-responsive|setup-choice|game-versions|prompt-count|category-vote)\.spec\.ts/,
       use: { ...devices["iPhone 13"] }
     }
   ]

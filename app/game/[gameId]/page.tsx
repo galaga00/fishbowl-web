@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
 import { getSessionToken, saveSession, readableGameError } from "@/lib/player-session";
+import { CategoryVoteLobby } from "@/app/category-vote-lobby";
+import { usesCategoryVote } from "@/lib/category-vote";
 import { QuickStart } from "@/app/quick-start";
 import { SetupChoice, type SetupPath } from "@/app/setup-choice";
 import { VersionSelector } from "@/app/version-selector";
@@ -16,6 +18,9 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { trackAnalyticsEvent } from "@/lib/analytics";
 import { CONFETTI_PIECES } from "@/lib/confetti";
 import {
+  startCategoryVoting,
+  castCategoryVote,
+  closeCategoryVoteRound,
   synchronizeClock,
   setGameVersion,
   adjustTeamScore,
@@ -106,6 +111,9 @@ export default function GamePage() {
   const [teamNames, setTeamNames] = useState(() => Array.from({ length: DEFAULT_TEAM_COUNT }, (_, index) => `Team ${index + 1}`));
   const [expectedPlayers, setExpectedPlayers] = useState("");
   const [teamAssignmentMode, setTeamAssignmentMode] = useState<TeamAssignmentMode>(DEFAULT_TEAM_ASSIGNMENT_MODE);
+  const [deckSelection, setDeckSelection] = useState<"draft" | "vote">("draft");
+  const [voteCardCount, setVoteCardCount] = useState(40);
+  const [voteCategoryCount, setVoteCategoryCount] = useState(3);
   const [promptMode, setPromptMode] = useState<PromptMode>("free");
   const [promptCategories, setPromptCategories] = useState<string[]>([MIXED_PASS_PLAY_CATEGORY]);
   const [playMode, setPlayMode] = useState<PlayMode>(DEFAULT_PLAY_MODE);
@@ -261,6 +269,9 @@ export default function GamePage() {
     setExpectedPlayers(game.expected_players?.toString() ?? "");
     setTeamAssignmentMode(game.team_assignment_mode);
     setPromptMode(game.prompt_mode);
+    setDeckSelection(game.deck_selection ?? "draft");
+    setVoteCardCount(game.vote_card_count ?? 40);
+    setVoteCategoryCount(game.vote_category_count ?? 3);
     setPromptCategories(game.prompt_categories ?? [MIXED_PASS_PLAY_CATEGORY]);
     setPassAndPlayCategories(game.prompt_categories ?? [MIXED_PASS_PLAY_CATEGORY]);
     setPlayMode(game.play_mode);
@@ -347,7 +358,10 @@ export default function GamePage() {
         passAndPlayPlayers,
         passAndPlayCardCount,
         passAndPlayCategories,
-        promptCategories
+        promptCategories,
+        resolveGameVersion(snapshot.game.game_version) === "v2" && playMode === "multi_device" && promptMode === "deck" ? deckSelection : "draft",
+        voteCardCount,
+        voteCategoryCount
       );
       setEditingSetup(false);
     });
@@ -466,12 +480,12 @@ export default function GamePage() {
               {snapshot.game.phase === "setup"
                 ? "Host setup"
                 : snapshot.game.phase === "lobby"
-                  ? "Collecting prompts"
+                  ? usesCategoryVote(snapshot.game) ? snapshot.categoryVote?.status === "complete" ? "Bowl ready" : snapshot.categoryVote?.status === "voting" ? "Voting on categories" : "Waiting to vote" : "Collecting prompts"
                   : `${getRoundName(snapshot.game.round_number)} - ${snapshot.game.phase}`}
             </p>
           </div>
         </div>
-        {isHost && snapshot.game.phase === "lobby" && !isPassAndPlay(snapshot) ? (
+        {isHost && snapshot.game.phase === "lobby" && !isPassAndPlay(snapshot) && snapshot.categoryVote?.status !== "voting" ? (
           <div className="split">
             <Image className="qr" src={qrUrl} alt="QR code for joining this game" width={164} height={164} unoptimized />
             <div className="stack">
@@ -532,6 +546,9 @@ export default function GamePage() {
             busy={busy}
             isHost={isHost}
             showPromptEstimate={gameVersion === "v2"}
+            deckSelection={deckSelection} setDeckSelection={setDeckSelection}
+            voteCardCount={voteCardCount} setVoteCardCount={setVoteCardCount}
+            voteCategoryCount={voteCategoryCount} setVoteCategoryCount={setVoteCategoryCount}
             promptsPerPlayer={promptsPerPlayer}
             setPromptsPerPlayer={handlePromptCountChange}
             turnDurationSeconds={turnDurationSeconds}
@@ -565,6 +582,16 @@ export default function GamePage() {
           />
           </div>
           </div>
+        ) : snapshot.game.phase === "lobby" && usesCategoryVote(snapshot.game) ? (
+          <CategoryVoteLobby snapshot={snapshot} me={me} busy={busy}
+            roster={<TeamRosters snapshot={snapshot} me={me} isHost={isHost} busy={busy} onAssignPlayerToTeam={handleAssignPlayerToTeam} />}
+            onStartVoting={() => runAction(() => startCategoryVoting(snapshot))}
+            onVote={(category) => runAction(() => castCategoryVote(snapshot, category))}
+            onCloseRound={() => runAction(() => closeCategoryVoteRound(snapshot))}
+            onStartGame={() => runAction(async () => { await startGame(snapshot); trackSnapshotEvent("game_started"); })}
+            onEditSetup={handleEditSetup} onChooseTeam={handleChooseTeam}
+            onRename={(name) => runAction(() => updatePlayerName(gameId, me.id, name))}
+          />
         ) : snapshot.game.phase === "lobby" ? (
           <Lobby
             snapshot={snapshot}
@@ -678,7 +705,7 @@ export default function GamePage() {
             onRedoLastFive={() => setConfirmation({ title: "Redo recent prompts?", body: "Restore up to five prompts from this turn, reverse their points, and give the clue giver 15 seconds. The timer will stay paused until you resume.", label: "Redo prompts", action: () => redoLastFivePrompts(snapshot) })}
             onFinishGame={() => setConfirmation({ title: "End this game?", body: "Keep the scores and show the results now.", label: "End game now", action: () => finishGame(snapshot) })}
             onResetToLobby={() => setConfirmation({ title: "Return to the lobby?", body: "Reset scores and keep this bowl, players, and teams.", label: "Reset scores", action: () => resetToLobby(snapshot) })}
-            onFreshRematch={() => setConfirmation({ title: "Play again with a fresh bowl?", body: snapshot.game.prompt_mode === "deck" ? "Keep your players, teams, and settings. Deal fresh cards, using unseen cards first. Small categories may need some repeats." : "Keep your players and teams. Clear scores and collect new prompts.", label: "Prepare new game", action: () => resetToLobby(snapshot, true) })}
+            onFreshRematch={() => setConfirmation({ title: "Play again with a fresh bowl?", body: usesCategoryVote(snapshot.game) ? "Keep your players and teams. Vote on new categories and fill a fresh secret bowl." : snapshot.game.prompt_mode === "deck" ? "Keep your players, teams, and settings. Deal fresh cards, using unseen cards first. Small categories may need some repeats." : "Keep your players and teams. Clear scores and collect new prompts.", label: "Prepare new game", action: () => resetToLobby(snapshot, true) })}
           />
         )}
       </div>
@@ -692,6 +719,7 @@ function Setup({
   busy,
   isHost,
   showPromptEstimate,
+  deckSelection, setDeckSelection, voteCardCount, setVoteCardCount, voteCategoryCount, setVoteCategoryCount,
   promptsPerPlayer,
   setPromptsPerPlayer,
   turnDurationSeconds,
@@ -726,6 +754,9 @@ function Setup({
   busy: boolean;
   isHost: boolean;
   showPromptEstimate: boolean;
+  deckSelection: "draft" | "vote"; setDeckSelection: (value: "draft" | "vote") => void;
+  voteCardCount: number; setVoteCardCount: (value: number) => void;
+  voteCategoryCount: number; setVoteCategoryCount: (value: number) => void;
   promptsPerPlayer: number;
   setPromptsPerPlayer: (count: number) => void;
   turnDurationSeconds: number;
@@ -758,10 +789,11 @@ function Setup({
   onSave: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   const [setupStep, setSetupStep] = useState(0);
+  const voting = showPromptEstimate && promptMode === "deck" && playMode === "multi_device" && deckSelection === "vote";
   const selectedCategories = playMode === "pass_and_play" ? passAndPlayCategories : promptCategories;
   const capacity = useMemo(() => filterStarterDeckByCategories(selectedCategories).length, [selectedCategories]);
   const requestedCards = playMode === "pass_and_play" ? passAndPlayCardCount : Math.max(1, Number(expectedPlayers) || 1) * cardsDealtPerPlayer;
-  const capacityError = promptMode === "deck" && requestedCards > capacity;
+  const capacityError = !voting && promptMode === "deck" && requestedCards > capacity;
   const stepLabels = ["Mode", "Prompts", "Teams", "Review"];
   const isFirstStep = setupStep === 0;
   const isLastStep = setupStep === stepLabels.length - 1;
@@ -871,18 +903,30 @@ function Setup({
                   <strong>Category prompts</strong>
                   <span>Players write from assigned categories.</span>
                 </button>
-                <button className={promptMode === "deck" ? "segment active" : "segment"} type="button" onClick={() => setPromptMode("deck")}>
+                <button className={promptMode === "deck" && !voting ? "segment active" : "segment"} type="button" onClick={() => { setPromptMode("deck"); setDeckSelection("draft"); }}>
                   <strong>Deck draft</strong>
                   <span>Players choose cards from a shared deck.</span>
                 </button>
+                {showPromptEstimate ? <button className={voting ? "segment active" : "segment"} type="button" onClick={() => { setPromptMode("deck"); setDeckSelection("vote"); }}>
+                  <strong>Category vote</strong>
+                  <span>Vote together. Built-in cards fill a secret bowl.</span>
+                </button> : null}
               </div>
             </div>
-            <div className="field">
+            {voting ? <div className="stack">
+              <p>Everyone votes on the same three random categories each round. Winners stay secret, and cards are drawn evenly from the winning categories. No drafting or writing needed.</p>
+              <p className="muted tiny">Uses the full built-in library. For an all-ages bowl, use the Family Quick game or the Family Friendly filter in Deck draft.</p>
+              <div className="split">
+                <div className="field"><label htmlFor="vote-card-count">Cards in the bowl</label><MobileNumberInput id="vote-card-count" min={10} max={80} value={voteCardCount} onValueChange={setVoteCardCount} /></div>
+                <div className="field"><label htmlFor="vote-category-count">Categories in the bowl</label><MobileNumberInput id="vote-category-count" min={1} max={3} value={voteCategoryCount} onValueChange={setVoteCategoryCount} /></div>
+              </div>
+              <p className="muted">{voteCategoryCount} voting {voteCategoryCount === 1 ? "round" : "rounds"} · {voteCardCount} cards reused across all three game rounds.</p>
+            </div> : <div className="field">
               <label htmlFor="promptCount">Prompts per player</label>
               <MobileNumberInput disabled={promptMode === "deck"} id="promptCount" describedBy={showPromptEstimate && promptMode !== "deck" ? "prompt-count-estimate" : undefined} min={1} max={20} value={promptsPerPlayer} onValueChange={setPromptsPerPlayer} />
               {showPromptEstimate && promptMode !== "deck" ? <PromptBowlEstimate id="prompt-count-estimate" playerCount={writtenPlayerCount} promptsPerPlayer={promptsPerPlayer} /> : null}
-            </div>
-            {promptMode !== "free" ? (
+            </div>}
+            {promptMode !== "free" && !voting ? (
               <CategorySelector
                 categories={promptCategories}
                 helpText={promptMode === "deck" ? "Cards will be dealt from these categories. Mixed pulls from the full deck." : "Players will be asked for prompt ideas from these categories. Mixed spreads the prompts across the full set."}
@@ -891,7 +935,7 @@ function Setup({
                 setCategories={setPromptCategories}
               />
             ) : null}
-            {promptMode === "deck" ? (
+            {promptMode === "deck" && !voting ? (
               <div className="split">
                 <div className="field">
                   <label htmlFor="cardsDealt">Cards dealt</label>
@@ -906,6 +950,11 @@ function Setup({
           </div>
         )
       ) : null}
+
+      {showPromptEstimate && setupStep === 1 && playMode === "pass_and_play" && promptMode === "deck" ? <div className="notice stack">
+        <p>Want everyone to vote on categories? Each player will need to join on their own phone.</p>
+        <button className="button secondary" type="button" disabled={busy} onClick={() => { setPlayMode("multi_device"); setDeckSelection("vote"); }}>Use category voting</button>
+      </div> : null}
 
       {setupStep === 2 ? (
         <div className="stack">
@@ -965,15 +1014,15 @@ function Setup({
       {setupStep === 3 ? (
         <div className="setup-review-grid">
           <div><span>Mode</span><strong>{playMode === "pass_and_play" ? "Pass & Play" : "Everyone joins"}</strong></div>
-          <div><span>Prompts</span><strong>{promptMode === "deck" ? "Built-in deck" : promptMode === "category" ? "Categories" : "Anything goes"}</strong></div>
+          <div><span>Prompts</span><strong>{voting ? `Category vote · ${voteCategoryCount} categories` : promptMode === "deck" ? "Built-in deck" : promptMode === "category" ? "Categories" : "Anything goes"}</strong></div>
           <div><span>Teams</span><strong>{teamCount}</strong></div>
           <div><span>Timer</span><strong>{turnDurationSeconds}s</strong></div>
           <div><span>Players</span><strong>{playMode === "pass_and_play" ? passAndPlayPlayers.length : expectedPlayers || "Open"}</strong></div>
-          <div><span>Cards</span><strong>{playMode === "pass_and_play" && promptMode === "deck" ? passAndPlayCardCount : promptMode === "deck" ? `${cardsKeptPerPlayer} kept` : showPromptEstimate && writtenPlayerCount ? `${writtenPlayerCount * promptsPerPlayer} total · ${promptsPerPlayer} each` : `${promptsPerPlayer} each`}</strong></div>
+          <div><span>Cards</span><strong>{voting ? voteCardCount : playMode === "pass_and_play" && promptMode === "deck" ? passAndPlayCardCount : promptMode === "deck" ? `${cardsKeptPerPlayer} kept` : showPromptEstimate && writtenPlayerCount ? `${writtenPlayerCount * promptsPerPlayer} total · ${promptsPerPlayer} each` : `${promptsPerPlayer} each`}</strong></div>
         </div>
       ) : null}
 
-      {promptMode === "deck" && setupStep > 0 ? <div className={capacityError ? "notice stack" : "muted tiny"} role={capacityError ? "alert" : "status"}>
+      {promptMode === "deck" && !voting && setupStep > 0 ? <div className={capacityError ? "notice stack" : "muted tiny"} role={capacityError ? "alert" : "status"}>
         <p>{capacity} unique cards in these categories. {playMode === "pass_and_play" ? `${passAndPlayCardCount} requested.` : `Enough for ${Math.floor(capacity / cardsDealtPerPlayer)} hands of ${cardsDealtPerPlayer}.`}</p>
         {capacityError ? <><p>Choose fewer cards or add categories to make this game playable.</p><div className="button-row">
           {playMode === "pass_and_play" && capacity >= 10 ? <button className="button secondary" type="button" onClick={() => setPassAndPlayCardCount(Math.min(80, capacity))}>Use {Math.min(80, capacity)} cards</button> : null}
@@ -1837,6 +1886,7 @@ function PlayerLobbyRow({
   snapshot: GameSnapshot;
   onAssignPlayerToTeam: (playerId: string, teamId: string) => void;
 }) {
+  const voting = usesCategoryVote(snapshot.game);
   const isDeckDraft = snapshot.game.prompt_mode === "deck";
   const passAndPlay = isPassAndPlay(snapshot);
   const progressCount = isDeckDraft
@@ -1855,11 +1905,12 @@ function PlayerLobbyRow({
       </span>
       <div className="player-row-actions">
         <span className={isReady ? "pill" : "pill pending"}>
-          {player.team_id ? (passAndPlay ? "Pass & Play" : `${progressCount} / ${progressRequired}`) : "No team"}
+          {player.team_id ? (voting ? "Joined" : passAndPlay ? "Pass & Play" : `${progressCount} / ${progressRequired}`) : "No team"}
         </span>
         {isHost ? (
           <select
             className="team-select"
+            aria-label={`Team for ${player.name}`}
             disabled={busy}
             value={player.team_id ?? ""}
             onChange={(event) => onAssignPlayerToTeam(player.id, event.target.value)}

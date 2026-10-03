@@ -1551,3 +1551,18 @@ button:focus-visible, summary:focus-visible, a:focus-visible, input:focus-visibl
 @media (min-width: 680px) {
   .version-choices, .setup-choices { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Voting choices remain readable with narrow viewports and enlarged text. */
+.category-ballot { display: grid; gap: 12px; grid-template-columns: 1fr; min-width: 0; }
+.category-ballot .team-choice { width: 100%; min-width: 0; min-height: 76px; white-space: normal; overflow-wrap: anywhere; }
+@media (min-width: 760px) { .category-ballot { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.status-panel .split, .status-panel .stack, .status-panel .button-row > div { min-width: 0; }
+.status-panel a.input { min-width: 0; overflow-wrap: anywhere; }
+.status-panel .button-row { grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); }
+.category-ballot .team-choice { flex-direction: column; align-items: flex-start; justify-content: center; gap: 6px; }
+.category-ballot .team-choice > * { min-width: 0; max-width: 100%; }
+.category-ballot .team-choice span { font-weight: 400; }
+.voting-lobby .player-row, .voting-lobby .player-row-actions { flex-wrap: wrap; min-width: 0; }
+.voting-lobby .player-row > span { min-width: 0; overflow-wrap: anywhere; }
+.voting-lobby .button-row { grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); }
