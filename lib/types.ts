@@ -9,6 +9,9 @@ export type Game = {
   id: string;
   code: string;
   game_version?: GameVersion;
+  deck_selection?: "draft" | "vote";
+  vote_card_count?: number;
+  vote_category_count?: number;
   access_version?: number;
   match_number?: number;
   finish_reason?: "completed" | "host";
@@ -125,6 +128,16 @@ export type AnalyticsEvent = {
 };
 
 export type GameSnapshot = {
+  categoryVote?: {
+    id: string | null;
+    status: "waiting" | "voting" | "complete";
+    round: number;
+    totalRounds: number;
+    choices: string[];
+    votedCount: number;
+    voterCount: number;
+    myVote: string | null;
+  };
   game: Game;
   players: Player[];
   teams: Team[];

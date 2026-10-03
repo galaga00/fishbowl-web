@@ -23,8 +23,10 @@ const howToPages = [
 
 export default function Home() {
   const router = useRouter();
+  const [interactive, setInteractive] = useState(false);
   const [lastGameId, setLastGameId] = useState<string | null>(null);
   useEffect(() => {
+    setInteractive(true);
     const saved = localStorage.getItem(LAST_GAME_KEY);
     if (saved && getSessionToken(saved)) setLastGameId(saved);
   }, []);
@@ -266,13 +268,13 @@ export default function Home() {
             </div>
           ) : (
             <div className="home-button-grid">
-              <button className="button accent" disabled={busy} type="button" onClick={handleCreate}>
+              <button className="button accent" disabled={busy || !interactive} type="button" onClick={handleCreate}>
                 Create Game
               </button>
-              <button className="button" disabled={busy} type="button" onClick={() => setMode("join")}>
+              <button className="button" disabled={busy || !interactive} type="button" onClick={() => setMode("join")}>
                 Join Game
               </button>
-              <button className="button secondary" disabled={busy} type="button" onClick={() => setMode("howTo")}>
+              <button className="button secondary" disabled={busy || !interactive} type="button" onClick={() => setMode("howTo")}>
                 How to Play
               </button>
             </div>

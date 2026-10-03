@@ -88,3 +88,20 @@ test("setup presets stay readable across phone widths, larger text, and desktop"
   await expect(page.getByRole("button", { name: "Create lobby", exact: true })).toBeEnabled();
   expect(errors).toEqual([]);
 });
+
+
+test("home menu waits for its code before accepting the first tap on a slow connection", async ({ page }) => {
+  let releaseBundle!: () => void;
+  const bundleGate = new Promise<void>(resolve => { releaseBundle = resolve; });
+  await page.route("**/_next/static/chunks/app/page-*.js", async route => { await bundleGate; await route.continue(); });
+  try {
+    await page.goto("/", { waitUntil: "domcontentloaded" });
+    for (const name of ["Create Game", "Join Game", "How to Play"]) {
+      await expect(page.getByRole("button", { name, exact: true })).toBeDisabled();
+    }
+  } finally { releaseBundle(); }
+  await page.getByRole("button", { name: "Create Game", exact: true }).click();
+  await expect(page).toHaveURL(/\/game\//);
+  gameIds.push(page.url().split("/game/")[1]);
+  await expect(page.getByRole("button", { name: "Quick game", exact: true })).toBeVisible();
+});

@@ -41,7 +41,10 @@ export async function saveGameSetup(
   passAndPlayPlayers: Array<{ name: string; teamIndex: number }> = [],
   passPlayCardCount = getDefaultPassPlayCardCount(passAndPlayPlayers.length || 4),
   passPlayCategories: string[] = [MIXED_PASS_PLAY_CATEGORY],
-  promptCategories: string[] = [MIXED_PASS_PLAY_CATEGORY]
+  promptCategories: string[] = [MIXED_PASS_PLAY_CATEGORY],
+  deckSelection: "draft" | "vote" = "draft",
+  voteCardCount = 40,
+  voteCategoryCount = 3
 ) {
   return getConvexClient().mutation(api.game.saveGameSetup, {
     ...roomArgs(gameId),
@@ -57,7 +60,7 @@ export async function saveGameSetup(
     passAndPlayPlayers,
     passPlayCardCount,
     passPlayCategories,
-    promptCategories
+    promptCategories, deckSelection, voteCardCount, voteCategoryCount
   });
 }
 
@@ -182,4 +185,21 @@ function matchArgs(snapshot: GameSnapshot) {
 
 export async function synchronizeClock(gameId: string) {
   return getConvexClient().mutation(api.game.synchronizeClock, roomArgs(gameId));
+}
+
+export async function startCategoryVoting(snapshot: GameSnapshot) {
+  await getConvexClient().mutation(api.game.startCategoryVoting, matchArgs(snapshot));
+}
+
+function ballotArgs(snapshot: GameSnapshot) {
+  if (!snapshot.categoryVote?.id) throw new Error("Voting has not started yet.");
+  return { ...matchArgs(snapshot), voteId: snapshot.categoryVote.id, expectedRound: snapshot.categoryVote.round };
+}
+
+export async function castCategoryVote(snapshot: GameSnapshot, category: string) {
+  await getConvexClient().mutation(api.game.castCategoryVote, { ...ballotArgs(snapshot), category });
+}
+
+export async function closeCategoryVoteRound(snapshot: GameSnapshot) {
+  await getConvexClient().mutation(api.game.closeCategoryVoteRound, ballotArgs(snapshot));
 }

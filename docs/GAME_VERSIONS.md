@@ -39,3 +39,7 @@ Creating the lobby saves the contribution count using the existing game setting.
 Deploy the additive Convex schema/functions first, then the frontend. No new backend, scheduled jobs, credentials, or persistent resources are needed. Older clients continue to operate; the new selector requires the new backend mutation. Test on development Convex and publish the production pair only after Austin approves the phone preview.
 
 The `game-versions` tests run in Chromium and the WebKit phone project, covering permission/phase enforcement, missing-version compatibility, form preservation, failed-save recovery, link/code joins, refresh/continue, a complete V1 game and rematch, and responsive choices. The existing foundation suite covers V2 play/rematches and shared security/timer/recovery invariants.
+
+## Category vote (V2)
+
+Custom game → Everyone joins → Category vote lets the group choose a secret built-in bowl through one to three rounds of three random categories. The server builds the bowl automatically after voting; no private hand reveals the mix. See [CATEGORY_VOTING.md](CATEGORY_VOTING.md) for privacy, validation, late join, and rematch behavior. V1 and the existing written/draft/Quick paths are unchanged.

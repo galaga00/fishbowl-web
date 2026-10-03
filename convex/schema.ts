@@ -24,6 +24,19 @@ export default defineSchema({
     match_number: v.optional(v.number()),
     finish_reason: v.optional(v.union(v.literal("completed"), v.literal("host"))),
     previous_card_titles: v.optional(v.array(v.string())),
+    deck_selection: v.optional(v.union(v.literal("draft"), v.literal("vote"))),
+    vote_card_count: v.optional(v.number()),
+    vote_category_count: v.optional(v.number()),
+    // Private: never serialize this object into a room response.
+    category_vote: v.optional(v.object({
+      id: v.string(),
+      status: v.union(v.literal("voting"), v.literal("complete")),
+      round: v.number(),
+      ballots: v.array(v.array(v.string())),
+      winners: v.array(v.string()),
+      voter_ids: v.array(v.id("players")),
+      votes: v.array(v.object({ player_id: v.id("players"), category: v.string() }))
+    })),
     host_player_id: v.union(v.id("players"), v.null()),
     phase: gamePhase,
     current_team_id: v.union(v.id("teams"), v.null()),
