@@ -1,4 +1,5 @@
 import { findViewer, hashSessionToken, requireController, requireHost, requirePlayer } from "./access";
+import { DEFAULT_GAME_VERSION, resolveGameVersion } from "../lib/game-versions";
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
@@ -78,6 +79,7 @@ export const createGame = mutation({
 
       id = await ctx.db.insert("games", {
         code,
+        game_version: DEFAULT_GAME_VERSION,
         access_version: 2,
         match_number: 1,
         host_player_id: null,
@@ -119,6 +121,16 @@ export const createGame = mutation({
     const player = await ctx.db.get(host);
     if (!game || !player) throw new Error("Could not create game.");
     return { game: toGame(game), player: toPlayer(player) };
+  }
+});
+
+export const setGameVersion = mutation({
+  args: { gameId, sessionToken, gameVersion: v.union(v.literal("v1"), v.literal("v2")) },
+  handler: async (ctx, args) => {
+    await requireHost(ctx, args.gameId, args.sessionToken);
+    const game = await requireGame(ctx, args.gameId);
+    if (game.phase !== "setup") throw new Error("The version is locked after setup. Create a new game to choose another version.");
+    await ctx.db.patch(args.gameId, { game_version: args.gameVersion });
   }
 });
 
@@ -1119,7 +1131,7 @@ function clampRound(value: number, min: number, max: number) {
 function toGame(doc: Doc<"games">) {
   const { previous_card_titles, ...game } = stripDoc(doc);
   void previous_card_titles;
-  return { ...game, id: doc._id };
+  return { ...game, game_version: resolveGameVersion(game.game_version), id: doc._id };
 }
 
 function toPlayer(doc: Doc<"players">) {

@@ -71,6 +71,8 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 
 ## Source Of Truth
 
+- Host setup offers V1 — Original and V2 — Improved; V2 is the default for every new room. `game_version` is stored per room and is independent of security's `access_version`. Missing versions resolve to V2, and the choice locks when setup ends. Both presentations share the protected engine. See [Game versions](docs/GAME_VERSIONS.md) for differences and deployment compatibility.
+
 - GitHub/repo files are source of truth for code.
 - Notion's main Fish Bowl page is the project map and status log, not a secret vault.
 - `CODEX_HANDOFF.md` is a short, stable onboarding map. Do not use it as a changelog.

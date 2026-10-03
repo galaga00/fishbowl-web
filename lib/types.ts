@@ -1,3 +1,5 @@
+import type { GameVersion } from "./game-versions";
+
 export type GamePhase = "setup" | "lobby" | "ready" | "playing" | "paused" | "finished";
 export type TeamAssignmentMode = "auto" | "choose";
 export type PromptMode = "free" | "category" | "deck";
@@ -6,6 +8,7 @@ export type PlayMode = "multi_device" | "pass_and_play";
 export type Game = {
   id: string;
   code: string;
+  game_version?: GameVersion;
   access_version?: number;
   match_number?: number;
   finish_reason?: "completed" | "host";
