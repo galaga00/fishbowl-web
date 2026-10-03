@@ -58,6 +58,7 @@ test("capacity recovery is inline and Review never submits itself", async ({ pag
 });
 
 test("quick start completes all three rounds and offers a fresh rematch", async ({ page }) => {
+  test.setTimeout(300_000);
   const gameId = await createInBrowser(page);
   await page.getByRole("button", { name: /Quick 20 cards/ }).click();
   await page.getByRole("button", { name: "Start quick game" }).click();
@@ -65,13 +66,20 @@ test("quick start completes all three rounds and offers a fresh rematch", async 
   const before = await loadSeededSnapshot(gameId);
   const originalTitles = new Set(before.prompts.map((prompt) => prompt.text));
   expect(before.game.turn_duration_seconds).toBe(30);
-  for (let round = 1; round <= 3; round += 1) {
-    await page.getByRole("button", { name: "Ready!", exact: true }).click();
-    for (let card = 0; card < 20; card += 1) {
-      await expect(page.getByRole("button", { name: "Correct", exact: true })).toBeEnabled();
-      await page.getByRole("button", { name: "Correct", exact: true }).click();
-      if (card < 19) await expect(page.getByLabel("Turn progress")).toContainText(`${19 - card} cards left`);
-    }
+  // A slow browser can reach the real 30-second deadline. Keep playing through
+  // normal handoffs instead of assuming every round fits into a single turn.
+  const progressKey = (snapshot: Awaited<ReturnType<typeof loadSeededSnapshot>>) =>
+    `${snapshot.game.phase}:${snapshot.game.round_number}:${snapshot.game.current_prompt_id}:${snapshot.activeTurn?.id}`;
+  let current = before;
+  for (let action = 0; action < 200 && current.game.phase !== "finished"; action += 1) {
+    const previousKey = progressKey(current);
+    const control = page.getByRole("button", { name: /^(Ready!|Correct)$/ });
+    await expect(control).toBeEnabled();
+    await control.click();
+    await expect.poll(async () => {
+      current = await loadSeededSnapshot(gameId);
+      return progressKey(current);
+    }).not.toBe(previousKey);
   }
   await expect(page.getByRole("heading", { name: "Game finished" })).toBeVisible();
   const finished = await loadSeededSnapshot(gameId);

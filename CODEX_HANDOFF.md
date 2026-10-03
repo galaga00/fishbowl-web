@@ -61,7 +61,7 @@ vercel --prod --yes
 vercel alias set <deployment-url> fish-bowl-game.vercel.app
 ```
 
-End-to-end testing uses Playwright with one headless Chromium worker by default. Run `npx playwright install chromium` once on a new machine, then `npm run test:e2e`. Use `npm run test:e2e:headed` or `npm run test:e2e:ui` only when you want to watch/debug the browser. Coverage includes host-only Pass & Play setup/gameplay, second-browser joining/realtime, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams. Test-created Convex games are cleaned up through guarded E2E helpers on the named dev deployment only. Both `E2E_TEST_SECRET` and `FISH_BOWL_E2E_ENABLED=true` must be set in development Convex; keep both unset in production. The 32-test suite also covers access protection, private cards, capacity, quick start, a complete three-round game, timer races, recovery, undo, rematches and responsive controls.
+End-to-end testing uses Playwright with one headless worker. Run `npx playwright install chromium webkit` once on a new machine, then `npm run test:e2e`. Chromium covers the game suite; a focused WebKit iPhone project checks setup layout. Use `npm run test:e2e:headed` or `npm run test:e2e:ui` only when you want to watch/debug the browser. Coverage includes host-only Pass & Play setup/gameplay, second-browser joining/realtime, refresh/rejoin identity, round transition, and clue-giver rotation for even and uneven teams. Test-created Convex games are cleaned up through guarded E2E helpers on the named dev deployment only. Both `E2E_TEST_SECRET` and `FISH_BOWL_E2E_ENABLED=true` must be set in development Convex; keep both unset in production. The suite also covers access protection, private cards, capacity, quick start, a complete three-round game, timer races, recovery, undo, rematches and responsive controls. Setup regression checks sweep 320–1440px and 125–200% text sizes, checking text containment rather than only page overflow.
 
 Card deck target-fill review artifacts live in `card-review/target-fill/`. After review Markdown is updated, run `npm run cards:apply-target-fill` to regenerate `lib/target-fill-deck.ts` from cards still marked Keep in `candidates.json`; the generated deck is wired into `STARTER_DECK`, and family-friendly additions are included in the family-friendly filter.
 
@@ -83,7 +83,7 @@ Private owner analytics lives at `/owner/analytics?key=<OWNER_ANALYTICS_KEY>`. I
 - Run `npm run lint` and `npm run build` before committing/deploying when code changes.
 - Run `npx convex dev --once --typecheck enable` when Convex functions/schema change.
 - Run `npm run test:e2e` when game flow, setup/lobby behavior, or user-facing controls change.
-- Commit useful completed work to `main`, push to GitHub, deploy to Vercel when the user wants the live app updated.
+- Keep substantial changes and follow-up fixes on a `codex/` branch, commit and push there, and provide a tested preview before merging or deploying production. Austin requested this review stage after the foundation rollout. Use development Convex for preview testing. Merge to `main` and update the live app after Austin approves that rollout.
 - After deployment, keep `https://fish-bowl-game.vercel.app` pointed at the newest production deployment.
 
 ## When To Update Things

@@ -81,7 +81,7 @@ This project uses Playwright for automated browser testing. The default E2E comm
 First-time setup:
 
 ```bash
-npx playwright install chromium
+npx playwright install chromium webkit
 ```
 
 Run the E2E suite:
