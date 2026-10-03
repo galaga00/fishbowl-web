@@ -4,13 +4,19 @@ After Create Game, the host can open Change in the Version panel. V2 — Improve
 
 | Behavior | V1 | V2 |
 | --- | --- | --- |
-| Setup | Four-step wizard | Wizard and Quick Start |
+| Setup | Four-step wizard | Explicit Quick game / Custom game choice |
 | Turn layout | Original card/timer arrangement and round details | Added player, round, and progress context |
 | Extra host controls | Expanded | Collapsed under More host controls |
 | Edit setup in lobby | Hidden | Available |
 | Finished game | Reset to lobby with the same bowl | Same-bowl or fresh-bowl rematch |
 
 Both use the same protected game engine: session authorization, private cards, authoritative deadlines, pause/recovery, capacity validation, inline errors/confirmations, and accurate results. These are presentation variations, not isolated historical runtimes. Git backup branches remain the full-code recovery path.
+
+## V2 setup choices
+
+During initial setup, the host chooses Quick game or Custom game beneath the version selector. Neither is selected initially. Quick game opens the existing Classic, Quick, and Family presets; Custom game opens the full wizard with written prompts, category prompts, deck drafting, teams, and timer settings. Both choices remain visible while configuring the room.
+
+Switching paths or versions preserves each form's entries and the wizard step within the page. Inactive forms stay mounted but hidden from view and keyboard navigation. Choice controls are disabled during saves and starts. Reloading initial setup returns to the chooser; unsaved drafts keep their existing non-persistent behavior. Editing setup from the lobby opens the populated custom wizard directly. These choices are local UI state, not a new room setting, and do not change card-count recommendations.
 
 ## Room contract
 

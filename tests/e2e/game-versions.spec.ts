@@ -78,19 +78,25 @@ test("rooms without a version resolve to V2 without a backfill", async () => {
 
 test("host can compare versions without losing setup, recover a failed save, and resume V1", async ({ page }) => {
   const gameId = await createInBrowser(page);
+  await page.getByRole("button", { name: "Quick game", exact: true }).click();
   await page.getByLabel("Number of players", { exact: true }).selectOption("6");
   await page.getByRole("button", { name: /^Family 30 cards/ }).click();
+  await page.getByRole("button", { name: "Custom game", exact: true }).click();
   await page.getByRole("button", { name: /Pass & Play/ }).click();
   await page.getByRole("button", { name: "Next", exact: true }).click();
   await page.locator("#passCardCount").fill("30");
   await chooseVersion(page, "v1");
+  await expect(page.getByRole("group", { name: "Choose game setup" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Quick start", exact: true })).toBeHidden();
   await expect(page.getByRole("heading", { name: "Prompts", exact: true })).toBeVisible();
   await expect(page.locator("#passCardCount")).toHaveValue("30");
   await chooseVersion(page, "v2");
   await expect(page.locator("#passCardCount")).toHaveValue("30");
+  await expect(page.getByRole("heading", { name: "Prompts", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Quick game", exact: true }).click();
   await expect(page.getByLabel("Number of players", { exact: true })).toHaveValue("6");
   await expect(page.getByRole("button", { name: /^Family 30 cards/ })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Custom game", exact: true }).click();
 
   await page.route("**/api/mutation", async route => {
     if (route.request().postDataJSON()?.path !== "game:setGameVersion") return route.continue();
@@ -127,6 +133,8 @@ for (const version of ["v1", "v2"] as const) {
       await guest.goto(page.url());
       await expect(guest.getByRole("heading", { name: "Waiting for the host" })).toBeVisible();
       await expect(guest.getByRole("region", { name: "Game version", exact: true })).toHaveCount(0);
+      await expect(guest.getByRole("group", { name: "Choose game setup" })).toHaveCount(0);
+      await expect(guest.getByRole("button", { name: "Start quick game" })).toHaveCount(0);
       await convex.mutation(api.game.saveGameSetup, { ...setupArgs(game.id, sessionToken), promptMode: "free" });
       await expect(page.getByRole("button", { name: "Change game version" })).toHaveCount(0);
       await expect(page.getByRole("button", { name: "Edit setup" })).toHaveCount(version === "v2" ? 1 : 0);
@@ -199,6 +207,7 @@ test("version choices and both setup layouts fit phones, enlarged text, tablets,
   await createInBrowser(page);
   for (const version of ["v1", "v2"] as const) {
     await chooseVersion(page, version);
+    if (version === "v2") await page.getByRole("button", { name: "Custom game", exact: true }).click();
     await page.getByRole("button", { name: "Change game version" }).click();
     for (const width of [320, 390, 680, 820, 1440]) {
       await page.setViewportSize({ width, height: width < 680 ? 844 : 1080 });

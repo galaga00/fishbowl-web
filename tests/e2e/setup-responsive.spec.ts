@@ -50,6 +50,7 @@ test("setup presets stay readable across phone widths, larger text, and desktop"
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.getByRole("button", { name: "Create Game", exact: true }).click();
+  await page.getByRole("button", { name: "Quick game", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Quick start", exact: true })).toBeVisible();
   gameIds.push(page.url().split("/game/")[1]);
 
@@ -72,11 +73,12 @@ test("setup presets stay readable across phone widths, larger text, and desktop"
   await page.evaluate(() => { document.documentElement.style.removeProperty("font-size"); });
 
   for (const title of ["Family", "Quick", "Classic"]) {
-    const option = page.getByRole("button", { name: new RegExp(`^${title} `) });
+    const option = page.locator(".quick-presets").getByRole("button", { name: new RegExp(`^${title} `) });
     await option.click();
     await expect(option).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator('.quick-presets [aria-pressed="true"]')).toHaveCount(1);
   }
+  await page.getByRole("button", { name: "Custom game", exact: true }).click();
   await page.getByRole("button", { name: /Pass & Play/ }).click();
   for (const title of ["Prompts", "Teams", "Review"]) {
     await page.getByRole("button", { name: "Next", exact: true }).click();

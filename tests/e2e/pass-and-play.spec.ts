@@ -28,6 +28,7 @@ test.describe("Pass & Play game loop", () => {
 
     await expect(page.getByRole("heading", { name: "Fish Bowl" })).toBeVisible();
     await page.getByRole("button", { name: "Create Game" }).click();
+    await page.getByRole("button", { name: "Custom game", exact: true }).click();
 
     await expect(page.getByRole("heading", { name: "Mode" })).toBeVisible();
     const gameId = page.url().match(/\/game\/([^/?#]+)/)?.[1];
