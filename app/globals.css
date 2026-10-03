@@ -634,16 +634,32 @@ a {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
 }
 
+.game-v2 .setup-wizard .category-toggle-grid .team-choice {
+  flex-wrap: wrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.game-v2 .setup-wizard .segment {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.game-v2 .setup-wizard .split > .field {
+  min-width: 0;
+  align-content: start;
+}
+
 .game-v2 .setup-review-grid > div {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-.game-v2 .status-panel > .button-row {
+.status-panel > .button-row {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
 }
 
-.game-v2 .status-panel .code {
+.status-panel .code {
   display: block;
   width: fit-content;
   max-width: 100%;

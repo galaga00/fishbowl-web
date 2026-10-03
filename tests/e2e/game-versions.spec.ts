@@ -212,7 +212,11 @@ test("version choices and both setup layouts fit phones, enlarged text, tablets,
     for (const width of [320, 390, 680, 820, 1440]) {
       await page.setViewportSize({ width, height: width < 680 ? 844 : 1080 });
       for (const fontSize of [100, 200]) {
-        await page.evaluate(size => { document.documentElement.style.fontSize = `${size}%`; }, fontSize);
+        await page.evaluate(size => {
+          document.documentElement.style.fontSize = `${size}%`;
+          // Exercise a wide display without changing the actual room's join code.
+          document.querySelector(".code")!.textContent = "WWWWW";
+        }, fontSize);
         const problems = await page.locator(".version-choice").evaluateAll(buttons => {
           const issues: string[] = [];
           for (const button of buttons) {
@@ -226,7 +230,7 @@ test("version choices and both setup layouts fit phones, enlarged text, tablets,
           if (document.documentElement.scrollWidth > innerWidth + 1) issues.push("Page overflow");
           return issues;
         });
-        expect(problems).toEqual([]);
+        expect(problems, `${version} at ${width}px and ${fontSize}% text`).toEqual([]);
         if (fontSize === 100 && [390, 820, 1440].includes(width)) await page.screenshot({ path: testInfo.outputPath(`${version}-setup-${width}.png`), fullPage: true });
       }
     }

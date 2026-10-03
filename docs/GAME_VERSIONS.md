@@ -16,7 +16,15 @@ Both use the same protected game engine: session authorization, private cards, a
 
 During initial setup, the host chooses Quick game or Custom game beneath the version selector. Neither is selected initially. Quick game opens the existing Classic, Quick, and Family presets; Custom game opens the full wizard with written prompts, category prompts, deck drafting, teams, and timer settings. Both choices remain visible while configuring the room.
 
-Switching paths or versions preserves each form's entries and the wizard step within the page. Inactive forms stay mounted but hidden from view and keyboard navigation. Choice controls are disabled during saves and starts. Reloading initial setup returns to the chooser; unsaved drafts keep their existing non-persistent behavior. Editing setup from the lobby opens the populated custom wizard directly. These choices are local UI state, not a new room setting, and do not change card-count recommendations.
+Switching paths or versions preserves each form's entries and the wizard step within the page. Inactive forms stay mounted but hidden from view and keyboard navigation. Choice controls are disabled during saves and starts. Reloading initial setup returns to the chooser; unsaved drafts keep their existing non-persistent behavior. Editing setup from the lobby opens the populated custom wizard directly. These choices are local UI state, not a new room setting.
+
+## Written prompt counts
+
+V2 Custom game suggests an equal contribution near a 40-card bowl: round `40 / playerCount`, bounded to 1–20 prompts per player. Six players get seven prompts each (42 cards). Everyone joins uses Expected players; Pass & Play uses its configured roster size. With no expected count, the existing three-prompt fallback remains and the UI explains how to get a suggestion. Very large groups can exceed 40 cards because everyone contributes at least one.
+
+The suggestion follows player-count and phone-mode changes during initial V2 setup until the host manually edits Prompts per player. Manual choices survive path, mode, and version switches. V1 retains its original default; switching into V2 applies a suggestion only if the host has not edited the count. The prompt field shows the projected total and explains that the same bowl is used in all three rounds; Review also shows the total.
+
+Creating the lobby saves the contribution count using the existing game setting. Joins, refresh, continuing a game, and rematches never recalculate it. Explicit Edit setup loads that saved count and disables automatic suggestions; saving edited setup retains the existing warning and clears prepared cards. Quick game presets, deck drafting, and built-in Pass & Play card counts are unchanged by this feature.
 
 ## Room contract
 
