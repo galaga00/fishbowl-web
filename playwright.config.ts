@@ -31,6 +31,11 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] }
+    },
+    {
+      name: "webkit-phone",
+      testMatch: /setup-responsive\.spec\.ts/,
+      use: { ...devices["iPhone 13"] }
     }
   ]
 });
