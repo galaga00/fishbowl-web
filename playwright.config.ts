@@ -20,7 +20,7 @@ export default defineConfig({
     trace: "retain-on-failure",
     video: "retain-on-failure"
   },
-  webServer: {
+  webServer: process.env.PLAYWRIGHT_BASE_URL ? undefined : {
     command: "npm run dev -- --hostname 127.0.0.1",
     env: { ANALYTICS_NOTIFY_EVENTS: "" },
     url: "http://127.0.0.1:3000",
